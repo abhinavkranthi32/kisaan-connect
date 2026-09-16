@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kissan Connect (కిసాన్ కనెక్ట్) | Telangana Agri Market Linkage</title>
+  
+  <!-- Fonts: Inter for crisp numerals & English, Noto Sans Telugu for authentic Telugu typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for Clean, Interactive Price Trend Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/farmer.css">
+</head>
+<body>
+
+  <!-- Top Announcement / Mandi Intel Ticker -->
+  <aside class="mandi-ticker-bar" id="mandiTickerBar" aria-label="Telangana Mandi Rates">
+    <div class="ticker-label">
+      <span class="live-dot"></span>
+      <span data-i18n="ticker_title">తెలంగాణ మార్కెట్ ధరలు (Live Mandi Rates)</span>
+    </div>
+    <div class="ticker-track-wrapper">
+      <div class="ticker-track" id="tickerTrack">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+    <div class="lang-switch-wrapper">
+      <button class="lang-btn active" id="btnLangTe" onclick="setLanguage('te')">తెలుగు</button>
+      <span class="lang-divider">|</span>
+      <button class="lang-btn" id="btnLangEn" onclick="setLanguage('en')">English</button>
+    </div>
+  </aside>
+
+  <!-- Main Container -->
+  <main id="appContainer">
+
+    <!-- ==============================================
+         VIEW 1: ROLE SELECTION SCREEN (MAIN LANDING)
+         ============================================== -->
+    <section id="roleSelectView" class="view-section active">
+      <div class="role-hero-header">
+        <div class="gov-badge-row">
+          <span class="gov-pill" data-i18n="tagline_gov">తెలంగాణ వ్యవసాయ మార్కెట్ వేదిక • SIH 26132</span>
+        </div>
+        <h1 class="main-heading" data-i18n="hero_title">కిసాన్ కనెక్ట్ (Kissan Connect)</h1>
+        <p class="main-subheading" data-i18n="hero_subtitle">రైతులే ధర నిర్ణయించే సురక్షిత డిజిటల్ మార్కెట్. దళారులు లేకుండా నేరుగా అమ్మకాలు, పోటీ బిడ్డింగ్, తక్షణ ఎస్క్రో చెల్లింపులు.</p>
+      </div>
+
+      <div class="role-cards-container">
+        <!-- 1. Farmer Card -->
+        <div class="role-card role-farmer" onclick="openFarmerAuth()">
+          <div class="role-card-badge" data-i18n="badge_farmer_empowered">రైతుకే పూర్తి అధికారం</div>
+          <div class="role-icon-box">👨‍🌾</div>
+          <h2 class="role-title" data-i18n="role_farmer_title">నేను రైతును (Farmer)</h2>
+          <p class="role-desc" data-i18n="role_farmer_desc">మీ పంటకు మీరే డిమాండ్ ఆధారంగా ధర నిర్ణయించండి. కొనుగోలుదారుల లైవ్ బిడ్డింగ్ పరిశీలించి, నచ్చిన వారికి మాత్రమే అమ్మండి.</p>
+          <ul class="role-features-list">
+            <li data-i18n="feat_f1">✓ పంట ఫోటోలు, గ్రేడింగ్‌తో నేరుగా లిస్టింగ్</li>
+            <li data-i18n="feat_f2">✓ లైవ్ బిడ్డింగ్ వార్ – మీరే బిడ్ ఆమోదించండి</li>
+            <li data-i18n="feat_f3">✓ ఎస్క్రో గ్యారెంటీ – నేరుగా మీ బ్యాంక్ ఖాతాలోకే డబ్బు</li>
+          </ul>
+          <button class="btn btn-primary role-btn" data-i18n="btn_enter_farmer">రైతు ఖాతాలోకి ప్రవేశించండి (OTP Login) →</button>
+        </div>
+
+        <!-- 2. Buyer Card -->
+        <div class="role-card role-buyer" onclick="handleRoleClick('buyer')">
+          <div class="role-card-badge outline" data-i18n="badge_buyer">ధృవీకరించబడిన వ్యాపారులు</div>
+          <div class="role-icon-box">🏢</div>
+          <h2 class="role-title" data-i18n="role_buyer_title">కొనుగోలుదారు (Buyer)</h2>
+          <p class="role-desc" data-i18n="role_buyer_desc">తెలంగాణ రైతులు మరియు FPOల నుండి నేరుగా నాణ్యమైన ధాన్యం, మిర్చి, పత్తిని పారదర్శక బిడ్డింగ్ ద్వారా సేకరించండి.</p>
+          <ul class="role-features-list">
+            <li data-i18n="feat_b1">✓ రైతుల పొలాల నుండే నాణ్యమైన పంట సేకరణ</li>
+            <li data-i18n="feat_b2">✓ పారదర్శక డిజిటల్ బిడ్డింగ్ & డిమాండ్ కోట్</li>
+            <li data-i18n="feat_b3">✓ నాణ్యత ధృవీకరణ & డిజిటల్ ఇన్వాయిస్</li>
+          </ul>
+          <button class="btn btn-secondary role-btn" data-i18n="btn_enter_buyer">కొనుగోలుదారు పోర్టల్ (Phase 2 - ప్రస్తుతం పాజ్ చేయబడింది) →</button>
+        </div>
+
+        <!-- 3. Logistics Card -->
+        <div class="role-card role-logistics" onclick="handleRoleClick('logistics')">
+          <div class="role-card-badge outline" data-i18n="badge_transporter">రవాణా నెట్‌వర్క్</div>
+          <div class="role-icon-box">🚛</div>
+          <h2 class="role-title" data-i18n="role_logistics_title">రవాణాదారు (Logistics)</h2>
+          <p class="role-desc" data-i18n="role_logistics_desc">గ్రామీణ ప్రాంతాల నుండి మార్కెట్లు మరియు వేర్‌హౌస్‌లకు రవాణా ట్రిప్పులను ఆమోదించండి. సరసమైన ధరలు, తక్షణ లోడింగ్ ఛార్జీలు.</p>
+          <ul class="role-features-list">
+            <li data-i18n="feat_l1">✓ ట్రాక్టర్, డీసీఎం, లారీ ట్రిప్ ఆర్డర్లు</li>
+            <li data-i18n="feat_l2">✓ OTP ఆధారిత లోడింగ్ & అన్‌లోడింగ్ వెరిఫికేషన్</li>
+            <li data-i18n="feat_l3">✓ తక్షణ రవాణా చార్జీల విడుదల</li>
+          </ul>
+          <button class="btn btn-secondary role-btn" data-i18n="btn_enter_logistics">రవాణా పోర్టల్ (Phase 3) →</button>
+        </div>
+      </div>
+
+      <div class="role-footer-stats">
+        <div class="stat-pill"><strong data-i18n="stat_mandis">6+</strong> <span data-i18n="stat_mandis_sub">తెలంగాణ ప్రముఖ మార్కెట్లు</span></div>
+        <div class="stat-pill"><strong data-i18n="stat_escrow">100%</strong> <span data-i18n="stat_escrow_sub">ఎస్క్రో చెల్లింపు రక్షణ</span></div>
+        <div class="stat-pill"><strong data-i18n="stat_commission">₹0</strong> <span data-i18n="stat_commission_sub">రైతులకు మధ్యవర్తి కమీషన్</span></div>
+      </div>
+    </section>
+
+    <!-- ==============================================
+         VIEW 2: COMPLETE FARMER PORTAL WITH VERTICAL SIDEBAR
+         ============================================== -->
+    <section id="farmerPortalView" class="view-section">
+      
+      <!-- Top Navigation Bar for Farmer Portal -->
+      <header class="farmer-top-navbar">
+        <div class="brand-left">
+          <span class="brand-logo-text">🌾 కిసాన్ కనెక్ట్</span>
+          <span class="portal-badge" data-i18n="badge_farmer_portal">రైతు పోర్టల్</span>
+        </div>
+
+        <div class="nav-middle-breadcrumbs">
+          <button class="breadcrumb-home-btn" onclick="navigateFarmerHome()" title="రైతు డాష్‌బోర్డ్ హోమ్">
+            🏠 <span data-i18n="nav_home">హోమ్ (డ్యాష్‌బోర్డ్)</span>
+          </button>
+          <span class="breadcrumb-sep">/</span>
+          <span id="currentTabBreadcrumb">లైవ్ బిడ్డింగ్ వార్</span>
+        </div>
+
+        <div class="nav-right-actions">
+          <div class="escrow-quick-pill">
+            <span class="escrow-dot"></span>
+            <span data-i18n="wallet_escrow_label">ఎస్క్రో నిధులు:</span>
+            <strong id="topDisplayWallet">₹1,48,500</strong>
+          </div>
+          <button class="btn btn-outline btn-sm switch-role-btn" onclick="confirmSwitchRole()" title="వినియోగదారు ఎంపిక స్క్రీన్‌కు వెళ్లండి">
+            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి (Switch Role)</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Dashboard Grid: Left Vertical Sidebar + Right Content Area -->
+      <div class="farmer-dashboard-grid">
+
+        <!-- ==========================================
+             LEFT VERTICAL SIDEBAR
+             ========================================== -->
+        <aside class="farmer-vertical-sidebar">
+          
+          <!-- Farmer Profile Widget -->
+          <div class="sidebar-profile-card">
+            <div class="sidebar-avatar">👨‍🌾</div>
+            <div class="sidebar-profile-text">
+              <h3 class="farmer-name" id="displayFarmerName">మల్లారెడ్డి (Malla Reddy)</h3>
+              <p class="farmer-village">📍 జనగామ, వరంగల్ జిల్లా</p>
+              <div class="verified-badge-row">
+                <span class="verified-tag">✓ ధృవీకరించబడిన రైతు</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vertical Nav Menu Items -->
+          <nav class="sidebar-nav-menu" aria-label="Farmer Navigation">
+            <button class="sidebar-nav-item active" onclick="switchFarmerTab('biddingArena')" id="tabBiddingArena">
+              <span class="nav-icon">⚡</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_bidding_arena">లైవ్ బిడ్డింగ్ వార్</span>
+                <small class="nav-subtitle">కొనుగోలుదారుల లైవ్ బిడ్‌లు</small>
+              </div>
+              <span class="nav-badge count" id="activeBidsBadge">3</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('createLot')" id="tabCreateLot">
+              <span class="nav-icon">➕</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_create_lot">కొత్త పంట లిస్ట్ చేయండి</span>
+                <small class="nav-subtitle">డిమాండ్ ధరతో నమోదు</small>
+              </div>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('marketCharts')" id="tabMarketCharts">
+              <span class="nav-icon">📈</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_charts">మార్కెట్ చార్ట్‌లు & ట్రెండ్స్</span>
+                <small class="nav-subtitle">ధరల హెచ్చుతగ్గుల గ్రాఫ్‌లు</small>
+              </div>
+              <span class="nav-badge live">లైవ్</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('holdVsSell')" id="tabHoldVsSell">
+              <span class="nav-icon">📊</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_hold_vs_sell">అమ్మాలా? నిల్వ చేయాలా?</span>
+                <small class="nav-subtitle">AI గోదాము సలహాదారు</small>
+              </div>
+              <span class="nav-badge ai">AI</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('ordersEscrow')" id="tabOrdersEscrow">
+              <span class="nav-icon">🔒</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_orders_escrow">ఆర్డర్లు & ఎస్క్రో ట్రాకర్</span>
+                <small class="nav-subtitle">లారీ & OTP చెల్లింపులు</small>
+              </div>
+              <span class="nav-badge info" id="activeOrdersBadge">1</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('disputes')" id="tabDisputes">
+              <span class="nav-icon">⚖️</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_disputes">సమస్య పరిష్కారం</span>
+                <small class="nav-subtitle">ఫిర్యాదు నమోదు & సహాయవాణి</small>
+              </div>
+            </button>
+          </nav>
+
+          <!-- Escrow Summary Card in Sidebar -->
+          <div class="sidebar-escrow-box">
+            <div class="escrow-header-row">
+              <span>🛡️ ఎస్క్రో రక్షిత మొత్తం</span>
+            </div>
+            <div class="escrow-value" id="displayWalletAmount">₹1,48,500</div>
+            <p class="escrow-note">పొలం వద్ద OTP సరిచూశాక మాత్రమే లారీ బయలుదేరుతుంది. డబ్బు సురక్షితం.</p>
+          </div>
+
+          <!-- Bottom Switch Role link -->
+          <div class="sidebar-footer-action">
+            <button class="sidebar-logout-btn" onclick="confirmSwitchRole()">
+              <span>🚪</span>
+              <span data-i18n="btn_switch_role_text">పాత్ర మార్చండి (హోమ్‌కు వెళ్లు)</span>
+            </button>
+          </div>
+
+        </aside>
+
+        <!-- ==========================================
+             RIGHT MAIN CONTENT AREA
+             ========================================== -->
+        <div class="farmer-main-content">
+
+          <!-- TAB 1: LIVE BIDDING WAR ARENA -->
+          <div id="paneBiddingArena" class="tab-pane active">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="bidding_title">మీ పంటలపై లైవ్ కొనుగోలుదారుల పోటీ బిడ్డింగ్</h2>
+                <p class="section-desc" data-i18n="bidding_desc">రైతుగా మీకే పూర్తి నిర్ణయాధికారం ఉంది. కేవలం ఎక్కువ ధర మాత్రమే కాకుండా, కొనుగోలుదారు రేటింగ్ మరియు సొంత వాహనం తెచ్చే సౌకర్యాన్ని బట్టి డీల్ ఎంచుకోండి.</p>
+              </div>
+              <div class="banner-actions">
+                <button class="btn btn-outline btn-sm" onclick="renderBiddingArena()" title="తాజా బిడ్లను లోడ్ చేయండి">🔄 <span data-i18n="btn_refresh_bids">రిఫ్రెష్ బిడ్‌లు</span></button>
+              </div>
+            </div>
+
+            <!-- Active Lots Grid with incoming bids -->
+            <div id="farmerLotsList" class="farmer-lots-grid">
+              <!-- Populated via JavaScript -->
+            </div>
+          </div>
+
+          <!-- TAB 2: CREATE NEW CROP LOT -->
+          <div id="paneCreateLot" class="tab-pane">
+            <div class="create-lot-layout">
+              <!-- Form Card -->
+              <div class="create-lot-form-card">
+                <h2 class="form-title" data-i18n="create_lot_title">పంట వివరాలు నమోదు చేయండి (Create Crop Lot)</h2>
+                <p class="form-subtitle" data-i18n="create_lot_subtitle">మీరు వివరాలు నమోదు చేసిన వెంటనే తెలంగాణ మార్కెట్ డిమాండ్ ఆధారంగా సిఫారసు చేయబడిన సరైన ధర లెక్కిస్తాము.</p>
+
+                <form id="newLotForm" onsubmit="handleCreateLotSubmit(event)">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="cropSelect" data-i18n="lbl_crop_name">పంట పేరు (Crop Name) *</label>
+                      <select id="cropSelect" required onchange="onCropSelected()">
+                        <option value="teja_chilli">తేజ మిర్చి (Teja Red Chilli) - ఖమ్మం / వరంగల్</option>
+                        <option value="paddy">తెలంగాణ సోనా వరి (Telangana Sona Paddy / BPT)</option>
+                        <option value="cotton">పత్తి (Raw White Cotton) - వరంగల్ / ఆదిలాబాద్</option>
+                        <option value="turmeric">నిజామాబాద్ పసుపు (Raw Turmeric Fingers)</option>
+                        <option value="red_gram">ఎర్ర కందులు (Red Gram / Kandulu)</option>
+                        <option value="maize">మొక్కజొన్న (Yellow Maize / Mokka Jonna)</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="cropVariety" data-i18n="lbl_variety">రకం / వెరైటీ (Variety) *</label>
+                      <input type="text" id="cropVariety" value="తేజ స్పెషల్ ఎగుమతి గ్రేడ్ (Teja Special Export)" required>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="lotQuantity" data-i18n="lbl_quantity">మొత్తం పరిమాణం (క్వింటాళ్లలో / Quintals) *</label>
+                      <input type="number" id="lotQuantity" min="1" max="1000" value="40" required oninput="calculateDemandAsk()">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="cropGrade" data-i18n="lbl_grade">నాణ్యతా గ్రేడ్ (Quality Grade) *</label>
+                      <select id="cropGrade" onchange="calculateDemandAsk()">
+                        <option value="A">గ్రేడ్ A (మొదటి రకం / తేమ < 10% / శుభ్రమైనది)</option>
+                        <option value="B">గ్రేడ్ B (మధ్యమ రకం / తేమ 11-13%)</option>
+                        <option value="C">గ్రేడ్ C (సాధారణ రకం)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="farmLocation" data-i18n="lbl_location">పొలం ఉన్న ప్రదేశం (Mandal & District) *</label>
+                      <input type="text" id="farmLocation" value="జనగామ మండలం, వరంగల్ జిల్లా" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="storageStatus" data-i18n="lbl_storage_type">నిల్వ ఉన్న ప్రదేశం (Storage Location) *</label>
+                      <select id="storageStatus">
+                        <option value="farmgate">పొలంలోనే ఉంది (Farm Gate Pickup Ready)</option>
+                        <option value="home_shed">ఇంటి గోదాములో ఉంది (Village Home Shed)</option>
+                        <option value="tswc_warehouse">తెలంగాణ స్టేట్ వేర్‌హౌస్‌లో ఉంది (TSWC Cold Storage)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Crop Images Upload simulation -->
+                  <div class="form-group">
+                    <label data-i18n="lbl_crop_photos">పంట అసలు ఫోటోలు (Product Images) *</label>
+                    <div class="image-upload-dropzone" onclick="document.getElementById('cropPhotoInput').click()">
+                      <input type="file" id="cropPhotoInput" accept="image/*" style="display:none;" onchange="handleImagePreview(event)">
+                      <div class="dropzone-content">
+                        <span class="upload-icon">📸</span>
+                        <strong data-i18n="upload_prompt">పంట ఫోటోను ఎంచుకోండి లేదా కెమెరాతో తీయండి</strong>
+                        <span class="upload-hint" data-i18n="upload_hint">స్పష్టమైన ఫోటోలు పెడితే కొనుగోలుదారులు ఎక్కువ ధరకు బిడ్ వేస్తారు</span>
+                      </div>
+                    </div>
+                    <!-- Preview Box -->
+                    <div id="imagePreviewContainer" class="image-preview-box">
+                      <img id="lotPreviewImg" src="assets/crops/teja_chilli.jpg" alt="Crop preview">
+                      <span class="preview-badge" data-i18n="preview_selected">ఎంచుకున్న ఫోటో సిద్ధంగా ఉంది</span>
+                    </div>
+                  </div>
+
+                  <!-- DEMAND-BASED SMART ASK SECTION -->
+                  <div class="smart-ask-card">
+                    <div class="smart-ask-header">
+                      <span class="sparkle-icon">💡</span>
+                      <div>
+                        <strong class="smart-ask-title" data-i18n="smart_ask_title">మార్కెట్ డిమాండ్ ఆధారిత ధర సలహాదారు (Smart Ask Price)</strong>
+                        <div class="smart-ask-subtitle" id="smartDemandIndicator">ఖమ్మం & వరంగల్ మార్కెట్లలో తేజ మిర్చికి డిమాండ్: <span class="demand-tag high">చాలా ఎక్కువ (High)</span></div>
+                      </div>
+                    </div>
+                    <div class="smart-ask-body">
+                      <div class="suggested-rate-box">
+                        <div class="suggested-label" data-i18n="suggested_ask_label">సిఫారసు చేయబడిన బేస్ ధర (Recommended Ask):</div>
+                        <div class="suggested-price" id="suggestedPriceRange">₹20,800 – ₹22,500 / క్వింటాల్</div>
+                        <p class="suggested-explanation" id="suggestedExplanation">ఇటీవలి 7 రోజులలో ఖమ్మం మార్కెట్ రాకలు 15% తగ్గాయి, నాణ్యమైన మిర్చి కోసం ఎగుమతిదారులు పోటీ పడుతున్నారు. మీరు తక్కువ ధరకు విక్రయించకండి.</p>
+                      </div>
+
+                      <div class="farmer-reserve-input-group">
+                        <label for="farmerAskPrice"><strong>మీరు కోరుకునే కనీస రిజర్వ్ ధర (Your Ask Price per Quintal) *</strong></label>
+                        <div class="currency-input-wrapper">
+                          <span class="currency-symbol">₹</span>
+                          <input type="number" id="farmerAskPrice" value="21000" min="500" step="50" required>
+                          <span class="unit-symbol">/ Quintal</span>
+                        </div>
+                        <span class="input-helper-text" data-i18n="helper_reserve_price">ఈ ధర కంటే తక్కువగా ఏ కొనుగోలుదారు కూడా బిడ్ వేయలేరు. మీకే పూర్తి రక్షణ.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitLot">
+                      🚀 <span data-i18n="btn_publish_lot">పంటను బిడ్డింగ్ కోసం లైవ్ చేయండి (List for Live Bidding)</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Side Card: Telangana Market Insights -->
+              <div class="create-lot-sidebar">
+                <div class="sidebar-card">
+                  <h3 class="sidebar-title">📌 <span data-i18n="mandi_snapshot_title">తెలంగాణ ప్రముఖ మార్కెట్ల రేట్లు</span></h3>
+                  <div class="mandi-snapshot-list" id="mandiSnapshotList">
+                    <!-- Injected via JS -->
+                  </div>
+                </div>
+
+                <div class="sidebar-card trust-notes">
+                  <h3 class="sidebar-title">🛡️ <span data-i18n="farmer_safety_title">రైతు భద్రతా హామీలు</span></h3>
+                  <ul class="safety-points">
+                    <li><strong>రైతుదే తుది నిర్ణయం:</strong> బిడ్ ఎంత ఎక్కువగా వచ్చినా మీరు ఆమోదిస్తేనే డీల్ ఖరారవుతుంది.</li>
+                    <li><strong>ముందస్తు ఎస్క్రో డిపాజిట్:</strong> కొనుగోలుదారు మొత్తం డబ్బును బ్యాంక్ ఎస్క్రోలో జమ చేసిన తర్వాతే లారీ పొలానికి వస్తుంది.</li>
+                    <li><strong>రవాణా ఎంపిక:</strong> కొనుగోలుదారు స్వయంగా వాహనం పంపేలా షరతు పెట్టవచ్చు.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: NEW INTERACTIVE MARKET CHARTS & TRENDS -->
+          <div id="paneMarketCharts" class="tab-pane">
+            <div class="charts-view-container">
+              
+              <div class="section-banner">
+                <div>
+                  <h2 class="section-title">📊 తెలంగాణ మార్కెట్ ధరల విశ్లేషణ & లైవ్ చార్ట్‌లు</h2>
+                  <p class="section-desc">ఖమ్మం, వరంగల్, నిజామాబాద్, మిర్యాలగూడ మార్కెట్లలో ధరల కదలికలు మరియు పంట రాకలను లైవ్‌గా ట్రాక్ చేయండి.</p>
+                </div>
+
+                <div class="chart-controls-group">
+                  <select id="chartCropSelector" class="chart-crop-select" onchange="handleChartCropChange()">
+                    <option value="teja_chilli">తేజ మిర్చి (ఖమ్మం & వరంగల్ ఎనుమాముల)</option>
+                    <option value="paddy">తెలంగాణ సోనా వరి (మిర్యాలగూడ & సూర్యాపేట)</option>
+                    <option value="cotton">పత్తి (ఆదిలాబాద్ & వరంగల్)</option>
+                    <option value="turmeric">నిజామాబాద్ పసుపు</option>
+                  </select>
+
+                  <div class="chart-timeframe-toggles">
+                    <button class="timeframe-btn active" onclick="setChartTimeframe('15D')">15 రోజులు</button>
+                    <button class="timeframe-btn" onclick="setChartTimeframe('30D')">30 రోజులు</button>
+                    <button class="timeframe-btn" onclick="setChartTimeframe('90D')">3 నెలలు</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metrics Row -->
+              <div class="chart-metrics-row">
+                <div class="chart-metric-card">
+                  <span class="metric-label">ప్రస్తుత సగటు మార్కెట్ ధర</span>
+                  <div class="metric-value" id="metricCurrentPrice">₹21,650 / Q</div>
+                  <span class="metric-change up" id="metricPriceChange">▲ +12.4% (గత 15 రోజుల్లో)</span>
+                </div>
+
+                <div class="chart-metric-card">
+                  <span class="metric-label">15 రోజుల గరిష్ట ధర (High)</span>
+                  <div class="metric-value" id="metricHighPrice">₹22,400 / Q</div>
+                  <span class="metric-sub">ఖమ్మం మార్కెట్ రికార్డ్</span>
+                </div>
+
+                <div class="chart-metric-card">
+                  <span class="metric-label">మొత్తం మార్కెట్ రాకలు (Arrivals)</span>
+                  <div class="metric-value" id="metricArrivals">14,250 బస్తాలు/రోజు</div>
+                  <span class="metric-change down" id="metricArrivalsChange">▼ -18% (రాకలు తగ్గాయి - డిమాండ్ పెరిగింది)</span>
+                </div>
+
+                <div class="chart-metric-card highlight-box">
+                  <span class="metric-label">రైతుకు లాభదాయక సూచన</span>
+                  <div class="metric-value" style="color:#15803D;" id="metricActionAdvice">అధిక డిమాండ్ (Strong Ask)</div>
+                  <span class="metric-sub">కనీసం ₹21,200 కంటే తక్కువగా అమ్మకండి</span>
+                </div>
+              </div>
+
+              <!-- Main Canvas Charts Grid -->
+              <div class="charts-dual-grid">
+                <!-- Price Trend Line Chart -->
+                <div class="chart-card-box">
+                  <div class="chart-card-header">
+                    <h3 class="chart-card-title">📈 రోజువారీ మార్కెట్ ధరల గ్రాఫ్ (Price Trend in ₹ / Quintal)</h3>
+                    <span class="chart-legend-tag">కనీస రిజర్వ్ ధర vs వాస్తవ సగటు బిడ్</span>
+                  </div>
+                  <div class="chart-canvas-wrapper">
+                    <canvas id="priceTrendCanvas"></canvas>
+                  </div>
+                </div>
+
+                <!-- Arrival Volume vs Price Correlation Bar Chart -->
+                <div class="chart-card-box">
+                  <div class="chart-card-header">
+                    <h3 class="chart-card-title">🚚 మార్కెట్ రాకల పరిమాణం (Daily Arrival Volumes in Quintals)</h3>
+                    <span class="chart-legend-tag">తక్కువ రాకలు = ఎక్కువ డిమాండ్</span>
+                  </div>
+                  <div class="chart-canvas-wrapper">
+                    <canvas id="volumeTrendCanvas"></canvas>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB 4: HOLD OR SELL AI ADVISOR -->
+          <div id="paneHoldVsSell" class="tab-pane">
+            <div class="hold-advisor-layout">
+              <div class="advisor-main-card">
+                <div class="advisor-header">
+                  <div class="advisor-badge">AI పంట విక్రయ విండో సలహాదారు (Sale-Window Intelligence)</div>
+                  <h2 class="advisor-title" data-i18n="advisor_heading">ఇప్పుడే అమ్మాలా? లేక గోదాములో దాచి తర్వాత అమ్మాలా?</h2>
+                  <p class="advisor-desc" data-i18n="advisor_sub">తెలంగాణ స్టేట్ వేర్‌హౌసింగ్ కార్పొరేషన్ (TSWC) నిల్వ ఖర్చులు మరియు రాబోయే 15 రోజుల ధరల అంచనాను విశ్లేషించి మీకు లాభదాయకమైన సలహా అందిస్తుంది.</p>
+                </div>
+
+                <div class="advisor-crop-selector-row">
+                  <label for="advisorCropSelect"><strong>పంటను ఎంచుకోండి:</strong></label>
+                  <select id="advisorCropSelect" onchange="updateHoldSellAdvice()">
+                    <option value="paddy">తెలంగాణ సోనా వరి (Telangana Sona Paddy)</option>
+                    <option value="teja_chilli">తేజ మిర్చి (Teja Chilli)</option>
+                    <option value="cotton">పత్తి (Raw Cotton)</option>
+                    <option value="turmeric">పసుపు (Nizamabad Turmeric)</option>
+                  </select>
+                </div>
+
+                <!-- AI Decision Banner -->
+                <div class="decision-recommendation-box hold" id="decisionBox">
+                  <!-- Injected via JS -->
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="comparison-grid" id="holdSellComparisonGrid">
+                  <!-- Injected via JS -->
+                </div>
+
+                <!-- Nearby TSWC Warehouses -->
+                <div class="nearby-warehouses-section">
+                  <h3 class="subsection-title" data-i18n="tswc_title">📍 సమీపంలోని తెలంగాణ ప్రభుత్వ వేర్‌హౌస్‌లు & కోల్డ్ స్టోరేజ్‌లు</h3>
+                  <div class="warehouse-cards-grid" id="warehouseCardsGrid">
+                    <!-- Injected via JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: ORDERS & ESCROW LIFECYCLE TRACKER -->
+          <div id="paneOrdersEscrow" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="orders_title">ఎస్క్రో చెల్లింపుల ట్రాకర్ & లైవ్ ఆర్డర్లు</h2>
+                <p class="section-desc" data-i18n="orders_desc">కొనుగోలుదారు డబ్బు డిపాజిట్ చేయడం మొదలుకొని, మీ పొలం వద్ద OTP వెరిఫికేషన్ ద్వారా డబ్బు మీ బ్యాంక్ ఖాతాలో చేరేవరకు ప్రతి అడుగు పారదర్శకం.</p>
+              </div>
+            </div>
+
+            <div class="orders-list-container" id="ordersEscrowContainer">
+              <!-- Populated via JavaScript -->
+            </div>
+          </div>
+
+          <!-- TAB 6: GRIEVANCE & DISPUTE REDRESSAL -->
+          <div id="paneDisputes" class="tab-pane">
+            <div class="dispute-container">
+              <div class="dispute-form-card">
+                <h2 class="form-title" data-i18n="dispute_title">రైతు సమస్య పరిష్కార వేదిక (Grievance Support)</h2>
+                <p class="form-subtitle" data-i18n="dispute_subtitle">కొనుగోలుదారు బరువులో తేడా చూపించినా, లారీ రాక ఆలస్యమైనా, లేదా చెల్లింపులో సమస్య ఉన్నా వెంటనే ఫిర్యాదు నమోదు చేయండి. పరిష్కారం అయ్యేవరకు ఎస్క్రో డబ్బు భద్రంగా నిలిపివేయబడుతుంది.</p>
+
+                <form onsubmit="handleDisputeSubmit(event)">
+                  <div class="form-group">
+                    <label for="disputeOrderSelect" data-i18n="lbl_dispute_order">ఆర్డర్ / డీల్ ఐడీ (Select Order) *</label>
+                    <select id="disputeOrderSelect">
+                      <option value="KC-TS-2026-091">ఆర్డర్ #KC-TS-2026-091 (40 క్వింటాళ్లు తేజ మిర్చి - ITC Agri Sourcing)</option>
+                      <option value="KC-TS-2026-042">ఆర్డర్ #KC-TS-2026-042 (100 క్వింటాళ్లు వరి - తెలంగాణ రైస్ మిల్లర్స్)</option>
+                      <option value="general">ఇతర సాధారణ సమస్య (Other General Issue)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="disputeType" data-i18n="lbl_dispute_category">సమస్య రకం (Category) *</label>
+                    <select id="disputeType">
+                      <option value="weight">బరువు తూకంలో వ్యత్యాసం (Weight Scale Discrepancy)</option>
+                      <option value="pickup_delay">వాహనం నిర్ణీత సమయానికి రాలేదు (Truck Delay / No-show)</option>
+                      <option value="quality_rejection">అనవసరంగా నాణ్యత తిరస్కరణ (Unfair Quality Grading)</option>
+                      <option value="payment_query">ఎస్క్రో విడుదల విచారణ (Payment Release Query)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="disputeDetails" data-i18n="lbl_dispute_desc">సమస్య పూర్తి వివరాలు (Detailed Description) *</label>
+                    <textarea id="disputeDetails" rows="4" placeholder="సమస్యను వివరంగా తెలియజేయండి..." required></textarea>
+                  </div>
+
+                  <button type="submit" class="btn btn-danger">
+                    🚨 <span data-i18n="btn_submit_dispute">ఫిర్యాదు సమర్పించండి (Raise Dispute Ticket)</span>
+                  </button>
+                </form>
+              </div>
+
+              <div class="dispute-info-card">
+                <h3 class="sidebar-title">📞 <span data-i18n="helpline_title">తెలంగాణ రైతు సహాయవాణి</span></h3>
+                <div class="helpline-box">
+                  <div class="helpline-number">1800-425-3434</div>
+                  <div class="helpline-time">ఉదయం 8:00 నుండి రాత్రి 8:00 వరకు అందుబాటులో ఉంటుంది</div>
+                </div>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">సమస్య పరిష్కార ప్రక్రియ:</h4>
+                <ol class="dispute-steps-list">
+                  <li>ఫిర్యాదు దాఖలు కాగానే ఎస్క్రో చెల్లింపు తాత్కాలికంగా హోల్డ్ అవుతుంది.</li>
+                  <li>మండల వ్యవసాయ అధికారి లేదా మార్కెట్ నోడల్ ఆఫీసర్ 24 గంటల్లో సంప్రదిస్తారు.</li>
+                  <li>పొలం వద్ద ఉన్న డిజిటల్ తూకం స్లిప్ లేదా ఫోటోల ఆధారంగా రైతుకు న్యాయం చేయబడుతుంది.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /farmer-main-content -->
+
+      </div><!-- /farmer-dashboard-grid -->
+    </section>
+
+  </main>
+
+  <!-- ==============================================
+       MODAL: FARMER AUTHENTICATION (MOBILE + OTP)
+       ============================================== -->
+  <div class="modal-backdrop" id="farmerAuthModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeFarmerAuth()">&times;</button>
+      
+      <!-- Step 1: Enter Phone Number -->
+      <div id="authStepPhone" class="auth-step active">
+        <div class="auth-icon-circle">📱</div>
+        <h3 class="modal-title" data-i18n="auth_phone_title">రైతు మొబైల్ లాగిన్</h3>
+        <p class="modal-subtitle" data-i18n="auth_phone_sub">మీ 10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి. తక్షణమే OTP పంపబడుతుంది.</p>
+
+        <form onsubmit="handleSendOtp(event)">
+          <div class="phone-input-row">
+            <span class="country-prefix">+91</span>
+            <input type="tel" id="farmerPhoneInput" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="98480 12345" value="9848055210" required autofocus>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block" id="btnSendOtp">
+            <span data-i18n="btn_send_otp">OTP పంపండి (Get OTP) →</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div id="authStepOtp" class="auth-step">
+        <div class="auth-icon-circle success">🔑</div>
+        <h3 class="modal-title" data-i18n="auth_otp_title">OTP వెరిఫికేషన్</h3>
+        <p class="modal-subtitle">
+          <span data-i18n="otp_sent_to">ఈ నంబర్‌కు 6 అంకెల OTP పంపబడింది:</span><br>
+          <strong id="displayTargetPhone">+91 98480 55210</strong>
+        </p>
+
+        <form onsubmit="handleVerifyOtp(event)">
+          <div class="otp-inputs-row">
+            <input type="text" class="otp-digit" maxlength="1" id="otp1" oninput="focusNextOtp(1)" required>
+            <input type="text" class="otp-digit" maxlength="1" id="otp2" oninput="focusNextOtp(2)" required>
+            <input type="text" class="otp-digit" maxlength="1" id="otp3" oninput="focusNextOtp(3)" required>
+            <input type="text" class="otp-digit" maxlength="1" id="otp4" oninput="focusNextOtp(4)" required>
+            <input type="text" class="otp-digit" maxlength="1" id="otp5" oninput="focusNextOtp(5)" required>
+            <input type="text" class="otp-digit" maxlength="1" id="otp6" oninput="focusNextOtp(6)" required>
+          </div>
+
+          <!-- Hackathon Testing Fast Fill Button -->
+          <div class="quick-demo-otp-banner">
+            <span>హ్యాకథాన్ టెస్టింగ్ OTP: <strong>842109</strong></span>
+            <button type="button" class="btn-text-link" onclick="autoFillDemoOtp()">👉 ఒక్క క్లిక్‌తో నింపండి (Auto-Fill)</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="btnVerifyOtp">
+            <span data-i18n="btn_verify_enter">వెరిఫై చేసి లోపలికి ప్రవేశించండి →</span>
+          </button>
+
+          <div class="resend-otp-row">
+            <span id="resendTimerText">మళ్ళీ పంపడానికి వేచి ఉండండి: <strong id="timerSecs">28s</strong></span>
+            <button type="button" id="btnResendOtp" style="display:none;" onclick="handleSendOtp(null)" class="btn-text-link">OTP మళ్ళీ పంపండి</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==============================================
+       MODAL: COUNTER OFFER DIALOG
+       ============================================== -->
+  <div class="modal-backdrop" id="counterOfferModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeCounterModal()">&times;</button>
+      <h3 class="modal-title" data-i18n="counter_title">కొనుగోలుదారుకు ఎదురు ప్రతిపాదన (Counter Offer)</h3>
+      <p class="modal-subtitle" id="counterModalSubtitle">కొనుగోలుదారు బిడ్: ₹20,800/క్వింటాల్. మీరు ఆశించే ఎక్కువ ధరను ప్రతిపాదించండి.</p>
+
+      <div class="counter-input-box">
+        <label for="counterPriceInput"><strong>మీ కౌంటర్ ధర (రూపాయలు / క్వింటాల్) *</strong></label>
+        <div class="currency-input-wrapper">
+          <span class="currency-symbol">₹</span>
+          <input type="number" id="counterPriceInput" value="21500" step="50" required>
+          <span class="unit-symbol">/ Quintal</span>
+        </div>
+      </div>
+
+      <div class="counter-terms-check" style="margin: 1.25rem 0;">
+        <label class="custom-checkbox-row">
+          <input type="checkbox" id="counterRequireVehicle" checked>
+          <span>కొనుగోలుదారుడే సొంత లారీని పొలం వద్దకు పంపించాలి (Buyer arranges transport)</span>
+        </label>
+      </div>
+
+      <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="closeCounterModal()">రద్దు చేయండి (Cancel)</button>
+        <button class="btn btn-primary" onclick="submitCounterOffer()">కౌంటర్ ఆఫర్ పంపండి →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="toast-popup" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

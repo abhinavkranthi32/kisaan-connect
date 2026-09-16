@@ -1,0 +1,396 @@
+/* ==========================================================================
+   KISSAN CONNECT (కిసాన్ కనెక్ట్) - CORE DESIGN SYSTEM
+   Human-Made, Honest, Agricultural Design System (Zero Neon / Glows)
+   ========================================================================== */
+
+:root {
+  /* Brand Palettes: Organic Agricultural Greens & Earth Tones */
+  --primary-900: #123524;
+  --primary-800: #1B4332;
+  --primary-700: #2D6A4F;
+  --primary-600: #40916C;
+  --primary-500: #52B788;
+  --primary-100: #D8F3DC;
+  --primary-50:  #F2F9F5;
+
+  /* Earthy & Warm Slate Neutrals */
+  --bg-main:     #F8FAF8;
+  --bg-surface:  #FFFFFF;
+  --bg-subtle:   #F3F5F3;
+  --text-main:   #1A2421;
+  --text-muted:  #4B5A54;
+  --text-light:  #708079;
+  --border-card: #E1E6E2;
+  --border-focus:#2D6A4F;
+
+  /* Semantic Accents (Matte, non-glowing) */
+  --accent-amber: #B45309;
+  --accent-amber-bg: #FEF3C7;
+  --accent-blue: #1D4ED8;
+  --accent-blue-bg: #EFF6FF;
+  --accent-red: #B91C1C;
+  --accent-red-bg: #FEE2E2;
+  --accent-green: #15803D;
+  --accent-green-bg: #DCFCE7;
+
+  /* Geometry & Typography */
+  --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-telugu: 'Noto Sans Telugu', 'Inter', system-ui, sans-serif;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Subtle, Natural Shadows (Physical Paper Depth, No Glows) */
+  --shadow-subtle: 0 1px 3px rgba(18, 53, 36, 0.06), 0 1px 2px rgba(18, 53, 36, 0.04);
+  --shadow-card:   0 3px 8px rgba(18, 53, 36, 0.07), 0 1px 3px rgba(18, 53, 36, 0.04);
+  --shadow-hover:  0 6px 16px rgba(18, 53, 36, 0.09), 0 2px 4px rgba(18, 53, 36, 0.04);
+  --shadow-modal:  0 20px 30px -10px rgba(18, 53, 36, 0.18), 0 8px 10px -6px rgba(18, 53, 36, 0.1);
+}
+
+/* Base Reset & Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background-color: var(--bg-main);
+}
+
+body {
+  font-family: var(--font-telugu);
+  color: var(--text-main);
+  background-color: var(--bg-main);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Enforce English font when active */
+body.lang-en {
+  font-family: var(--font-base);
+}
+
+/* View Sections Controller */
+.view-section {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.view-section.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Mandi Rates Top Ticker Bar */
+.mandi-ticker-bar {
+  background-color: var(--primary-900);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.ticker-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #A7F3D0;
+  padding-right: 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #34D399;
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.ticker-track-wrapper {
+  flex: 1;
+  overflow: hidden;
+  margin: 0 1rem;
+  white-space: nowrap;
+  position: relative;
+}
+
+.ticker-track {
+  display: inline-flex;
+  gap: 2rem;
+  animation: ticker-slide 38s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+}
+
+.ticker-item strong {
+  color: #F3F4F6;
+}
+
+.ticker-item .rate {
+  font-weight: 700;
+  color: #FDE68A;
+}
+
+.ticker-item .trend.up {
+  color: #6EE7B7;
+}
+
+.ticker-item .trend.down {
+  color: #FCA5A5;
+}
+
+/* Language Switcher */
+.lang-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  color: #D1D5DB;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.lang-btn:hover {
+  color: #FFFFFF;
+}
+
+.lang-btn.active {
+  background-color: var(--primary-700);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.lang-divider {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+}
+
+/* Main Landing: Role Selection View */
+#roleSelectView {
+  max-width: 1200px;
+  margin: 2.5rem auto 4rem;
+  padding: 0 1.5rem;
+}
+
+.role-hero-header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 3rem;
+}
+
+.gov-badge-row {
+  margin-bottom: 0.85rem;
+}
+
+.gov-pill {
+  display: inline-block;
+  background-color: var(--primary-100);
+  color: var(--primary-900);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 106, 79, 0.25);
+  letter-spacing: 0.02em;
+}
+
+.main-heading {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary-900);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.main-subheading {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* 3 Role Cards Grid */
+.role-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 960px) {
+  .role-cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.role-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.role-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary-600);
+}
+
+/* Primary role card (Farmer) highlighted naturally */
+.role-card.role-farmer {
+  border: 2px solid var(--primary-700);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFDFB 100%);
+}
+
+.role-card-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--primary-800);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.role-card-badge.outline {
+  background-color: transparent;
+  color: var(--text-light);
+  border: 1px solid var(--border-card);
+}
+
+.role-icon-box {
+  font-size: 2.75rem;
+  margin-bottom: 1.25rem;
+  width: 64px;
+  height: 64px;
+  background-color: var(--primary-50);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(45, 106, 79, 0.15);
+}
+
+.role-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-900);
+  margin-bottom: 0.65rem;
+}
+
+.role-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.role-features-list {
+  list-style: none;
+  margin-bottom: 1.75rem;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.role-features-list li {
+  line-height: 1.4;
+  color: #2F3E37;
+}
+
+.role-btn {
+  width: 100%;
+  text-align: center;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+}
+
+/* Landing Footer Stats */
+.role-footer-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-card);
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .role-footer-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.stat-pill {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.stat-pill strong {
+  font-size: 1.4rem;
+  color: var(--primary-800);
+  font-weight: 800;
+}
