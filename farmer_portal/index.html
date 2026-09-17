@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kissan Connect | రైతు పోర్టల్ (Farmer Portal)</title>
+  
+  <!-- Fonts: Inter & Noto Sans Telugu -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for Price Trends -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Base URL & Stylesheets -->
+  <base href="/farmer_portal/">
+  <link rel="stylesheet" href="/shared/css/main.css">
+  <link rel="stylesheet" href="/shared/css/components.css">
+  <link rel="stylesheet" href="/farmer_portal/css/farmer.css">
+</head>
+<body>
+
+  <!-- Top Announcement / Mandi Intel Ticker -->
+  <aside class="mandi-ticker-bar" id="mandiTickerBar" aria-label="Telangana Mandi Rates">
+    <div class="ticker-label">
+      <span class="live-dot"></span>
+      <span data-i18n="ticker_title">తెలంగాణ మార్కెట్ ధరలు (Live Mandi Rates)</span>
+    </div>
+    <div class="ticker-track-wrapper">
+      <div class="ticker-track" id="tickerTrack">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+    <div class="lang-switch-wrapper">
+      <button class="lang-btn active" id="btnLangTe" onclick="setLanguage('te')">తెలుగు</button>
+      <span class="lang-divider">|</span>
+      <button class="lang-btn" id="btnLangEn" onclick="setLanguage('en')">English</button>
+    </div>
+  </aside>
+
+  <!-- Main Container -->
+  <main id="appContainer">
+
+    <section id="farmerPortalView" class="view-section active">
+      
+      <!-- Top Navigation Bar for Farmer Portal -->
+      <header class="farmer-top-navbar">
+        <div class="brand-left">
+          <a href="../main_portal/index.html" style="text-decoration:none;" class="brand-logo-text">🌾 కిసాన్ కనెక్ట్</a>
+          <span class="portal-badge" data-i18n="badge_farmer_portal">రైతు పోర్టల్ (Farmer)</span>
+        </div>
+
+        <div class="nav-middle-breadcrumbs">
+          <button class="breadcrumb-home-btn" onclick="navigateFarmerHome()" title="రైతు డాష్‌బోర్డ్ హోమ్">
+            🏠 <span data-i18n="nav_home">హోమ్ (డ్యాష్‌బోర్డ్)</span>
+          </button>
+          <span class="breadcrumb-sep">/</span>
+          <span id="currentTabBreadcrumb">లైవ్ బిడ్డింగ్ వార్</span>
+        </div>
+
+        <div class="nav-right-actions">
+          <!-- Clean Real-Time Location Display -->
+          <div class="top-location-clean-pill" id="topLocationCleanPill" onclick="requestRealTimeLocation(true)" title="క్లిక్ చేసి GPS లొకేషన్ రిఫ్రెష్ చేయండి">
+            <span class="loc-icon">📍</span>
+            <span id="topLocationCleanText">జనగామ, వరంగల్</span>
+          </div>
+
+          <!-- Clean Farmer Profile Badge -->
+          <div class="top-farmer-profile-pill">
+            <span class="farmer-avatar-icon">👨‍🌾</span>
+            <strong id="topCleanFarmerName">మల్లారెడ్డి (Farmer)</strong>
+          </div>
+
+          <!-- Escrow Funds Pill -->
+          <div class="escrow-quick-pill">
+            <span class="escrow-dot"></span>
+            <span data-i18n="wallet_escrow_label">ఎస్క్రో నిధులు:</span>
+            <strong id="topDisplayWallet">₹1,48,500</strong>
+          </div>
+
+          <!-- Switch Role Button -->
+          <a href="../main_portal/index.html" class="btn btn-outline btn-sm switch-role-btn" title="వినియోగదారు ఎంపిక స్క్రీన్‌కు వెళ్లండి">
+            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి (Switch Role)</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Dashboard Grid: Left Vertical Sidebar + Right Content Area -->
+      <div class="farmer-dashboard-grid">
+
+        <!-- LEFT VERTICAL SIDEBAR -->
+        <aside class="farmer-vertical-sidebar">
+          
+          <!-- Farmer Profile Widget -->
+          <div class="sidebar-profile-card">
+            <div class="sidebar-avatar">👨‍🌾</div>
+            <div class="sidebar-profile-text">
+              <h3 class="farmer-name" id="displayFarmerName">మల్లారెడ్డి (Malla Reddy)</h3>
+              <p class="farmer-village">📍 జనగామ, వరంగల్ జిల్లా</p>
+              <div class="verified-badge-row">
+                <span class="verified-tag">✓ రైతుబంధు ధృవీకరించబడింది</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vertical Nav Menu Items -->
+          <nav class="sidebar-nav-menu" aria-label="Farmer Navigation">
+            <button class="sidebar-nav-item active" onclick="switchFarmerTab('biddingArena')" id="tabBiddingArena">
+              <span class="nav-icon">⚡</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_bidding_arena">లైవ్ బిడ్డింగ్ వార్</span>
+                <small class="nav-subtitle">కొనుగోలుదారుల లైవ్ బిడ్‌లు</small>
+              </div>
+              <span class="nav-badge count" id="activeBidsBadge">3 బిడ్‌లు</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('createLot')" id="tabCreateLot">
+              <span class="nav-icon">➕</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_create_lot">కొత్త పంట లిస్ట్ చేయండి</span>
+                <small class="nav-subtitle">డిమాండ్ ధరతో నమోదు</small>
+              </div>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('marketCharts')" id="tabMarketCharts">
+              <span class="nav-icon">📈</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_charts">మార్కెట్ చార్ట్‌లు & ట్రెండ్స్</span>
+                <small class="nav-subtitle">ధరల హెచ్చుతగ్గుల గ్రాఫ్‌లు</small>
+              </div>
+              <span class="nav-badge live">లైవ్</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('holdVsSell')" id="tabHoldVsSell">
+              <span class="nav-icon">📊</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_hold_vs_sell">అమ్మాలా? నిల్వ చేయాలా?</span>
+                <small class="nav-subtitle">AI గోదాము సలహాదారు</small>
+              </div>
+              <span class="nav-badge ai">AI</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('ordersEscrow')" id="tabOrdersEscrow">
+              <span class="nav-icon">🔒</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_orders_escrow">ఆర్డర్లు & ఎస్క్రో ట్రాకర్</span>
+                <small class="nav-subtitle">లారీ & OTP చెల్లింపులు</small>
+              </div>
+              <span class="nav-badge info" id="activeOrdersBadge">1 యాక్టివ్</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('aiQuality')" id="tabAiQuality">
+              <span class="nav-icon">🔬</span>
+              <div class="nav-text-col">
+                <span class="nav-title">AI పంట నాణ్యత స్కాన్</span>
+                <small class="nav-subtitle">తేమ & గ్రేడ్ విశ్లేషణ</small>
+              </div>
+              <span class="nav-badge ai">AI</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('weather')" id="tabWeather">
+              <span class="nav-icon">🌦️</span>
+              <div class="nav-text-col">
+                <span class="nav-title">వాతావరణం & వర్ష హెచ్చరికలు</span>
+                <small class="nav-subtitle">కల్లాల రాడార్ అలెర్ట్స్</small>
+              </div>
+              <span class="nav-badge live">లైవ్</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('docVerification')" id="tabDocVerification">
+              <span class="nav-icon">📑</span>
+              <div class="nav-text-col">
+                <span class="nav-title">రైతు ధృవీకరణ పత్రాలు</span>
+                <small class="nav-subtitle">ధరణి & ఆధార్ KYC</small>
+              </div>
+              <span class="nav-badge info">ధృవీకరణ</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('disputes')" id="tabDisputes">
+              <span class="nav-icon">⚖️</span>
+              <div class="nav-text-col">
+                <span class="nav-title" data-i18n="tab_disputes">సమస్య పరిష్కారం</span>
+                <small class="nav-subtitle">ఫిర్యాదు నమోదు & సహాయవాణి</small>
+              </div>
+            </button>
+          </nav>
+
+          <!-- Escrow Summary Card in Sidebar -->
+          <div class="sidebar-escrow-box">
+            <div class="escrow-header-row">
+              <span>🛡️ ఎస్క్రో రక్షిత మొత్తం</span>
+            </div>
+            <div class="escrow-value" id="displayWalletAmount">₹1,48,500</div>
+            <p class="escrow-note">పొలం వద్ద OTP సరిచూశాక మాత్రమే లారీ బయలుదేరుతుంది. డబ్బు సురక్షితం.</p>
+          </div>
+
+          <!-- Bottom Switch Role link -->
+          <div class="sidebar-footer-action">
+            <a href="../main_portal/index.html" class="sidebar-logout-btn" style="text-decoration:none;">
+              <span>🚪</span>
+              <span data-i18n="btn_switch_role_text">పాత్ర మార్చండి (హోమ్‌కు వెళ్లు)</span>
+            </a>
+          </div>
+
+        </aside>
+
+        <!-- RIGHT MAIN CONTENT AREA -->
+        <div class="farmer-main-content">
+
+          <!-- TAB 1: LIVE BIDDING WAR ARENA -->
+          <div id="paneBiddingArena" class="tab-pane active">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="bidding_title">మీ పంటలపై లైవ్ కొనుగోలుదారుల పోటీ బిడ్డింగ్</h2>
+                <p class="section-desc" data-i18n="bidding_desc">రైతుగా మీకే పూర్తి నిర్ణయాధికారం ఉంది. కేవలం ఎక్కువ ధర మాత్రమే కాకుండా, కొనుగోలుదారు రేటింగ్ మరియు సొంత వాహనం తెచ్చే సౌకర్యాన్ని బట్టి డీల్ ఎంచుకోండి.</p>
+              </div>
+              <div class="banner-actions">
+                <button class="btn btn-outline btn-sm" onclick="renderBiddingArena()" title="తాజా బిడ్లను లోడ్ చేయండి">🔄 <span data-i18n="btn_refresh_bids">రిఫ్రెష్ బిడ్‌లు</span></button>
+              </div>
+            </div>
+
+            <!-- Active Lots Grid with incoming bids -->
+            <div class="farmer-lots-list" id="farmerLotsList">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+
+          <!-- TAB 2: CREATE LOT & SMART ASK PRICE ENGINE -->
+          <div id="paneCreateLot" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="create_lot_title">పంట వివరాలు నమోదు చేయండి (Create Crop Lot)</h2>
+                <p class="section-desc" data-i18n="create_lot_subtitle">మీరు వివరాలు నమోదు చేసిన వెంటనే తెలంగాణ మార్కెట్ డిమాండ్ ఆధారంగా సిఫారసు చేయబడిన సరైన ధర లెక్కిస్తాము.</p>
+              </div>
+            </div>
+
+            <div class="create-lot-two-col">
+              <!-- Left: Form -->
+              <div class="lot-form-card">
+                <form id="createLotForm" onsubmit="handleCreateLotSubmit(event)">
+                  
+                  <div class="form-group">
+                    <label for="cropSelect" data-i18n="lbl_crop_name">పంట పేరు (Crop Name) *</label>
+                    <select id="cropSelect" onchange="onCropSelected()" required>
+                      <option value="teja_chilli">తేజ మిర్చి (Teja Red Chilli)</option>
+                      <option value="paddy">తెలంగాణ సోనా వరి (Telangana Sona Paddy)</option>
+                      <option value="cotton">పత్తి (Raw White Cotton)</option>
+                      <option value="turmeric">నిజామాబాద్ పసుపు (Turmeric)</option>
+                      <option value="red_gram">ఎర్ర కందులు (Red Gram)</option>
+                      <option value="maize">మొక్కజొన్న (Yellow Maize)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="cropVariety" data-i18n="lbl_variety">రకం / వెరైటీ (Variety) *</label>
+                      <input type="text" id="cropVariety" value="తేజ స్పెషల్ ఎగుమతి రకం" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="lotQuantity" data-i18n="lbl_quantity">మొత్తం పరిమాణం (క్వింటాళ్లలో / Quintals) *</label>
+                      <input type="number" id="lotQuantity" value="50" min="1" step="1" oninput="calculateDemandAsk()" required>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="cropGrade" data-i18n="lbl_grade">నాణ్యతా గ్రేడ్ (Quality Grade) *</label>
+                      <select id="cropGrade" onchange="calculateDemandAsk()" required>
+                        <option value="A">గ్రేడ్ A (ఎగుమతి నాణ్యత / ప్రీమియం)</option>
+                        <option value="B">గ్రేడ్ B (మంచి నాణ్యత / ఫెయిర్ యావరేజ్)</option>
+                        <option value="C">గ్రేడ్ C (సాధారణ రకం)</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="farmLocation" data-i18n="lbl_location">పొలం ఉన్న ప్రదేశం (Mandal & District) *</label>
+                      <input type="text" id="farmLocation" value="జనగామ మండలం, వరంగల్ జిల్లా" required>
+                    </div>
+                  </div>
+
+                  <!-- Photo Upload Demo Field -->
+                  <div class="form-group">
+                    <label data-i18n="lbl_crop_photos">పంట అసలు ఫోటోలు (Product Images) *</label>
+                    <div class="custom-file-dropzone">
+                      <input type="file" id="cropPhotoInput" accept="image/*" onchange="handleImagePreview(event)">
+                      <div class="dropzone-content">
+                        <span class="upload-icon">📷</span>
+                        <span class="upload-text" data-i18n="upload_prompt">పంట ఫోటోను ఎంచుకోండి లేదా కెమెరాతో తీయండి</span>
+                        <small class="upload-hint" data-i18n="upload_hint">స్పష్టమైన ఫోటోలు పెడితే కొనుగోలుదారులు ఎక్కువ ధరకు బిడ్ వేస్తారు</small>
+                      </div>
+                    </div>
+                    <!-- Photo preview thumbnail -->
+                    <div class="photo-preview-box" id="photoPreviewContainer">
+                      <img id="lotPreviewImg" src="../shared/assets/crops/teja_chilli.jpg" alt="Preview">
+                      <span class="preview-tag" data-i18n="preview_selected">ఎంచుకున్న ఫోటో సిద్ధంగా ఉంది</span>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="runInlineAiQualityScan()" style="margin-top:0.65rem; display:inline-flex; align-items:center; gap:0.4rem;">
+                      🔬 <span>AI నాణ్యత స్కాన్ చేసి ఆటో-ఫిల్ చేయండి (Scan with AI & Auto-Fill)</span>
+                    </button>
+                  </div>
+
+                  <!-- SMART ASK PRICE ENGINE WIDGET -->
+                  <div class="smart-ask-widget">
+                    <div class="smart-ask-header">
+                      <span class="bulb-icon">💡</span>
+                      <strong data-i18n="smart_ask_title">మార్కెట్ డిమాండ్ ఆధారిత ధర సలహాదారు (Smart Ask Price)</strong>
+                    </div>
+                    <div class="smart-ask-body">
+                      <div class="smart-demand-row" id="smartDemandIndicator">
+                        <!-- Dynamic demand status -->
+                      </div>
+                      <div class="suggested-price-line">
+                        <span data-i18n="suggested_ask_label">సిఫారసు చేయబడిన బేస్ ధర (Recommended Ask):</span>
+                        <strong class="suggested-highlight" id="suggestedPriceRange">₹20,800 – ₹22,500 / క్వింటాల్</strong>
+                      </div>
+                      <p class="suggested-reason" id="suggestedExplanation">
+                        ఖమ్మం మరియు వరంగల్ మార్కెట్లలో ఎగుమతి సంస్థల నుండి భారీ డిమాండ్ ఉంది. రాకలు 15% తగ్గాయి.
+                      </p>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 1rem; margin-bottom: 0;">
+                      <label for="farmerAskPrice"><strong>మీ రిజర్వ్ కనీస ధర (Reserve Price / Quintal) *</strong></label>
+                      <div class="currency-input-wrapper">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="farmerAskPrice" value="21200" step="50" required>
+                        <span class="unit-symbol">/ Quintal</span>
+                      </div>
+                      <small style="color: var(--text-muted);" data-i18n="helper_reserve_price">ఈ ధర కంటే తక్కువగా ఏ కొనుగోలుదారు కూడా బిడ్ వేయలేరు. మీకే పూర్తి రక్షణ.</small>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1.5rem;">
+                    🚀 <span data-i18n="btn_publish_lot">పంటను బిడ్డింగ్ కోసం లైవ్ చేయండి (List for Live Bidding)</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Right: Market Mandi Snapshot -->
+              <div class="lot-guide-sidebar">
+                <div class="guide-card">
+                  <h3 class="sidebar-title">📊 <span data-i18n="mandi_snapshot_title">తెలంగాణ ప్రముఖ మార్కెట్ల రేట్లు</span></h3>
+                  <div class="mandi-snapshot-list" id="mandiSnapshotList">
+                    <!-- Injected via JS -->
+                  </div>
+                </div>
+
+                <div class="guide-card" style="margin-top: 1.25rem;">
+                  <h3 class="sidebar-title">🛡️ <span data-i18n="farmer_safety_title">రైతు భద్రతా హామీలు</span></h3>
+                  <ul class="safety-points-list">
+                    <li><strong>100% ఎస్క్రో భద్రత:</strong> కొనుగోలుదారు ముందుగానే మొత్తం డిపాజిట్ చేయాలి.</li>
+                    <li><strong>సొంత వాహన వెసులుబాటు:</strong> కొనుగోలుదారులే లారీ పంపేలా షరతు పెట్టవచ్చు.</li>
+                    <li><strong>తూకం వద్ద పూర్తి రక్షణ:</strong> పొలం వద్ద డిజిటల్ తూకం తర్వాతే OTP ధృవీకరణ.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: CHART.JS INTERACTIVE MARKET CHARTS & TRENDS -->
+          <div id="paneMarketCharts" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title">తెలంగాణ మార్కెట్ ధరలు & రాకల ట్రెండ్స్ (Live Price Trends)</h2>
+                <p class="section-desc">ఎనుమాముల వరంగల్, ఖమ్మం, నిజామాబాద్ మార్కెట్లలో రోజువారీ క్లియరింగ్ బిడ్లు మరియు రైతుల ఆస్క్ ధరల చారిత్రక విశ్లేషణ.</p>
+              </div>
+              <div class="chart-controls-group">
+                <select id="chartCropSelector" onchange="handleChartCropChange()" class="chart-select">
+                  <option value="teja_chilli">తేజ మిర్చి (Teja Chilli - వరంగల్ & ఖమ్మం)</option>
+                  <option value="paddy">తెలంగాణ సోనా వరి (మిర్యాలగూడ యార్డ్)</option>
+                  <option value="cotton">పత్తి (Raw Cotton - ఆదిలాబాద్)</option>
+                  <option value="turmeric">నిజామాబాద్ పసుపు (Nizamabad Turmeric)</option>
+                </select>
+                <div class="chart-timeframe-toggles">
+                  <button class="timeframe-btn active" onclick="setChartTimeframe('15D')">15 రోజులు</button>
+                  <button class="timeframe-btn" onclick="setChartTimeframe('30D')">30 రోజులు</button>
+                  <button class="timeframe-btn" onclick="setChartTimeframe('90D')">3 నెలలు</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="charts-kpi-grid">
+              <div class="kpi-metric-card">
+                <div class="kpi-label">ప్రస్తుత మార్కెట్ సగటు బిడ్</div>
+                <div class="kpi-value-row">
+                  <span class="kpi-value" id="metricCurrentPrice">₹21,650</span>
+                  <span class="kpi-change up" id="metricPriceChange">+12.4%</span>
+                </div>
+                <small class="kpi-subtext" id="metricUnit">రూపాయలు / క్వింటాల్</small>
+              </div>
+
+              <div class="kpi-metric-card">
+                <div class="kpi-label">ఈ సీజన్ గరిష్ట రికార్డ్ ధర</div>
+                <div class="kpi-value-row">
+                  <span class="kpi-value highlight" id="metricHighPrice">₹22,400</span>
+                </div>
+                <small class="kpi-subtext" id="metricHighLocation">ఖమ్మం మార్కెట్ రికార్డ్</small>
+              </div>
+
+              <div class="kpi-metric-card">
+                <div class="kpi-label">రోజువారీ మార్కెట్ రాకలు (Arrivals)</div>
+                <div class="kpi-value-row">
+                  <span class="kpi-value" id="metricArrivals">14,250 బస్తాలు</span>
+                  <span class="kpi-change down" id="metricArrivalsChange">▼ -18%</span>
+                </div>
+                <small class="kpi-subtext" id="metricArrivalsStatus">రాకలు తగ్గాయి - డిమాండ్ పెరిగింది</small>
+              </div>
+
+              <div class="kpi-metric-card recommendation">
+                <div class="kpi-label">మార్కెట్ డిమాండ్ సిగ్నల్</div>
+                <div class="kpi-value-row">
+                  <span class="kpi-action" id="metricActionAdvice">అధిక డిమాండ్ (Strong Ask)</span>
+                </div>
+                <small class="kpi-subtext" id="metricActionSub">కనీసం ₹21,200 కంటే తక్కువగా అమ్మకండి</small>
+              </div>
+            </div>
+
+            <!-- Main Interactive Chart Container -->
+            <div class="chart-canvas-container">
+              <div class="chart-header-row">
+                <div class="chart-legend-custom">
+                  <span class="legend-dot" style="background:#2D6A4F;"></span> <span>రైతుల సగటు రిజర్వ్ ధర (Ask Price)</span>
+                  <span class="legend-dot" style="background:#B45309; margin-left: 1.25rem;"></span> <span>కొనుగోలుదారుల ముగింపు బిడ్ (Clearing Bid)</span>
+                  <span class="legend-dot" style="background:#94A3B8; margin-left: 1.25rem;"></span> <span>మార్కెట్ రాకలు (Arrivals)</span>
+                </div>
+                <div class="chart-live-indicator">
+                  <span class="live-dot"></span> లైవ్ అప్‌డేట్
+                </div>
+              </div>
+              <div style="position: relative; height: 380px; width: 100%;">
+                <canvas id="marketTrendsCanvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: HOLD OR SELL AI ADVISOR -->
+          <div id="paneHoldVsSell" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="advisor_heading">ఇప్పుడే అమ్మాలా? లేక గోదాములో దాచి తర్వాత అమ్మాలా?</h2>
+                <p class="section-desc" data-i18n="advisor_sub">తెలంగాణ స్టేట్ వేర్‌హౌసింగ్ కార్పొరేషన్ (TSWC) నిల్వ ఖర్చులు మరియు రాబోయే 15 రోజుల ధరల అంచనాను విశ్లేషించి మీకు లాభదాయకమైన సలహా అందిస్తుంది.</p>
+              </div>
+              <div class="banner-actions">
+                <select id="advisorCropSelect" onchange="updateHoldSellAdvice()" class="chart-select">
+                  <option value="paddy">తెలంగాణ సోనా వరి (Paddy)</option>
+                  <option value="teja_chilli">తేజ మిర్చి (Teja Chilli)</option>
+                  <option value="cotton">పత్తి (Raw Cotton)</option>
+                  <option value="turmeric">నిజామాబాద్ పసుపు (Turmeric)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Recommendation Alert Box -->
+            <div id="decisionBox" class="decision-recommendation-box hold">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Comparison Cards (Sell Now vs Hold 15 Days) -->
+            <div class="hold-sell-comparison-grid" id="holdSellComparisonGrid">
+              <!-- Injected via JS -->
+            </div>
+
+            <!-- Nearby TSWC Warehouses Locator -->
+            <div class="nearby-warehouses-section">
+              <h3 class="section-subtitle" data-i18n="tswc_title">📍 సమీపంలోని తెలంగాణ ప్రభుత్వ వేర్‌హౌస్‌లు & కోల్డ్ స్టోరేజ్‌లు</h3>
+              <div class="warehouse-cards-grid" id="warehouseCardsGrid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: ORDERS & ESCROW TRACKER -->
+          <div id="paneOrdersEscrow" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="orders_title">ఎస్క్రో చెల్లింపుల ట్రాకర్ & లైవ్ ఆర్డర్లు</h2>
+                <p class="section-desc" data-i18n="orders_desc">కొనుగోలుదారు డబ్బు డిపాజిట్ చేయడం మొదలుకొని, మీ పొలం వద్ద OTP వెరిఫికేషన్ ద్వారా డబ్బు మీ బ్యాంక్ ఖాతాలో చేరేవరకు ప్రతి అడుగు పారదర్శకం.</p>
+              </div>
+              <div class="banner-actions">
+                <button class="btn btn-outline btn-sm" onclick="renderOrdersEscrow()">🔄 రిఫ్రెష్ ఆర్డర్లు</button>
+              </div>
+            </div>
+
+            <div class="orders-escrow-container" id="ordersEscrowContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- TAB 6: DISPUTE & GRIEVANCE REDRESSAL -->
+          <div id="paneDisputes" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title" data-i18n="dispute_title">రైతు సమస్య పరిష్కార వేదిక (Grievance Support)</h2>
+                <p class="section-desc" data-i18n="dispute_subtitle">కొనుగోలుదారు బరువులో తేడా చూపించినా, లారీ రాక ఆలస్యమైనా, లేదా చెల్లింపులో సమస్య ఉన్నా వెంటనే ఫిర్యాదు నమోదు చేయండి. పరిష్కారం అయ్యేవరకు ఎస్క్రో డబ్బు భద్రంగా నిలిపివేయబడుతుంది.</p>
+              </div>
+            </div>
+
+            <div class="dispute-two-col">
+              <div class="dispute-form-card">
+                <form id="disputeForm" onsubmit="handleDisputeSubmit(event)">
+                  <div class="form-group">
+                    <label for="disputeOrderSelect" data-i18n="lbl_dispute_order">ఆర్డర్ / డీల్ ఐడీ (Select Order) *</label>
+                    <select id="disputeOrderSelect" required>
+                      <option value="KC-TS-2026-091">ఆర్డర్ #KC-TS-2026-091 (తేజ మిర్చి - ITC Agri Hub)</option>
+                      <option value="KC-TS-2026-092">ఆర్డర్ #KC-TS-2026-092 (సోనా వరి - శ్రీ కృష్ణ రైస్ మిల్స్)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="disputeType" data-i18n="lbl_dispute_category">సమస్య రకం (Category) *</label>
+                    <select id="disputeType" required>
+                      <option value="weight_discrepancy">తూకంలో తేడా (Weight Scale Discrepancy)</option>
+                      <option value="vehicle_delay">లారీ రాక ఆలస్యం (Truck Arrival Delayed > 24 Hours)</option>
+                      <option value="unfair_deduction">అనవసరమైన గ్రేడ్ తగ్గింపు (Unfair Quality Deduction)</option>
+                      <option value="payment_query">ఎస్క్రో విడుదల విచారణ (Payment Release Query)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="disputeDetails" data-i18n="lbl_dispute_desc">సమస్య పూర్తి వివరాలు (Detailed Description) *</label>
+                    <textarea id="disputeDetails" rows="4" placeholder="సమస్యను వివరంగా తెలియజేయండి..." required></textarea>
+                  </div>
+
+                  <button type="submit" class="btn btn-danger">
+                    🚨 <span data-i18n="btn_submit_dispute">ఫిర్యాదు సమర్పించండి (Raise Dispute Ticket)</span>
+                  </button>
+                </form>
+              </div>
+
+              <div class="dispute-info-card">
+                <h3 class="sidebar-title">📞 <span data-i18n="helpline_title">తెలంగాణ రైతు సహాయవాణి</span></h3>
+                <div class="helpline-box">
+                  <div class="helpline-number">1800-425-3434</div>
+                  <div class="helpline-time">ఉదయం 8:00 నుండి రాత్రి 8:00 వరకు అందుబాటులో ఉంటుంది</div>
+                </div>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">సమస్య పరిష్కార ప్రక్రియ:</h4>
+                <ol class="dispute-steps-list">
+                  <li>ఫిర్యాదు దాఖలు కాగానే ఎస్క్రో చెల్లింపు తాత్కాలికంగా హోల్డ్ అవుతుంది.</li>
+                  <li>మండల వ్యవసాయ అధికారి లేదా మార్కెట్ నోడల్ ఆఫీసర్ 24 గంటల్లో సంప్రదిస్తారు.</li>
+                  <li>పొలం వద్ద ఉన్న డిజిటల్ తూకం స్లిప్ లేదా ఫోటోల ఆధారంగా రైతుకు న్యాయం చేయబడుతుంది.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 7: AI CROP QUALITY ASSESSMENT -->
+          <div id="paneAiQuality" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title">🌾 AI పంట నాణ్యత & తేమ విశ్లేషణ (AI Crop Quality Assessment)</h2>
+                <p class="section-desc">పంట ఫోటో లేదా నమూనాను స్కాన్ చేసి క్షణాల్లో తేమ శాతం, నాణ్యతా గ్రేడ్ (Grade A, B, C) మరియు డిజిటల్ సర్టిఫికేట్ పొందండి. సర్టిఫైడ్ పంటలకు కొనుగోలుదారులు గరిష్ట ధర చెల్లిస్తారు.</p>
+              </div>
+            </div>
+
+            <div class="ai-scanner-layout">
+              <!-- Left: Viewfinder & Controls -->
+              <div class="scanner-viewfinder-card">
+                <div class="form-group">
+                  <label for="aiScannerCropSelect"><strong>విశ్లేషించాల్సిన పంటను ఎంచుకోండి:</strong></label>
+                  <select id="aiScannerCropSelect" onchange="changeAiScannerSampleCrop()" class="chart-select" style="width:100%;">
+                    <option value="teja_chilli">తేజ మిర్చి (Teja Chilli - వరంగల్ ఎగుమతి రకం)</option>
+                    <option value="paddy">తెలంగాణ సోనా వరి (Telangana Sona Paddy)</option>
+                    <option value="cotton">పత్తి (Raw White Cotton - ఆదిలాబాద్)</option>
+                    <option value="turmeric">నిజామాబాద్ పసుపు (Nizamabad Turmeric)</option>
+                  </select>
+                </div>
+
+                <div class="scanner-viewport" id="aiScannerViewport">
+                  <img id="aiScanImgPreview" src="../shared/assets/crops/teja_chilli.jpg" alt="Crop Viewfinder">
+                  <div class="scan-laser-beam" id="aiScanLaserBeam"></div>
+                  <div class="scan-hud-overlay">
+                    <div class="hud-corner-top">
+                      <div class="hud-bracket tl"></div>
+                      <div class="hud-bracket tr"></div>
+                    </div>
+                    <div class="hud-corner-bottom">
+                      <div class="hud-bracket bl"></div>
+                      <div class="hud-bracket br"></div>
+                    </div>
+                  </div>
+                <canvas id="aiScanHiddenCanvas" style="display:none;"></canvas>
+
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                  <button class="btn btn-primary" style="flex:1;" id="btnTriggerAiScan" onclick="triggerAiQualityScan()">
+                    🔬 AI స్కాన్ ప్రారంభించండి (Scan Now)
+                  </button>
+                  <label class="btn btn-secondary" style="cursor:pointer; margin:0;">
+                    📷 ఫోటో మార్చండి
+                    <input type="file" accept="image/*" style="display:none;" onchange="handleAiScannerCustomImage(event)">
+                  </label>
+                </div>
+              </div>
+
+              <!-- Right: AI Scorecard & Certificate -->
+              <div class="ai-scorecard-card" id="aiScorecardCard">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary-900);">📋 AI నాణ్యత ధృవీకరణ పత్రం</h3>
+                  <span class="cert-grade-badge" id="aiResultGradeBadge">✓ గ్రేడ్ A (ప్రీమియం)</span>
+                </div>
+
+                <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.35rem;" id="aiScanTimestamp">
+                  స్కాన్ చేయబడిన సమయం: ఈరోజు ఉదయం 10:15 గంటలకు • విశ్వసనీయత: 99.4%
+                </p>
+
+                <div class="metric-bar-group">
+                  <!-- Metric 1: Moisture -->
+                  <div class="metric-bar-row">
+                    <div class="metric-bar-header">
+                      <span>తేమ శాతం (Moisture Content):</span>
+                      <strong id="aiMoistureVal">9.2% (ఆప్టిమల్ రేంజ్)</strong>
+                    </div>
+                    <div class="metric-track">
+                      <div class="metric-fill good" id="aiMoistureBar" style="width: 28%;"></div>
+                    </div>
+                  </div>
+
+                  <!-- Metric 2: Purity / Discoloration -->
+                  <div class="metric-bar-row">
+                    <div class="metric-bar-header">
+                      <span>రంగు స్వచ్ఛత & తీక్షణత (Color Intensity):</span>
+                      <strong id="aiColorVal">98.4% (తీవ్ర ఎరుపు రంగు)</strong>
+                    </div>
+                    <div class="metric-track">
+                      <div class="metric-fill optimal" id="aiColorBar" style="width: 98%;"></div>
+                    </div>
+                  </div>
+
+                  <!-- Metric 3: Foreign Matter -->
+                  <div class="metric-bar-row">
+                    <div class="metric-bar-header">
+                      <span>విదేశీ పదార్థాలు / మట్టి రహితం (Cleanliness):</span>
+                      <strong id="aiCleanlinessVal">99.5% (అత్యంత స్వచ్ఛమైనది)</strong>
+                    </div>
+                    <div class="metric-track">
+                      <div class="metric-fill good" id="aiCleanlinessBar" style="width: 99%;"></div>
+                    </div>
+                  </div>
+
+                  <!-- Metric 4: Broken / Defect Seeds -->
+                  <div class="metric-bar-row">
+                    <div class="metric-bar-header">
+                      <span>మచ్చలు లేదా పురుగు దెబ్బతిన్న కాయలు:</span>
+                      <strong id="aiDefectVal">1.2% (అతి తక్కువ రిస్క్)</strong>
+                    </div>
+                    <div class="metric-track">
+                      <div class="metric-fill good" id="aiDefectBar" style="width: 12%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="valuation-booster-pill">
+                  <span style="font-size:1.35rem;">💰</span>
+                  <div>
+                    <strong>మార్కెట్ ప్రీమియం అడ్వాంటేజ్:</strong>
+                    <div style="font-size:0.82rem;" id="aiValuationAdvantage">
+                      ఈ గ్రేడ్ A క్వాలిటీ సర్టిఫికేట్‌తో కొనుగోలుదారులు క్వింటాలుకు <strong>+₹1,150</strong> వరకు అధిక ధర చెల్లిస్తారు.
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-block" style="margin-top:1.25rem;" onclick="exportAiQualityToCreateLot()">
+                  🚀 ఈ నాణ్యతతో పంటను వెంటనే లిస్ట్ చేయండి →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 8: WEATHER RADAR & HARVEST RAIN ALERTS -->
+          <div id="paneWeather" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title">🌦️ తెలంగాణ వాతావరణం & అకాల వర్ష హెచ్చరికలు (Agri Weather Radar)</h2>
+                <p class="section-desc">కల్లాలలో మరియు మార్కెట్ యార్డులలో ఆరబోసిన మిర్చి, ధాన్యం, పసుపు పంటలను రక్షించడానికి ప్రత్యక్ష ఉపగ్రహ వాతావరణ నిఘా & కల్లం ఆరబెట్టు సూచిక.</p>
+              </div>
+              <div class="banner-actions" style="display:flex; gap:0.5rem; align-items:center;">
+                <button class="btn btn-outline btn-sm" onclick="requestRealTimeLocation(true)" title="బ్రౌజర్ GPS ద్వారా ప్రస్తుత వాతావరణాన్ని రీఫ్రెష్ చేయండి">
+                  🔄 లైవ్ GPS రీఫ్రెష్
+                </button>
+                <select id="weatherDistrictSelect" onchange="updateWeatherDistrictUI()" class="chart-select">
+                  <option value="live_gps" id="optLiveGps">📍 నా ప్రత్యక్ష GPS లొకేషన్ (My Real-Time GPS)</option>
+                  <option value="warangal">వరంగల్ & జనగామ (Warangal / Jangaon)</option>
+                  <option value="khammam">ఖమ్మం మిర్చి బెల్ట్ (Khammam Mandi)</option>
+                  <option value="nizamabad">నిజామాబాద్ పసుపు హబ్ (Nizamabad)</option>
+                  <option value="nalgonda">మిర్యాలగూడ వరి ప్రాంతం (Nalgonda)</option>
+                  <option value="adilabad">ఆదిలాబాద్ కాటన్ జోన్ (Adilabad)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Red Rain Alert Banner -->
+            <div class="rain-alarm-banner" id="rainAlarmBanner">
+              <div class="alarm-icon-box">⚠️</div>
+              <div class="alarm-text-col">
+                <h4 id="weatherAlarmTitle">అకాల వర్ష హెచ్చరిక: రాబోయే 36 గంటల్లో వర్ష సూచన!</h4>
+                <p id="weatherAlarmDesc">వరంగల్ మరియు పరిసర మండలాల్లో తేలికపాటి నుండి మోస్తరు వర్షాలు మరియు ఈదురుగాలులు వీచే అవకాశం ఉంది. కల్లాలలో ఆరబోసిన తేజ మిర్చి మరియు ధాన్యంపై టార్పాలిన్ పట్టాలు కప్పి భద్రపరచండి.</p>
+              </div>
+            </div>
+
+            <!-- Weather Hero Card -->
+            <div class="weather-hero-card">
+              <div class="weather-header-flex">
+                <div class="weather-location-title">
+                  <h3 id="weatherLocationName">వరంగల్ & జనగామ పరిసరాలు</h3>
+                  <span id="weatherDataSourceText">తెలంగాణ వ్యవసాయ వాతావరణ కేంద్రం • ప్రత్యక్ష డేటా</span>
+                </div>
+                <div class="weather-cond-badge" id="weatherCondText">
+                  ⛅ పాక్షిక మేఘావృతం (Partly Cloudy)
+                </div>
+              </div>
+
+              <!-- Live GPS Station Coordinates Meta Row -->
+              <div class="weather-gps-meta-bar" id="weatherGpsMetaBar">
+                <span>📡 GPS కోఆర్డినేట్స్: <strong id="weatherGpsCoords">17.72° N, 79.16° E</strong></span>
+                <span>🎯 ఖచ్చితత్వం: <strong id="weatherGpsAccuracy">±15 మీటర్లు</strong></span>
+                <span>🛰️ ఉపగ్రహ సమకాలీకరణ: <strong id="weatherGpsSyncTime">లైవ్</strong></span>
+              </div>
+
+              <div class="weather-stats-cluster">
+                <div class="big-temp-col">
+                  <span style="font-size:2.8rem;" id="weatherMainIcon">⛅</span>
+                  <div>
+                    <span class="big-temp-num" id="weatherTempNum">32°</span><span style="font-size:1.5rem;">C</span>
+                  </div>
+                </div>
+
+                <div class="weather-substat-box">
+                  <span>గాలిలో తేమ (Humidity):</span>
+                  <strong id="weatherHumidity">64%</strong>
+                </div>
+
+                <div class="weather-substat-box">
+                  <span>వర్ష సంభావ్యత (Rain Chance):</span>
+                  <strong id="weatherRainChance" style="color:#FCA5A5;">25% (తక్కువ)</strong>
+                </div>
+
+                <div class="weather-substat-box">
+                  <span>కల్లం ఆరబెట్టు సూచిక (Drying Index):</span>
+                  <strong id="weatherDryingIndex" style="color:#86EFAC;">85% (చాలా అనుకూలం)</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5-Day Agricultural Weather Forecast Grid -->
+            <h3 style="font-size:1.1rem; font-weight:800; color:var(--primary-900); margin-bottom:1rem;">
+              📅 రాబోయే 5 రోజుల వ్యవసాయ వాతావరణ అంచనా (5-Day Harvest Outlook)
+            </h3>
+            <div class="forecast-days-grid" id="forecastDaysGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- TAB 9: REAL-TIME FARMER DOCUMENT VERIFICATION & KYC CENTER -->
+          <div id="paneDocVerification" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title">📑 రైతు ధృవీకరణ పత్రాలు & రియల్ టైమ్ KYC (Real-Time Verified Farmer Credentials)</h2>
+                <p class="section-desc">ఆధార్ కార్డ్, ధరణి పాస్‌బుక్, లైవ్ IFSC బ్యాంక్ ఖాతా, పాన్ కార్డ్ మరియు నివాస ధృవీకరణ (విద్యుత్ బిల్లు) పత్రాలను అప్‌లోడ్ చేసి మీ ప్రొఫైల్‌ను 100% ధృవీకరించండి. సర్టిఫైడ్ రైతులకు వ్యాపారులు తక్షణమే ఎస్క్రో నిధులను లాక్ చేస్తారు.</p>
+              </div>
+              <div class="banner-actions">
+                <button class="btn btn-outline btn-sm" onclick="renderKycDocumentsStatus()">🔄 స్థితిని రీఫ్రెష్ చేయండి</button>
+              </div>
+            </div>
+
+            <!-- KYC Overall Progress & Trust Level Card -->
+            <div class="kyc-trust-overview-card">
+              <div class="kyc-progress-header">
+                <div class="kyc-title-col">
+                  <div class="kyc-badge-pill" id="kycOverallBadgePill">
+                    <span id="kycBadgeIcon">🟡</span>
+                    <span id="kycBadgeText">ధృవీకరణ పురోగతిలో ఉంది (Verification in Progress)</span>
+                  </div>
+                  <h3 id="kycProgressTitle">రైతు ప్రొఫైల్ ధృవీకరణ శాతం</h3>
+                  <p id="kycProgressDesc">మొత్తం 5 కీలక పత్రాలలో <strong id="kycVerifiedCount">0</strong> పత్రాలు విజయవంతంగా అప్‌లోడ్ చేసి ధృవీకరించబడ్డాయి.</p>
+                </div>
+                <div class="kyc-percent-badge" id="kycPercentBadge">
+                  <span id="kycPercentNum">0%</span>
+                  <small>పూర్తయింది</small>
+                </div>
+              </div>
+
+              <!-- Animated Progress Bar -->
+              <div class="kyc-progress-bar-track">
+                <div class="kyc-progress-bar-fill" id="kycProgressBarFill" style="width: 0%;"></div>
+              </div>
+
+              <div class="kyc-features-grid">
+                <div class="kyc-feature-item">
+                  <span class="feat-icon">⚡</span>
+                  <div>
+                    <strong>లైవ్ IFSC శోధన:</strong>
+                    <small>బ్యాంక్ ఖాతా, బ్రాంచ్ & RTGS/NEFT తక్షణమే ధృవీకరించబడుతుంది</small>
+                  </div>
+                </div>
+                <div class="kyc-feature-item">
+                  <span class="feat-icon">🏛️</span>
+                  <div>
+                    <strong>ధరణి భూ రికార్డు:</strong>
+                    <small>ఖాతా & సర్వే నంబర్ల డిజిటల్ ల్యాండ్ రికార్డ్ అనుసంధానం</small>
+                  </div>
+                </div>
+                <div class="kyc-feature-item">
+                  <span class="feat-icon">🔒</span>
+                  <div>
+                    <strong>ఎస్క్రో రక్షణ:</strong>
+                    <small>100% KYC రైతులకు పొలం వద్ద OTP ద్వారా తక్షణ పేఅవుట్</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5-Document Verification Container -->
+            <div class="kyc-documents-container">
+
+              <!-- DOC 1: AADHAAR CARD -->
+              <div class="kyc-doc-card" id="cardDocAadhaar">
+                <div class="doc-card-header">
+                  <div class="doc-type-icon">🆔</div>
+                  <div class="doc-header-text">
+                    <div class="doc-title-row">
+                      <h4>1. ఆధార్ కార్డ్ ధృవీకరణ (Aadhaar Card KYC)</h4>
+                      <span class="doc-status-tag pending" id="statusTagAadhaar">⏳ అప్‌లోడ్ చేయండి</span>
+                    </div>
+                    <p class="doc-subtext">UIDAI 12 అంకెల ఆధార్ నంబర్ మరియు గుర్తింపు పత్రం (PDF / ఇమేజ్ ఫైల్)</p>
+                  </div>
+                </div>
+
+                <div class="doc-card-body">
+                  <form onsubmit="handleSaveAadhaar(event)" class="kyc-form-grid">
+                    <div class="form-group">
+                      <label for="inputAadhaarNumber">12 అంకెల ఆధార్ నంబర్ (Aadhaar Number) *</label>
+                      <input type="text" id="inputAadhaarNumber" maxlength="14" placeholder="XXXX XXXX XXXX" oninput="formatAadhaarInput(this)" required>
+                      <small class="field-hint" id="aadhaarValidHint">UIDAI 12 అంకెల నంబర్ నమోదు చేయండి</small>
+                    </div>
+
+                    <div class="form-group">
+                      <label>ఆధార్ కార్డ్ కాపీ (Aadhaar Front/Back - JPG/PNG/PDF) *</label>
+                      <div class="custom-file-dropzone" style="padding:1rem;">
+                        <input type="file" id="fileAadhaar" accept=".pdf,image/*" onchange="handleDocFileChange(event, 'aadhaar')">
+                        <div class="dropzone-content">
+                          <span class="upload-icon">📄</span>
+                          <span class="upload-text" id="labelFileAadhaar">ఫైల్ ఎంచుకోండి లేదా డ్రాగ్ చేయండి</span>
+                          <small class="upload-hint">గరిష్ట పరిమాణం: 5 MB (PDF, JPG, PNG)</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="doc-uploaded-preview-bar" id="previewBarAadhaar" style="display:none;">
+                      <div class="preview-meta">
+                        <span class="doc-icon-small">📎</span>
+                        <div>
+                          <strong id="nameAadhaar">aadhaar.pdf</strong>
+                          <small id="sizeAadhaar">320 KB • అప్‌లోడ్ చేయబడింది</small>
+                        </div>
+                      </div>
+                      <div class="preview-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openDocPreviewModal('aadhaar')">👁️ పత్రం చూడండి</button>
+                        <button type="button" class="btn btn-danger-soft btn-sm" onclick="removeKycDoc('aadhaar')">🗑️ తొలగించు</button>
+                      </div>
+                    </div>
+
+                    <div class="doc-actions-row">
+                      <button type="submit" class="btn btn-primary btn-sm">💾 ఆధార్ ధృవీకరించి భద్రపరచండి</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- DOC 2: DHARANI / AGRI LAND PASSBOOK -->
+              <div class="kyc-doc-card" id="cardDocDharani">
+                <div class="doc-card-header">
+                  <div class="doc-type-icon">🏛️</div>
+                  <div class="doc-header-text">
+                    <div class="doc-title-row">
+                      <h4>2. ధరణి / పట్టాదారు పాస్‌బుక్ & వ్యవసాయ భూమి పత్రం (Dharani Agri Land Title)</h4>
+                      <span class="doc-status-tag pending" id="statusTagDharani">⏳ అప్‌లోడ్ చేయండి</span>
+                    </div>
+                    <p class="doc-subtext">తెలంగాణ ధరణి CCLA పట్టాదారు పాస్‌బుక్, 1B నమూనా లేదా అగ్రికల్చర్ లీజు పత్రం</p>
+                  </div>
+                </div>
+
+                <div class="doc-card-body">
+                  <form onsubmit="handleSaveDharani(event)" class="kyc-form-grid">
+                    <div class="form-row-2col">
+                      <div class="form-group">
+                        <label for="inputDharaniPassbook">పాస్‌బుక్ / ఖాతా నంబర్ (Passbook/Khata No) *</label>
+                        <input type="text" id="inputDharaniPassbook" placeholder="ఉదా: T19020149021" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputSurveyNumbers">సర్వే నంబర్లు (Survey Nos) *</label>
+                        <input type="text" id="inputSurveyNumbers" placeholder="ఉదా: 284/A, 284/B" required>
+                      </div>
+                    </div>
+
+                    <div class="form-row-2col">
+                      <div class="form-group">
+                        <label for="inputLandExtent">మొత్తం భూమి విస్తీర్ణం (Land Extent) *</label>
+                        <input type="text" id="inputLandExtent" placeholder="ఉదా: 4 ఎకరాల 20 గుంటలు" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputLandLocation">గ్రామం & మండలం (Village & Mandal) *</label>
+                        <input type="text" id="inputLandLocation" placeholder="ఉదా: జనగామ మండలం, జనగామ జిల్లా" required>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>ధరణి పాస్‌బుక్ / 1B కాపీ (PDF లేదా ఇమేజ్) *</label>
+                      <div class="custom-file-dropzone" style="padding:1rem;">
+                        <input type="file" id="fileDharani" accept=".pdf,image/*" onchange="handleDocFileChange(event, 'dharani')">
+                        <div class="dropzone-content">
+                          <span class="upload-icon">📄</span>
+                          <span class="upload-text" id="labelFileDharani">ఫైల్ ఎంచుకోండి లేదా డ్రాగ్ చేయండి</span>
+                          <small class="upload-hint">గరిష్ట పరిమాణం: 8 MB</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="doc-uploaded-preview-bar" id="previewBarDharani" style="display:none;">
+                      <div class="preview-meta">
+                        <span class="doc-icon-small">📎</span>
+                        <div>
+                          <strong id="nameDharani">dharani_passbook.pdf</strong>
+                          <small id="sizeDharani">1.2 MB • అప్‌లోడ్ చేయబడింది</small>
+                        </div>
+                      </div>
+                      <div class="preview-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openDocPreviewModal('dharani')">👁️ పత్రం చూడండి</button>
+                        <button type="button" class="btn btn-danger-soft btn-sm" onclick="removeKycDoc('dharani')">🗑️ తొలగించు</button>
+                      </div>
+                    </div>
+
+                    <div class="doc-actions-row">
+                      <button type="submit" class="btn btn-primary btn-sm">💾 ధరణి వివరాలు భద్రపరచండి</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- DOC 3: BANK DETAILS WITH REAL-TIME LIVE IFSC LOOKUP -->
+              <div class="kyc-doc-card" id="cardDocBank">
+                <div class="doc-card-header">
+                  <div class="doc-type-icon">💳</div>
+                  <div class="doc-header-text">
+                    <div class="doc-title-row">
+                      <h4>3. ఎస్క్రో బ్యాంక్ ఖాతా & ప్రత్యక్ష IFSC ధృవీకరణ (Bank Account & Live IFSC)</h4>
+                      <span class="doc-status-tag pending" id="statusTagBank">⏳ అప్‌లోడ్ చేయండి</span>
+                    </div>
+                    <p class="doc-subtext">పంట డెలివరీ కాగానే నిధులు నేరుగా ఈ ఖాతాలోకి బదిలీ అవుతాయి (లైవ్ IFSC API ద్వారా ధృవీకరించబడుతుంది)</p>
+                  </div>
+                </div>
+
+                <div class="doc-card-body">
+                  <form onsubmit="handleSaveBank(event)" class="kyc-form-grid">
+                    <div class="form-row-2col">
+                      <div class="form-group">
+                        <label for="inputBankAccHolder">ఖాతాదారుని పేరు (Account Holder Name) *</label>
+                        <input type="text" id="inputBankAccHolder" placeholder="రైతు పేరు (పాస్‌బుక్ ప్రకారం)" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputBankIfsc">
+                          IFSC కోడ్ (11 అక్షరాలు - లైవ్ లుకప్) *
+                          <span class="live-api-pill">⚡ LIVE API</span>
+                        </label>
+                        <div class="ifsc-input-wrapper">
+                          <input type="text" id="inputBankIfsc" maxlength="11" placeholder="ఉదా: SBIN0020194" oninput="handleIfscInput(this)" style="text-transform:uppercase; font-weight:700;" required>
+                          <button type="button" class="btn btn-sm btn-outline btn-fetch-ifsc" onclick="triggerManualIfscFetch()">🔍 శోధించు</button>
+                        </div>
+                        <small class="field-hint" id="ifscFetchStatusHint">SBIN0020194, HDFC0000001, UBIN0802263 నమోదు చేయండి</small>
+                      </div>
+                    </div>
+
+                    <!-- Real-time Live Verified Bank Details Box -->
+                    <div class="live-bank-details-box" id="liveBankDetailsBox" style="display:none;">
+                      <div class="bank-box-header">
+                        <span class="bank-live-tick">✓ లైవ్ బ్యాంక్ డేటా ధృవీకరించబడింది</span>
+                        <span class="bank-code-tag" id="liveBankCodeTag">SBIN</span>
+                      </div>
+                      <div class="bank-box-grid">
+                        <div><span>బ్యాంక్ పేరు:</span> <strong id="liveBankName">State Bank of India</strong></div>
+                        <div><span>బ్రాంచ్:</span> <strong id="liveBankBranch">Jangaon Main</strong></div>
+                        <div><span>నగరం / జిల్లా:</span> <strong id="liveBankCity">Jangaon, Warangal</strong></div>
+                        <div><span>రాష్ట్రం:</span> <strong id="liveBankState">Telangana</strong></div>
+                        <div class="bank-modes-span">
+                          <span>చెల్లింపు సౌలభ్యాలు:</span>
+                          <span class="pay-mode-pill" id="liveModeImps">IMPS: ✓</span>
+                          <span class="pay-mode-pill" id="liveModeNeft">NEFT: ✓</span>
+                          <span class="pay-mode-pill" id="liveModeRtgs">RTGS: ✓</span>
+                          <span class="pay-mode-pill" id="liveModeUpi">UPI: ✓</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row-2col">
+                      <div class="form-group">
+                        <label for="inputBankAccNumber">ఖాతా నంబర్ (Account Number) *</label>
+                        <input type="password" id="inputBankAccNumber" placeholder="ఖాతా నంబర్ నమోదు చేయండి" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputBankAccConfirm">ఖాతా నంబర్ పునఃనమోదు (Confirm Account Number) *</label>
+                        <input type="text" id="inputBankAccConfirm" placeholder="మళ్లీ ఖాతా నంబర్ నమోదు చేయండి" oninput="checkBankAccMatch()" required>
+                        <small class="field-hint" id="accMatchHint"></small>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>బ్యాంక్ పాస్‌బుక్ మొదటి పేజీ లేదా క్యాన్సిల్ చేసిన చెక్ (PDF / Image) *</label>
+                      <div class="custom-file-dropzone" style="padding:1rem;">
+                        <input type="file" id="fileBank" accept=".pdf,image/*" onchange="handleDocFileChange(event, 'bank')">
+                        <div class="dropzone-content">
+                          <span class="upload-icon">📄</span>
+                          <span class="upload-text" id="labelFileBank">ఫైల్ ఎంచుకోండి లేదా డ్రాగ్ చేయండి</span>
+                          <small class="upload-hint">గరిష్ట పరిమాణం: 5 MB</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="doc-uploaded-preview-bar" id="previewBarBank" style="display:none;">
+                      <div class="preview-meta">
+                        <span class="doc-icon-small">📎</span>
+                        <div>
+                          <strong id="nameBank">bank_passbook.jpg</strong>
+                          <small id="sizeBank">450 KB • అప్‌లోడ్ చేయబడింది</small>
+                        </div>
+                      </div>
+                      <div class="preview-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openDocPreviewModal('bank')">👁️ పత్రం చూడండి</button>
+                        <button type="button" class="btn btn-danger-soft btn-sm" onclick="removeKycDoc('bank')">🗑️ తొలగించు</button>
+                      </div>
+                    </div>
+
+                    <div class="doc-actions-row">
+                      <button type="submit" class="btn btn-primary btn-sm">💾 బ్యాంక్ ఖాతాను ధృవీకరించి భద్రపరచండి</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- DOC 4: PAN CARD -->
+              <div class="kyc-doc-card" id="cardDocPan">
+                <div class="doc-card-header">
+                  <div class="doc-type-icon">📋</div>
+                  <div class="doc-header-text">
+                    <div class="doc-title-row">
+                      <h4>4. పాన్ కార్డ్ ధృవీకరణ (PAN Card KYC)</h4>
+                      <span class="doc-status-tag pending" id="statusTagPan">⏳ అప్‌లోడ్ చేయండి</span>
+                    </div>
+                    <p class="doc-subtext">ఆదాయపు పన్ను శాఖ 10 అంకెల ఆల్ఫాన్యూమరిక్ పాన్ కార్డ్ (పెద్ద ఎస్క్రో లావాదేవీలకు తప్పనిసరి)</p>
+                  </div>
+                </div>
+
+                <div class="doc-card-body">
+                  <form onsubmit="handleSavePan(event)" class="kyc-form-grid">
+                    <div class="form-group">
+                      <label for="inputPanNumber">10 అంకెల పాన్ నంబర్ (PAN Number) *</label>
+                      <input type="text" id="inputPanNumber" maxlength="10" placeholder="ఉదా: ABCDE1234F" oninput="formatPanInput(this)" style="text-transform:uppercase; font-weight:700;" required>
+                      <small class="field-hint" id="panValidHint">ఫార్మాట్: 5 అక్షరాలు + 4 అంకెలు + 1 అక్షరం (ఉదా: ABCDE1234F)</small>
+                    </div>
+
+                    <div class="form-group">
+                      <label>పాన్ కార్డ్ కాపీ (PAN Card Photo / PDF) *</label>
+                      <div class="custom-file-dropzone" style="padding:1rem;">
+                        <input type="file" id="filePan" accept=".pdf,image/*" onchange="handleDocFileChange(event, 'pan')">
+                        <div class="dropzone-content">
+                          <span class="upload-icon">📄</span>
+                          <span class="upload-text" id="labelFilePan">ఫైల్ ఎంచుకోండి లేదా డ్రాగ్ చేయండి</span>
+                          <small class="upload-hint">గరిష్ట పరిమాణం: 5 MB</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="doc-uploaded-preview-bar" id="previewBarPan" style="display:none;">
+                      <div class="preview-meta">
+                        <span class="doc-icon-small">📎</span>
+                        <div>
+                          <strong id="namePan">pancard.jpg</strong>
+                          <small id="sizePan">290 KB • అప్‌లోడ్ చేయబడింది</small>
+                        </div>
+                      </div>
+                      <div class="preview-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openDocPreviewModal('pan')">👁️ పత్రం చూడండి</button>
+                        <button type="button" class="btn btn-danger-soft btn-sm" onclick="removeKycDoc('pan')">🗑️ తొలగించు</button>
+                      </div>
+                    </div>
+
+                    <div class="doc-actions-row">
+                      <button type="submit" class="btn btn-primary btn-sm">💾 పాన్ కార్డ్ భద్రపరచండి</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- DOC 5: PROOF OF LOCATION / RESIDENCE (ELECTRICITY BILL) -->
+              <div class="kyc-doc-card" id="cardDocLocationProof">
+                <div class="doc-card-header">
+                  <div class="doc-type-icon">⚡</div>
+                  <div class="doc-header-text">
+                    <div class="doc-title-row">
+                      <h4>5. లొకేషన్ & నివాస ధృవీకరణ పత్రం (Proof of Location / Electricity Bill)</h4>
+                      <span class="doc-status-tag pending" id="statusTagLocationProof">⏳ అప్‌లోడ్ చేయండి</span>
+                    </div>
+                    <p class="doc-subtext">వ్యవసాయ బోర్ బావి / ఇంటి విద్యుత్ బిల్లు (TSNPDCL/TSSPDCL), నీటి పన్ను లేదా నివాస ధృవీకరణ</p>
+                  </div>
+                </div>
+
+                <div class="doc-card-body">
+                  <form onsubmit="handleSaveLocationProof(event)" class="kyc-form-grid">
+                    <div class="form-row-2col">
+                      <div class="form-group">
+                        <label for="inputLocProofType">పత్రం రకం (Document Type) *</label>
+                        <select id="inputLocProofType">
+                          <option value="electricity">వ్యవసాయ / గృహ విద్యుత్ బిల్లు (Electricity Bill - TSNPDCL / TSSPDCL)</option>
+                          <option value="water">గ్రామ పంచాయతీ నీటి పన్ను రసీదు (Water Tax)</option>
+                          <option value="gas">గ్యాస్ కనెక్షన్ రసీదు (LPG Subscription Voucher)</option>
+                          <option value="residence_cert">తహసీల్దార్ నివాస ధృవీకరణ పత్రం (Residence Certificate)</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputServiceNumber">సర్వీస్ కనెక్షన్ / USC నంబర్ (Service/USC No) *</label>
+                        <input type="text" id="inputServiceNumber" placeholder="ఉదా: 1029482710" required>
+                      </div>
+                    </div>
+
+                    <div class="form-row-2col">
+                      <div class="form-group">
+                        <label for="inputLocConsumerName">కన్స్యూమర్ పేరు (Consumer Name on Bill) *</label>
+                        <input type="text" id="inputLocConsumerName" placeholder="బిల్లుపై ఉన్న రైతు పేరు" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputLocAddress">పొలం / నివాస చిరునామా (Address) *</label>
+                        <input type="text" id="inputLocAddress" placeholder="గ్రామం, మండలం, జిల్లా" required>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>విద్యుత్ బిల్లు / లొకేషన్ పత్రం కాపీ (PDF లేదా ఇమేజ్) *</label>
+                      <div class="custom-file-dropzone" style="padding:1rem;">
+                        <input type="file" id="fileLocationProof" accept=".pdf,image/*" onchange="handleDocFileChange(event, 'location_proof')">
+                        <div class="dropzone-content">
+                          <span class="upload-icon">📄</span>
+                          <span class="upload-text" id="labelFileLocationProof">ఫైల్ ఎంచుకోండి లేదా డ్రాగ్ చేయండి</span>
+                          <small class="upload-hint">గరిష్ట పరిమాణం: 5 MB</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="doc-uploaded-preview-bar" id="previewBarLocationProof" style="display:none;">
+                      <div class="preview-meta">
+                        <span class="doc-icon-small">📎</span>
+                        <div>
+                          <strong id="nameLocationProof">electricity_bill.pdf</strong>
+                          <small id="sizeLocationProof">510 KB • అప్‌లోడ్ చేయబడింది</small>
+                        </div>
+                      </div>
+                      <div class="preview-actions">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="openDocPreviewModal('location_proof')">👁️ పత్రం చూడండి</button>
+                        <button type="button" class="btn btn-danger-soft btn-sm" onclick="removeKycDoc('location_proof')">🗑️ తొలగించు</button>
+                      </div>
+                    </div>
+
+                    <div class="doc-actions-row">
+                      <button type="submit" class="btn btn-primary btn-sm">💾 లొకేషన్ ప్రూఫ్ భద్రపరచండి</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div><!-- /kyc-documents-container -->
+          </div><!-- /paneDocVerification -->
+
+        </div><!-- /farmer-main-content -->
+
+      </div><!-- /farmer-dashboard-grid -->
+    </section>
+
+  </main>
+
+  <!-- MODAL: COUNTER OFFER DIALOG -->
+  <div class="modal-backdrop" id="counterOfferModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeCounterModal()">&times;</button>
+      <h3 class="modal-title" data-i18n="counter_title">కొనుగోలుదారుకు ఎదురు ప్రతిపాదన (Counter Offer)</h3>
+      <p class="modal-subtitle" id="counterModalSubtitle">కొనుగోలుదారు బిడ్: ₹20,800/క్వింటాల్. మీరు ఆశించే ఎక్కువ ధరను ప్రతిపాదించండి.</p>
+
+      <div class="counter-input-box">
+        <label for="counterPriceInput"><strong>మీ కౌంటర్ ధర (రూపాయలు / క్వింటాల్) *</strong></label>
+        <div class="currency-input-wrapper">
+          <span class="currency-symbol">₹</span>
+          <input type="number" id="counterPriceInput" value="21500" step="50" required>
+          <span class="unit-symbol">/ Quintal</span>
+        </div>
+      </div>
+
+      <div class="counter-terms-check" style="margin: 1.25rem 0;">
+        <label class="custom-checkbox-row">
+          <input type="checkbox" id="counterRequireVehicle" checked>
+          <span>కొనుగోలుదారుడే సొంత లారీని పొలం వద్దకు పంపించాలి (Buyer arranges transport)</span>
+        </label>
+      </div>
+
+      <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="closeCounterModal()">రద్దు చేయండి (Cancel)</button>
+        <button class="btn btn-primary" onclick="submitCounterOffer()">కౌంటర్ ఆఫర్ పంపండి →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REAL-TIME DOCUMENT PREVIEW VIEWER -->
+  <div class="modal-backdrop" id="docPreviewModal" style="display:none;">
+    <div class="modal-card doc-preview-modal-card">
+      <button class="modal-close-btn" onclick="closeDocPreviewModal()">&times;</button>
+      <div class="doc-modal-head">
+        <h3 class="modal-title" id="previewModalTitle">📄 పత్రం ప్రివ్యూ (Document Preview)</h3>
+        <span class="doc-modal-stamp" id="previewModalStamp">✓ DIGITAL RECORD</span>
+      </div>
+      <p class="modal-subtitle" id="previewModalSubtitle">అప్‌లోడ్ చేయబడిన అసలు పత్రం పరిశీలన</p>
+
+      <div class="doc-preview-viewport" id="docPreviewViewport">
+        <!-- Rendered dynamically as <img> or <iframe src="..."> -->
+      </div>
+
+      <div class="modal-actions-row" style="margin-top:1.25rem; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.82rem; color:var(--text-muted);" id="previewModalFileInfo">పరిమాణం: 450 KB</span>
+        <div style="display:flex; gap:0.5rem;">
+          <a id="btnDownloadPreviewDoc" class="btn btn-outline btn-sm" download="document">📥 డౌన్‌లోడ్ చేయండి</a>
+          <button class="btn btn-secondary btn-sm" onclick="closeDocPreviewModal()">మూసివేయండి (Close)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ACCEPT BID CONFIRMATION DIALOG -->
+  <div class="modal-backdrop" id="acceptBidConfirmModal" style="display:none;">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeAcceptBidConfirmModal()">&times;</button>
+      <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🤝</div>
+      <h3 class="modal-title">బిడ్ ఆమోదం & ఎస్క్రో లాక్ (Confirm Deal)</h3>
+      <p class="modal-subtitle" id="acceptBidModalSubtitle">కొనుగోలుదారుతో డీల్ ఖరారు చేయడం</p>
+
+      <div class="deal-summary-box" style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:1rem; margin:1.25rem 0;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748B;">కొనుగోలుదారు (Buyer):</span>
+          <strong id="acceptModalBuyerName">ITC Agri Business Hub</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748B;">పంట & పరిమాణం (Crop & Qty):</span>
+          <strong id="acceptModalCropQty">తేజ మిర్చి (40 క్వింటాళ్లు)</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748B;">ఆమోదిత ధర (Price / Q):</span>
+          <strong id="acceptModalPriceQ" style="color:#166534;">₹21,650</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748B;">రవాణా నిబంధన (Logistics):</span>
+          <strong id="acceptModalLogistics">🚛 కొనుగోలుదారు సొంత వాహనం</strong>
+        </div>
+        <hr style="border:none; border-top:1px dashed #CBD5E1; margin:0.75rem 0;">
+        <div style="display:flex; justify-content:space-between; font-size:1.05rem;">
+          <span>మొత్తం ఎస్క్రో చెల్లింపు (Total Escrow):</span>
+          <strong id="acceptModalTotalPayout" style="color:#166534; font-size:1.2rem;">₹8,66,000</strong>
+        </div>
+      </div>
+
+      <div style="background:#ECFDF5; border:1px solid #A7F3D0; border-radius:8px; padding:0.75rem; font-size:0.82rem; color:#065F46; margin-bottom:1.5rem;">
+        🛡️ <strong>ఎస్క్రో భద్రత:</strong> ఆమోదించిన వెంటనే ఈ మొత్తం బ్యాంకు ఎస్క్రోలో లాక్ అవుతుంది. మీ పొలం వద్ద లోడింగ్ పూర్తయి OTP చెప్పేవరకు మీ పంట మరియు డబ్బు రెండూ 100% సురక్షితం.
+      </div>
+
+      <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="closeAcceptBidConfirmModal()">రద్దు చేయండి (Cancel)</button>
+        <button class="btn btn-primary" onclick="confirmAcceptDealNow()">✓ డీల్ ఖరారు చేయండి (Confirm & Lock Escrow)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FARM-GATE OTP VERIFICATION DIALOG -->
+  <div class="modal-backdrop" id="otpVerifyModal" style="display:none;">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeOtpVerifyModal()">&times;</button>
+      <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🔐</div>
+      <h3 class="modal-title">పొలం వద్ద లోడింగ్ ధృవీకరణ (Farm-Gate OTP Verification)</h3>
+      <p class="modal-subtitle">డ్రైవర్ లేదా కొనుగోలుదారు ప్రతినిధి వద్ద ఉన్న 4 అంకెల OTP నమోదు చేసి ఎస్క్రో నిధులను తక్షణమే విడుదల చేయండి.</p>
+
+      <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:0.75rem; font-size:0.82rem; color:#92400E; margin:1rem 0;">
+        ⚠️ <strong>ముఖ్యమైన సూచన:</strong> లారీలో తూకం సరిచూసుకుని, పంటను పూర్తిగా ఎక్కించిన తర్వాత మాత్రమే OTP ని ధృవీకరించండి.
+      </div>
+
+      <div class="form-group" style="text-align:center; margin:1.5rem 0;">
+        <label for="inputVerifyOtpCode" style="font-size:0.95rem; font-weight:700;">4 అంకెల ఫార్మ్‌గేట్ OTP (Enter OTP):</label>
+        <input type="text" id="inputVerifyOtpCode" maxlength="4" placeholder="••••" style="font-size:2rem; letter-spacing:0.75rem; text-align:center; width:200px; margin:0.75rem auto 0; font-weight:800; border:2px solid #2D6A4F; border-radius:12px; padding:0.5rem; display:block;">
+        <div id="otpValidationHint" style="font-size:0.82rem; color:#DC2626; margin-top:0.5rem; min-height:1.2rem;"></div>
+      </div>
+
+      <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="closeOtpVerifyModal()">రద్దు చేయండి</button>
+        <button class="btn btn-primary" onclick="submitOtpVerification()">🔓 ధృవీకరించి డబ్బు విడుదల చేయండి →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DIGITAL ESCROW TAX INVOICE & PAYMENT RECEIPT -->
+  <div class="modal-backdrop" id="escrowReceiptModal" style="display:none;">
+    <div class="modal-card escrow-receipt-card" style="max-width:640px;">
+      <button class="modal-close-btn" onclick="closeEscrowReceiptModal()">&times;</button>
+      
+      <div class="receipt-print-container" id="printableReceiptArea">
+        <div class="receipt-header-row" style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1B4332; padding-bottom:1rem; margin-bottom:1.25rem;">
+          <div>
+            <div style="font-size:1.35rem; font-weight:800; color:#1B4332;">🌾 కిసాన్ కనెక్ట్ (Kissan Connect)</div>
+            <div style="font-size:0.75rem; color:#475569;">తెలంగాణ వ్యవసాయ మార్కెట్ వేదిక • డిజిటల్ ఎస్క్రో చెల్లింపు రశీదు</div>
+            <div style="font-size:0.75rem; color:#475569;">SIH 26132 • Integrated APMC Market Linkage</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="digital-paid-stamp">PAID &amp; VERIFIED</span>
+            <div style="font-size:0.72rem; color:#64748B; margin-top:0.35rem;" id="receiptTimestamp">17-09-2026 11:35 AM</div>
+          </div>
+        </div>
+
+        <div class="receipt-meta-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; font-size:0.82rem; margin-bottom:1.25rem; background:#F8FAFC; padding:1rem; border-radius:10px; border:1px solid #E2E8F0;">
+          <div>
+            <span style="color:#64748B;">రశీదు / ఆర్డర్ ఐడీ:</span>
+            <strong id="receiptOrderId" style="display:block; color:#0F172A;">KC-TS-2026-091</strong>
+          </div>
+          <div>
+            <span style="color:#64748B;">బ్యాంకింగ్ UTR రిఫరెన్స్:</span>
+            <strong id="receiptUtrNo" style="display:block; color:#166534; font-family:monospace;">UTR-RBI-20260917-91024</strong>
+          </div>
+          <div>
+            <span style="color:#64748B;">లబ్ధిదారు రైతు (Farmer):</span>
+            <strong id="receiptFarmerName" style="display:block; color:#0F172A;">మల్లారెడ్డి (Malla Reddy)</strong>
+          </div>
+          <div>
+            <span style="color:#64748B;">కొనుగోలుదారు (Buyer):</span>
+            <strong id="receiptBuyerName" style="display:block; color:#0F172A;">ITC Agri Business Hub</strong>
+          </div>
+          <div>
+            <span style="color:#64748B;">జమ చేయబడిన బ్యాంక్ ఖాతా:</span>
+            <strong id="receiptBankAccount" style="display:block; color:#0F172A;">SBI (SBIN0020194) - Jangaon</strong>
+          </div>
+          <div>
+            <span style="color:#64748B;">చెల్లింపు విధానం (Mode):</span>
+            <strong style="display:block; color:#0F172A;">Instant Escrow IMPS/RTGS (₹0 Fee)</strong>
+          </div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:1.25rem;">
+          <thead>
+            <tr style="background:#E8F5EE; border-top:1px solid #B7E4C7; border-bottom:1px solid #B7E4C7; text-align:left;">
+              <th style="padding:0.6rem 0.75rem; color:#1B4332;">పంట వివరాలు (Description)</th>
+              <th style="padding:0.6rem 0.75rem; text-align:center; color:#1B4332;">పరిమాణం</th>
+              <th style="padding:0.6rem 0.75rem; text-align:right; color:#1B4332;">ధర / క్వింటాల్</th>
+              <th style="padding:0.6rem 0.75rem; text-align:right; color:#1B4332;">మొత్తం (Amount)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #E2E8F0;">
+              <td style="padding:0.65rem 0.75rem;">
+                <strong id="receiptCropTitle">తేజ మిర్చి (Teja Chilli)</strong>
+                <small style="display:block; color:#64748B;" id="receiptCropVariety">ఎగుమతి గ్రేడ్ A • 9.2% తేమ</small>
+              </td>
+              <td style="padding:0.65rem 0.75rem; text-align:center;" id="receiptQty">40 Q</td>
+              <td style="padding:0.65rem 0.75rem; text-align:right;" id="receiptRate">₹21,650</td>
+              <td style="padding:0.65rem 0.75rem; text-align:right; font-weight:700;" id="receiptBaseAmount">₹8,66,000</td>
+            </tr>
+            <tr style="border-bottom:1px solid #E2E8F0; color:#64748B; font-size:0.8rem;">
+              <td style="padding:0.4rem 0.75rem;">మండి మార్కెట్ సెస్ (APMC Cess - 0%)</td>
+              <td></td>
+              <td></td>
+              <td style="padding:0.4rem 0.75rem; text-align:right;">₹0</td>
+            </tr>
+            <tr style="border-bottom:1px solid #E2E8F0; color:#64748B; font-size:0.8rem;">
+              <td style="padding:0.4rem 0.75rem;">ఎస్క్రో సర్వీస్ ఫీజు (రైతుకు ఉచితం - ₹0)</td>
+              <td></td>
+              <td></td>
+              <td style="padding:0.4rem 0.75rem; text-align:right;">₹0</td>
+            </tr>
+            <tr style="background:#F0FDF4; font-size:1.05rem; font-weight:800; color:#166534;">
+              <td colspan="3" style="padding:0.75rem; text-align:right;">రైతుకు జమ చేయబడిన నికర మొత్తం:</td>
+              <td style="padding:0.75rem; text-align:right;" id="receiptFinalTotal">₹8,66,000</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="font-size:0.75rem; color:#64748B; text-align:center; border-top:1px dashed #CBD5E1; padding-top:0.75rem;">
+          ఈ రశీదు కిసాన్ కనెక్ట్ ఎస్క్రో స్మార్ట్ కాంట్రాక్ట్ ద్వారా డిజిటల్ సంతకం చేయబడింది. భౌతిక సంతకం అవసరం లేదు.
+        </div>
+      </div>
+
+      <div class="modal-actions-row" style="margin-top:1.25rem; display:flex; justify-content:space-between;">
+        <button class="btn btn-outline" onclick="printEscrowReceipt()">🖨️ రశీదు ప్రింట్ / PDF డౌన్‌లోడ్</button>
+        <button class="btn btn-primary" onclick="closeEscrowReceiptModal()">పూర్తయింది (Close)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CUSTOM API KEYS & GEOLOCATION SETTINGS -->
+  <div class="modal-backdrop" id="apiKeysModal" style="display:none;">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeApiKeysModal()">&times;</button>
+      <h3 class="modal-title">⚙️ API కీలు & GPS సెట్టింగ్స్ (Custom API Settings)</h3>
+      <p class="modal-subtitle">
+        కిసాన్ కనెక్ట్ డిఫాల్ట్‌గా <strong>OpenStreetMap Nominatim</strong>, <strong>Open-Meteo</strong> మరియు <strong>Razorpay IFSC Live API</strong> లను ఉచితంగా, కీలు అవసరం లేకుండా ఉపయోగిస్తుంది. మీరు మీ స్వంత ప్రైవేట్ API కీలను ఉపయోగించాలనుకుంటే ఇక్కడ నమోదు చేయవచ్చు.
+      </p>
+
+      <form onsubmit="handleSaveCustomApiKeys(event)">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="customWeatherApiKey">OpenWeatherMap API Key (ఐచ్ఛికం - Optional)</label>
+          <input type="password" id="customWeatherApiKey" placeholder="మీ OpenWeatherMap API Key పేస్ట్ చేయండి">
+          <small class="field-hint">ఖాళీగా ఉంచితే డిఫాల్ట్ హై-ఆక్యురసీ Open-Meteo లైవ్ API పనిచేస్తుంది.</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="customMapsApiKey">Google Maps Geocoding API Key (ఐచ్ఛికం - Optional)</label>
+          <input type="password" id="customMapsApiKey" placeholder="మీ Google Maps API Key పేస్ట్ చేయండి">
+          <small class="field-hint">ఖాళీగా ఉంచితే డిఫాల్ట్ OpenStreetMap రివర్స్ జియోకోడింగ్ పనిచేస్తుంది.</small>
+        </div>
+
+        <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeApiKeysModal()">రద్దు చేయండి (Cancel)</button>
+          <button type="submit" class="btn btn-primary">💾 కీలు భద్రపరచండి (Save Settings)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastNotification" class="toast-popup" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="/integrated_db/integrated_db.js"></script>
+  <script src="/farmer_portal/db/farmer_db.js"></script>
+  <script src="/shared/js/data.js"></script>
+  <script src="/shared/js/lang.js"></script>
+  <script src="/farmer_portal/js/farmer.js"></script>
+</body>
+</html>

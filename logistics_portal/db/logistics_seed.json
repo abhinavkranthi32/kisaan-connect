@@ -1,0 +1,28 @@
+{
+  "transporter": {
+    "transporterId": "USR-LOG-01",
+    "agencyName": "తెలంగాణ ఆగ్రో ట్రాన్స్‌పోర్ట్ నెట్‌వర్క్ (Telangana Agro Fleet)",
+    "phone": "9988112233",
+    "baseMandi": "వరంగల్ & ఖమ్మం హబ్",
+    "totalEarnings": 48200,
+    "completedTrips": 28
+  },
+  "fleetVehicles": [
+    {
+      "regNumber": "TS 03 UB 8192",
+      "type": "10-Ton DCM / Truck",
+      "driverName": "రాము యాదవ్",
+      "driverPhone": "9848123990",
+      "capacity": 100,
+      "status": "en_route"
+    },
+    {
+      "regNumber": "TS 04 TA 4120",
+      "type": "ట్రాక్టర్ ట్రాలీ (Tractor Trolley)",
+      "driverName": "వెంకటేష్ గౌడ్",
+      "driverPhone": "9848552109",
+      "capacity": 40,
+      "status": "idle"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "buyers": [
+    {
+      "buyerId": "USR-BUY-01",
+      "companyName": "ITC Agri Business Hub",
+      "gstin": "36AAACI1234F1Z8",
+      "tradeLicense": "APMC-WGL-2024-4091",
+      "phone": "9440122891",
+      "location": "సికింద్రాబాద్ / వరంగల్",
+      "escrowBalance": 1550000,
+      "rating": "4.9 ★ (84 డీల్స్)"
+    },
+    {
+      "buyerId": "USR-BUY-02",
+      "companyName": "శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్",
+      "gstin": "36ABCKR9812G2Z1",
+      "tradeLicense": "APMC-MRG-2023-1120",
+      "phone": "9848211090",
+      "location": "మిర్యాలగూడ యార్డ్",
+      "escrowBalance": 2400000,
+      "rating": "4.9 ★ (120 డీల్స్)"
+    },
+    {
+      "buyerId": "USR-BUY-03",
+      "companyName": "ఖమ్మం స్పైసెస్ ఎక్స్‌పోర్టర్స్",
+      "gstin": "36AAXKS4412P1Z4",
+      "tradeLicense": "APMC-KHM-2024-6721",
+      "phone": "9848033211",
+      "location": "ఖమ్మం మార్కెట్ యార్డ్",
+      "escrowBalance": 880000,
+      "rating": "4.7 ★ (41 డీల్స్)"
+    }
+  ],
+  "activeBids": [
+    {
+      "bidId": "BID-901",
+      "lotId": "LOT-TS-401",
+      "buyerId": "USR-BUY-01",
+      "cropName": "తేజ మిర్చి (Teja Chilli)",
+      "farmerName": "మల్లారెడ్డి",
+      "farmerLocation": "జనగామ మండలం, వరంగల్",
+      "quantity": 40,
+      "pricePerQ": 21650,
+      "totalValuation": 866000,
+      "logisticsMode": "buyer_vehicle",
+      "status": "leading"
+    },
+    {
+      "bidId": "BID-881",
+      "lotId": "LOT-TS-402",
+      "buyerId": "USR-BUY-02",
+      "cropName": "తెలంగాణ సోనా వరి",
+      "farmerName": "మల్లారెడ్డి",
+      "farmerLocation": "మిర్యాలగూడ పరిసరాలు",
+      "quantity": 120,
+      "pricePerQ": 2440,
+      "totalValuation": 292800,
+      "logisticsMode": "buyer_vehicle",
+      "status": "leading"
+    }
+  ]
+}

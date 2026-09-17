@@ -1,0 +1,23 @@
+{
+  "name": "kissan-connect",
+  "version": "1.0.0",
+  "description": "Kissan Connect - Telangana Agricultural Market Linkage Platform (SIH)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "init-db": "node db/init_db.js",
+    "test": "node scratch/test_real_api.js"
+  },
+  "keywords": [
+    "agritech",
+    "sih",
+    "telangana",
+    "agmarknet",
+    "sqlite"
+  ],
+  "author": "Kissan Connect Team",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

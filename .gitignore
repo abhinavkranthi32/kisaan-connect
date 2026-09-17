@@ -4,3 +4,17 @@ desktop.ini
 *.log
 .vscode/
 .idea/
+.env
+.env.local
+.env.*.local
+!.env.example
+node_modules/
+dist/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.db-journal
+
+
