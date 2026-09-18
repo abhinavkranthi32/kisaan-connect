@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kissan Connect (కిసాన్ కనెక్ట్) | Telangana Agri Market Linkage Platform</title>
+  <title data-i18n="page_title_main">కిసాన్ కనెక్ట్ | తెలంగాణ వ్యవసాయ మార్కెట్ వేదిక</title>
   
   <!-- Fonts: Inter & Noto Sans Telugu -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
   <aside class="mandi-ticker-bar" id="mandiTickerBar" aria-label="Telangana Mandi Rates">
     <div class="ticker-label">
       <span class="live-dot"></span>
-      <span data-i18n="ticker_title">తెలంగాణ మార్కెట్ ధరలు (Live Mandi Rates)</span>
+      <span data-i18n="ticker_title">తెలంగాణ ప్రత్యక్ష మార్కెట్ ధరలు</span>
     </div>
     <div class="ticker-track-wrapper">
       <div class="ticker-track" id="tickerTrack">
@@ -44,7 +44,7 @@
         <div class="gov-badge-row">
           <span class="gov-pill" data-i18n="tagline_gov">తెలంగాణ వ్యవసాయ మార్కెట్ వేదిక • SIH 26132</span>
         </div>
-        <h1 class="main-heading" data-i18n="hero_title">కిసాన్ కనెక్ట్ (Kissan Connect)</h1>
+        <h1 class="main-heading" data-i18n="hero_title">కిసాన్ కనెక్ట్</h1>
         <p class="main-subheading" data-i18n="hero_subtitle">రైతులే ధర నిర్ణయించే సురక్షిత డిజిటల్ మార్కెట్. దళారులు లేకుండా నేరుగా అమ్మకాలు, పోటీ బిడ్డింగ్, తక్షణ ఎస్క్రో చెల్లింపులు.</p>
       </div>
 
@@ -53,7 +53,7 @@
         <div class="role-card role-farmer" id="roleCardFarmer">
           <div class="role-card-badge" data-i18n="badge_farmer_empowered">రైతుకే పూర్తి అధికారం</div>
           <div class="role-icon-box">👨‍🌾</div>
-          <h2 class="role-title" data-i18n="role_farmer_title">నేను రైతును (Farmer)</h2>
+          <h2 class="role-title" data-i18n="role_farmer_title">నేను రైతును</h2>
           <p class="role-desc" data-i18n="role_farmer_desc">మీ పంటకు మీరే డిమాండ్ ఆధారంగా ధర నిర్ణయించండి. కొనుగోలుదారుల లైవ్ బిడ్డింగ్ పరిశీలించి, నచ్చిన వారికి మాత్రమే అమ్మండి.</p>
           <ul class="role-features-list">
             <li data-i18n="feat_f1">✓ పంట ఫోటోలు, గ్రేడింగ్‌తో నేరుగా లిస్టింగ్</li>
@@ -62,10 +62,10 @@
           </ul>
           <div class="role-actions-group" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:auto;">
             <button type="button" class="btn btn-primary role-btn" id="btnInstantFarmerLogin" onclick="directFarmerLogin(event)" data-i18n="btn_instant_login">
-              ⚡ తక్షణ రైతు లాగిన్ (Instant Login) →
+              ⚡ తక్షణ రైతు లాగిన్ →
             </button>
             <button type="button" class="btn btn-secondary role-btn" id="btnFarmerOtpAuth" onclick="openFarmerAuth(event)" data-i18n="btn_enter_farmer">
-              📱 మొబైల్ OTP లాగిన్ (OTP Flow)
+              📱 మొబైల్ OTP లాగిన్
             </button>
           </div>
         </div>
@@ -74,7 +74,7 @@
         <div class="role-card role-buyer" id="roleCardBuyer" onclick="navigateToBuyerPortal(event)">
           <div class="role-card-badge buyer" data-i18n="badge_buyer">ధృవీకరించబడిన వ్యాపారులు</div>
           <div class="role-icon-box" style="background:#EEF2FF; border-color:#C7D2FE;">🏢</div>
-          <h2 class="role-title" data-i18n="role_buyer_title">కొనుగోలుదారు (Commercial Buyer)</h2>
+          <h2 class="role-title" data-i18n="role_buyer_title">కొనుగోలుదారు</h2>
           <p class="role-desc" data-i18n="role_buyer_desc">తెలంగాణ రైతులు మరియు FPOల నుండి నేరుగా నాణ్యమైన ధాన్యం, మిర్చి, పత్తిని పారదర్శక బిడ్డింగ్ ద్వారా సేకరించండి.</p>
           <ul class="role-features-list">
             <li data-i18n="feat_b1">✓ రైతుల పొలాల నుండే నాణ్యమైన పంట సేకరణ</li>
@@ -82,7 +82,7 @@
             <li data-i18n="feat_b3">✓ APMC సెస్ మినహాయింపు & డిజిటల్ ఇన్వాయిస్</li>
           </ul>
           <div class="role-actions-group" style="margin-top:auto;">
-            <button type="button" class="btn btn-primary role-btn" id="btnEnterBuyer" onclick="navigateToBuyerPortal(event)" style="background:#1E3A8A; border-color:#172554;">
+            <button type="button" class="btn btn-primary role-btn" id="btnEnterBuyer" onclick="navigateToBuyerPortal(event)" style="background:#1E3A8A; border-color:#172554;" data-i18n="btn_enter_buyer">
               కొనుగోలుదారు పోర్టల్ లోకి ప్రవేశించండి →
             </button>
           </div>
@@ -92,7 +92,7 @@
         <div class="role-card role-logistics" id="roleCardLogistics" onclick="navigateToLogisticsPortal(event)">
           <div class="role-card-badge logistics" data-i18n="badge_transporter">రవాణా నెట్‌వర్క్</div>
           <div class="role-icon-box" style="background:#FEF3C7; border-color:#FDE68A;">🚛</div>
-          <h2 class="role-title" data-i18n="role_logistics_title">రవాణాదారు (Logistics Fleet)</h2>
+          <h2 class="role-title" data-i18n="role_logistics_title">రవాణాదారు</h2>
           <p class="role-desc" data-i18n="role_logistics_desc">గ్రామీణ ప్రాంతాల నుండి మార్కెట్లు మరియు వేర్‌హౌస్‌లకు రవాణా ట్రిప్పులను ఆమోదించండి. సరసమైన ధరలు, తక్షణ లోడింగ్ ఛార్జీలు.</p>
           <ul class="role-features-list">
             <li data-i18n="feat_l1">✓ ట్రాక్టర్, డీసీఎం, లారీ ట్రిప్ ఆర్డర్లు</li>
@@ -100,7 +100,7 @@
             <li data-i18n="feat_l3">✓ తక్షణ రవాణా చార్జీల విడుదల</li>
           </ul>
           <div class="role-actions-group" style="margin-top:auto;">
-            <button type="button" class="btn btn-secondary role-btn" id="btnEnterLogistics" onclick="navigateToLogisticsPortal(event)">
+            <button type="button" class="btn btn-secondary role-btn" id="btnEnterLogistics" onclick="navigateToLogisticsPortal(event)" data-i18n="btn_enter_logistics">
               రవాణా పోర్టల్ లోకి ప్రవేశించండి →
             </button>
           </div>
@@ -136,12 +136,12 @@
           </div>
           
           <button type="submit" class="btn btn-primary btn-block" id="btnSendOtp">
-            <span data-i18n="btn_send_otp">OTP పంపండి (Get OTP) →</span>
+            <span data-i18n="btn_send_otp">OTP పంపండి →</span>
           </button>
 
           <div style="text-align:center; margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border-card);">
-            <button type="button" class="btn-text-link" onclick="directFarmerLogin(event)" style="font-weight:700;">
-              ⚡ డెమో లాగిన్ (Skip OTP & Enter Now) →
+            <button type="button" class="btn-text-link" onclick="directFarmerLogin(event)" style="font-weight:700;" data-i18n="btn_demo_login">
+              ⚡ డెమో లాగిన్ (OTP నివారించు) →
             </button>
           </div>
         </form>
@@ -169,16 +169,16 @@
           <!-- Fast Auto-Fill for Testing -->
           <div class="quick-demo-otp-banner">
             <span>టెస్టింగ్ OTP: <strong>842109</strong></span>
-            <button type="button" class="btn-text-link" onclick="autoFillDemoOtp()">👉 ఒక్క క్లిక్‌తో నింపండి (Auto-Fill)</button>
+            <button type="button" class="btn-text-link" onclick="autoFillDemoOtp()">👉 ఒక్క క్లిక్‌తో నింపండి</button>
           </div>
 
           <button type="submit" class="btn btn-primary btn-block" id="btnVerifyOtp">
-            <span data-i18n="btn_verify_enter">వెరిఫై చేసి రైతు డాష్‌బోర్డ్‌లోకి వెళ్లండి →</span>
+            <span data-i18n="btn_verify_enter">వెరిఫై చేసి ప్రవేశించండి →</span>
           </button>
 
           <div style="text-align:center; margin-top:0.75rem;">
-            <button type="button" class="btn-text-link" onclick="directFarmerLogin(event)" style="color:var(--text-muted); font-size:0.8rem;">
-              ⚡ నేరుగా ప్రవేశించండి (Skip OTP)
+            <button type="button" class="btn-text-link" onclick="directFarmerLogin(event)" style="color:var(--text-muted); font-size:0.8rem;" data-i18n="btn_skip_otp">
+              ⚡ నేరుగా ప్రవేశించండి (డెమో)
             </button>
           </div>
         </form>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kissan Connect | కొనుగోలుదారు పోర్టల్ (Commercial Buyer Portal)</title>
+  <title data-i18n="page_title_buyer">కిసాన్ కనెక్ట్ | కొనుగోలుదారు పోర్టల్</title>
   
   <!-- Fonts: Inter & Noto Sans Telugu -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +25,7 @@
   <aside class="mandi-ticker-bar" id="mandiTickerBar" aria-label="Telangana Mandi Rates">
     <div class="ticker-label">
       <span class="live-dot"></span>
-      <span data-i18n="ticker_title">తెలంగాణ మార్కెట్ ధరలు (Live Mandi Rates)</span>
+      <span data-i18n="ticker_title">తెలంగాణ ప్రత్యక్ష మార్కెట్ ధరలు</span>
     </div>
     <div class="ticker-track-wrapper">
       <div class="ticker-track" id="tickerTrack">
@@ -47,27 +47,27 @@
       <!-- Top Navigation Bar for Buyer Portal -->
       <header class="buyer-top-navbar">
         <div class="brand-left">
-          <a href="../main_portal/index.html" style="text-decoration:none;" class="brand-logo-text">🌾 కిసాన్ కనెక్ట్</a>
-          <span class="portal-badge-buyer">🏢 కొనుగోలుదారు పోర్టల్ (Commercial Buyer)</span>
+          <a href="../main_portal/index.html" style="text-decoration:none;" class="brand-logo-text" data-i18n="hero_title">🌾 కిసాన్ కనెక్ట్</a>
+          <span class="portal-badge-buyer" data-i18n="badge_buyer_portal">🏢 కొనుగోలుదారు పోర్టల్</span>
         </div>
 
         <div class="buyer-persona-switcher">
-          <span style="font-size:0.8rem; color:var(--text-muted);">వ్యాపార సంస్థ:</span>
+          <span style="font-size:0.8rem; color:var(--text-muted);" data-i18n="business_firm_label">వ్యాపార సంస్థ:</span>
           <select id="buyerPersonaSelect" onchange="handleBuyerPersonaChange()">
-            <option value="USR-BUY-01">ITC Agri Business Hub (సికింద్రాబాద్)</option>
-            <option value="USR-BUY-02">శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్ (మిర్యాలగూడ)</option>
-            <option value="USR-BUY-03">ఖమ్మం స్పైసెస్ ఎక్స్‌పోర్టర్స్ (ఖమ్మం)</option>
+            <option value="USR-BUY-01" data-i18n="buyer_firm_1">ITC Agri Business Hub (సికింద్రాబాద్)</option>
+            <option value="USR-BUY-02" data-i18n="buyer_firm_2">శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్ (మిర్యాలగూడ)</option>
+            <option value="USR-BUY-03" data-i18n="buyer_firm_3">ఖమ్మం స్పైసెస్ ఎక్స్‌పోర్టర్స్ (ఖమ్మం)</option>
           </select>
         </div>
 
         <div class="nav-right-actions">
           <div class="escrow-quick-pill">
             <span class="escrow-dot" style="background:#2563EB;"></span>
-            <span>ఎస్క్రో డిపాజిట్:</span>
+            <span data-i18n="escrow_deposit_label">ఎస్క్రో డిపాజిట్:</span>
             <strong id="topBuyerWallet">₹15,50,000</strong>
           </div>
           <a href="../main_portal/index.html" class="btn btn-outline btn-sm switch-role-btn" title="వినియోగదారు ఎంపిక స్క్రీన్‌కు వెళ్లండి">
-            🚪 <span>పాత్ర మార్చండి (Switch Role)</span>
+            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి</span>
           </a>
         </div>
       </header>
@@ -85,7 +85,7 @@
               <h3 id="displayBuyerName">ITC Agri Business Hub</h3>
               <p id="displayBuyerGstin">GSTIN: 36AAACI1234F1Z8</p>
               <div class="verified-badge-row">
-                <span class="verified-tag">✓ APMC లైసెన్స్ ధృవీకరించబడింది</span>
+                <span class="verified-tag" data-i18n="verified_apmc_badge">✓ APMC లైసెన్స్ ధృవీకరించబడింది</span>
               </div>
             </div>
           </div>
@@ -95,8 +95,8 @@
             <button class="sidebar-nav-item active" onclick="switchBuyerTab('farmLots')" id="tabFarmLots">
               <span class="nav-icon">🌾</span>
               <div class="nav-text-col">
-                <span class="nav-title">రైతుల పంటల వేలం (Farm Lots)</span>
-                <small class="nav-subtitle">లైవ్ హార్వెస్ట్ మార్కెట్</small>
+                <span class="nav-title" data-i18n="buyer_tab_lots">రైతుల పంటల వేలం</span>
+                <small class="nav-subtitle" data-i18n="buyer_tab_lots_sub">లైవ్ హార్వెస్ట్ మార్కెట్</small>
               </div>
               <span class="nav-badge count" id="activeLotsCountBadge">4 లాట్లు</span>
             </button>
@@ -104,8 +104,8 @@
             <button class="sidebar-nav-item" onclick="switchBuyerTab('myBids')" id="tabMyBids">
               <span class="nav-icon">⚡</span>
               <div class="nav-text-col">
-                <span class="nav-title">నా బిడ్‌లు & సంప్రదింపులు</span>
-                <small class="nav-subtitle">నెగోషియేషన్స్ & కౌంటర్లు</small>
+                <span class="nav-title" data-i18n="buyer_tab_bids">నా బిడ్‌లు & సంప్రదింపులు</span>
+                <small class="nav-subtitle" data-i18n="buyer_tab_bids_sub">నెగోషియేషన్స్ & కౌంటర్లు</small>
               </div>
               <span class="nav-badge live" id="myActiveBidsBadge">2 బిడ్‌లు</span>
             </button>
@@ -113,8 +113,8 @@
             <button class="sidebar-nav-item" onclick="switchBuyerTab('procurementOrders')" id="tabProcurementOrders">
               <span class="nav-icon">📦</span>
               <div class="nav-text-col">
-                <span class="nav-title">సేకరణ ఆర్డర్లు & ఎస్క్రో</span>
-                <small class="nav-subtitle">లారీ ట్రాకింగ్ & OTP విడుదల</small>
+                <span class="nav-title" data-i18n="buyer_tab_orders">సేకరణ ఆర్డర్లు & ఎస్క్రో</span>
+                <small class="nav-subtitle" data-i18n="buyer_tab_orders_sub">లారీ ట్రాకింగ్ & OTP విడుదల</small>
               </div>
               <span class="nav-badge info" id="buyerOrdersBadge">1 ఆర్డర్</span>
             </button>
@@ -122,16 +122,16 @@
             <button class="sidebar-nav-item" onclick="switchBuyerTab('postRfq')" id="tabPostRfq">
               <span class="nav-icon">📝</span>
               <div class="nav-text-col">
-                <span class="nav-title">కొనుగోలు డిమాండ్ (RFQ)</span>
-                <small class="nav-subtitle">బల్క్ టెండర్లు పోస్ట్ చేయండి</small>
+                <span class="nav-title" data-i18n="buyer_tab_rfq">కొనుగోలు డిమాండ్</span>
+                <small class="nav-subtitle" data-i18n="buyer_tab_rfq_sub">బల్క్ టెండర్లు పోస్ట్ చేయండి</small>
               </div>
             </button>
 
             <button class="sidebar-nav-item" onclick="switchBuyerTab('marketArbitrage')" id="tabMarketArbitrage">
               <span class="nav-icon">📊</span>
               <div class="nav-text-col">
-                <span class="nav-title">మార్కెట్ ఇంటెలిజెన్స్ & పొదుపు</span>
-                <small class="nav-subtitle">మండి వర్సెస్ డైరెక్ట్ పొదుపు</small>
+                <span class="nav-title" data-i18n="buyer_tab_arbitrage">మార్కెట్ ఇంటెలిజెన్స్ & పొదుపు</span>
+                <small class="nav-subtitle" data-i18n="buyer_tab_arbitrage_sub">మండి వర్సెస్ డైరెక్ట్ పొదుపు</small>
               </div>
               <span class="nav-badge ai">AI</span>
             </button>
@@ -140,19 +140,19 @@
           <!-- Escrow Summary Card in Sidebar -->
           <div class="buyer-escrow-box">
             <div class="escrow-header-row">
-              <span>🛡️ ఎస్క్రో ఖాతా నిల్వ</span>
-              <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">100% సేఫ్</span>
+              <span data-i18n="buyer_escrow_title">🛡️ ఎస్క్రో ఖాతా నిల్వ</span>
+              <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;" data-i18n="safe_100_badge">100% సేఫ్</span>
             </div>
             <div class="escrow-value" id="sideBuyerWallet">₹15,50,000</div>
-            <p class="escrow-note">రైతు పొలం వద్ద ధాన్యం తూకం వేసి OTP ధృవీకరించిన తర్వాతే మీ ఎస్క్రో నుండి పేమెంట్ విడుదలవుతుంది.</p>
-            <button class="btn btn-secondary btn-sm btn-block" style="margin-top:0.85rem;" onclick="showAddFundsToast()">+ నిధులు జత చేయండి (Add Funds)</button>
+            <p class="escrow-note" data-i18n="buyer_escrow_note">రైతు పొలం వద్ద ధాన్యం తూకం వేసి OTP ధృవీకరించిన తర్వాతే మీ ఎస్క్రో నుండి పేమెంట్ విడుదలవుతుంది.</p>
+            <button class="btn btn-secondary btn-sm btn-block" style="margin-top:0.85rem;" onclick="showAddFundsToast()" data-i18n="btn_add_funds">+ నిధులు జత చేయండి</button>
           </div>
 
           <!-- Bottom Switch Role link -->
           <div class="sidebar-footer-action">
             <a href="../main_portal/index.html" class="sidebar-logout-btn" style="text-decoration:none;">
               <span>🚪</span>
-              <span>పాత్ర మార్చండి (హోమ్‌కు వెళ్లు)</span>
+              <span data-i18n="btn_switch_role_text">పాత్ర మార్చండి (హోమ్‌కు వెళ్లు)</span>
             </a>
           </div>
 
@@ -165,11 +165,11 @@
           <div id="paneFarmLots" class="tab-pane active">
             <div class="section-banner">
               <div>
-                <h2 class="section-title">రైతుల పంటల వేలం & నేరుగా సేకరణ (Live Harvest Marketplace)</h2>
-                <p class="section-desc">తెలంగాణ రైతులు మరియు FPOల నుండి నేరుగా తేజ మిర్చి, తెలంగాణ సోనా వరి, పత్తి, పసుపు లాట్లను వేలం ద్వారా సేకరించండి. మధ్యవర్తి కమీషన్లు లేవు.</p>
+                <h2 class="section-title" data-i18n="buyer_lots_banner">రైతుల పంటల వేలం & నేరుగా సేకరణ</h2>
+                <p class="section-desc" data-i18n="buyer_lots_desc">తెలంగాణ రైతులు మరియు FPOల నుండి నేరుగా తేజ మిర్చి, తెలంగాణ సోనా వరి, పత్తి, పసుపు లాట్లను వేలం ద్వారా సేకరించండి. మధ్యవర్తి కమీషన్లు లేవు.</p>
               </div>
               <div class="banner-actions">
-                <button class="btn btn-outline btn-sm" onclick="renderBuyerLots()">🔄 రిఫ్రెష్ లాట్లు</button>
+                <button class="btn btn-outline btn-sm" onclick="renderBuyerLots()" data-i18n="btn_refresh_orders">🔄 రిఫ్రెష్ లాట్లు</button>
               </div>
             </div>
 
@@ -177,22 +177,22 @@
             <div class="discovery-filter-bar">
               <div class="filter-search-input">
                 <span>🔍</span>
-                <input type="text" id="buyerSearchInput" placeholder="పంట పేరు, ఊరు లేదా రైతు లాట్ ఐడీతో వెతకండి..." oninput="filterBuyerLots()">
+                <input type="text" id="buyerSearchInput" placeholder="పంట పేరు, ఊరు లేదా రైతు లాట్ ఐడీతో వెతకండి..." data-i18n-placeholder="buyer_search_placeholder" oninput="filterBuyerLots()">
               </div>
 
               <div class="filter-dropdown-group">
                 <select id="buyerCropFilter" onchange="filterBuyerLots()">
-                  <option value="all">అన్ని పంటలు (All Crops)</option>
-                  <option value="teja_chilli">తేజ మిర్చి (Teja Chilli)</option>
-                  <option value="paddy">తెలంగాణ సోనా వరి (Paddy)</option>
-                  <option value="cotton">పత్తి (Raw Cotton)</option>
-                  <option value="turmeric">నిజామాబాద్ పసుపు (Turmeric)</option>
+                  <option value="all" data-i18n="crop_all">అన్ని పంటలు</option>
+                  <option value="teja_chilli" data-i18n="crop_teja_chilli">తేజ మిర్చి</option>
+                  <option value="paddy" data-i18n="crop_paddy">తెలంగాణ సోనా వరి</option>
+                  <option value="cotton" data-i18n="crop_cotton">పత్తి</option>
+                  <option value="turmeric" data-i18n="crop_turmeric">నిజామాబాద్ పసుపు</option>
                 </select>
 
                 <select id="buyerGradeFilter" onchange="filterBuyerLots()">
-                  <option value="all">అన్ని గ్రేడ్‌లు (All Grades)</option>
-                  <option value="A">గ్రేడ్ A (ప్రీమియం ఎగుమతి రకం)</option>
-                  <option value="B">గ్రేడ్ B (ఫెయిర్ యావరేజ్)</option>
+                  <option value="all" data-i18n="grade_all">అన్ని గ్రేడ్‌లు</option>
+                  <option value="A" data-i18n="grade_a_short">గ్రేడ్ A (ప్రీమియం)</option>
+                  <option value="B" data-i18n="grade_b_short">గ్రేడ్ B (స్టాండర్డ్)</option>
                 </select>
               </div>
             </div>
@@ -207,11 +207,11 @@
           <div id="paneMyBids" class="tab-pane">
             <div class="section-banner">
               <div>
-                <h2 class="section-title">మీరు వేసిన బిడ్‌లు & సంప్రదింపులు (Active Bids & Negotiations)</h2>
-                <p class="section-desc">మీరు వివిధ రైతుల లాట్లపై వేసిన బిడ్‌ల స్థితిని ఇక్కడ గమనించండి. ఎవరైనా ఎక్కువ బిడ్ వేస్తే వెంటనే ధర పెంచండి లేదా రైతు కౌంటర్ ఆఫర్‌ను ఆమోదించండి.</p>
+                <h2 class="section-title" data-i18n="buyer_bids_banner">మీరు వేసిన బిడ్‌లు & సంప్రదింపులు</h2>
+                <p class="section-desc" data-i18n="buyer_bids_desc">మీరు వివిధ రైతుల లాట్లపై వేసిన బిడ్‌ల స్థితిని ఇక్కడ గమనించండి. ఎవరైనా ఎక్కువ బిడ్ వేస్తే వెంటనే ధర పెంచండి లేదా రైతు కౌంటర్ ఆఫర్‌ను ఆమోదించండి.</p>
               </div>
               <div class="banner-actions">
-                <button class="btn btn-outline btn-sm" onclick="renderMyBids()">🔄 రిఫ్రెష్ బిడ్‌లు</button>
+                <button class="btn btn-outline btn-sm" onclick="renderMyBids()" data-i18n="btn_refresh_bids">🔄 రిఫ్రెష్ బిడ్‌లు</button>
               </div>
             </div>
 
@@ -224,11 +224,11 @@
           <div id="paneProcurementOrders" class="tab-pane">
             <div class="section-banner">
               <div>
-                <h2 class="section-title">సేకరణ ఆర్డర్లు & లారీ రవాణా ట్రాకర్ (Procurement Pipeline)</h2>
-                <p class="section-desc">ఖరారైన డీల్స్ కోసం సొంత లారీని కేటాయించండి. పొలం వద్ద డ్రైవర్ సరుకును తూకం వేసిన తర్వాత రైతు ఇచ్చే OTPని నమోదు చేసి తక్షణమే పేమెంట్ విడుదల చేయండి.</p>
+                <h2 class="section-title" data-i18n="buyer_orders_banner">సేకరణ ఆర్డర్లు & లారీ రవాణా ట్రాకర్</h2>
+                <p class="section-desc" data-i18n="buyer_orders_desc">ఖరారైన డీల్స్ కోసం సొంత లారీని కేటాయించండి. పొలం వద్ద డ్రైవర్ సరుకును తూకం వేసిన తర్వాత రైతు ఇచ్చే OTPని నమోదు చేసి తక్షణమే పేమెంట్ విడుదల చేయండి.</p>
               </div>
               <div class="banner-actions">
-                <button class="btn btn-outline btn-sm" onclick="renderProcurementOrders()">🔄 రిఫ్రెష్ ఆర్డర్లు</button>
+                <button class="btn btn-outline btn-sm" onclick="renderProcurementOrders()" data-i18n="btn_refresh_orders">🔄 రిఫ్రెష్ ఆర్డర్లు</button>
               </div>
             </div>
 
@@ -241,8 +241,8 @@
           <div id="panePostRfq" class="tab-pane">
             <div class="section-banner">
               <div>
-                <h2 class="section-title">బల్క్ కొనుగోలు టెండర్ నమోదు చేయండి (Post Buy RFQ)</h2>
-                <p class="section-desc">మీ ప్రాసెసింగ్ యూనిట్ లేదా మిల్లుకు అవసరమైన భారీ పరిమాణాలను డిమాండ్ పోస్ట్‌గా పెట్టండి. తెలంగాణలోని 100+ రైతు ఉత్పత్తిదారుల సంఘాలు (FPOs) నేరుగా స్పందిస్తాయి.</p>
+                <h2 class="section-title" data-i18n="buyer_rfq_banner">బల్క్ కొనుగోలు టెండర్ నమోదు చేయండి</h2>
+                <p class="section-desc" data-i18n="buyer_rfq_desc">మీ ప్రాసెసింగ్ యూనిట్ లేదా మిల్లుకు అవసరమైన భారీ పరిమాణాలను డిమాండ్ పోస్ట్‌గా పెట్టండి. తెలంగాణలోని 100+ రైతు ఉత్పత్తిదారుల సంఘాలు నేరుగా స్పందిస్తాయి.</p>
               </div>
             </div>
 
@@ -251,42 +251,42 @@
               <div class="lot-form-card">
                 <form id="postRfqForm" onsubmit="handlePostRfqSubmit(event)">
                   <div class="form-group">
-                    <label for="rfqCropSelect">కావాల్సిన పంట (Crop Required) *</label>
+                    <label for="rfqCropSelect" data-i18n="lbl_rfq_crop">కావాల్సిన పంట *</label>
                     <select id="rfqCropSelect" required>
-                      <option value="teja_chilli">తేజ మిర్చి (Teja Chilli)</option>
-                      <option value="paddy">తెలంగాణ సోనా వరి (Telangana Sona Paddy)</option>
-                      <option value="cotton">పత్తి (Raw Cotton)</option>
-                      <option value="turmeric">నిజామాబాద్ పసుపు (Turmeric)</option>
-                      <option value="maize">మొక్కజొన్న (Maize)</option>
+                      <option value="teja_chilli" data-i18n="crop_teja_chilli">తేజ మిర్చి</option>
+                      <option value="paddy" data-i18n="crop_paddy">తెలంగాణ సోనా వరి</option>
+                      <option value="cotton" data-i18n="crop_cotton">పత్తి</option>
+                      <option value="turmeric" data-i18n="crop_turmeric">నిజామాబాద్ పసుపు</option>
+                      <option value="maize" data-i18n="crop_maize">మొక్కజొన్న</option>
                     </select>
                   </div>
 
                   <div class="form-row">
                     <div class="form-group">
-                      <label for="rfqQuantity">కావాల్సిన మొత్తం పరిమాణం (క్వింటాళ్లు) *</label>
+                      <label for="rfqQuantity" data-i18n="lbl_rfq_qty">కావాల్సిన మొత్తం పరిమాణం (క్వింటాళ్లు) *</label>
                       <input type="number" id="rfqQuantity" value="500" min="50" step="10" required>
                     </div>
                     <div class="form-group">
-                      <label for="rfqTargetPrice">మీరు ఇచ్చే గరిష్ట కొనుగోలు ధర (రూ/క్వింటాల్) *</label>
+                      <label for="rfqTargetPrice" data-i18n="lbl_rfq_price">మీరు ఇచ్చే గరిష్ట కొనుగోలు ధర (రూ/క్వింటాల్) *</label>
                       <input type="number" id="rfqTargetPrice" value="21800" step="50" required>
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label for="rfqDeliveryLocation">డెలివరీ లేదా సేకరణ ప్రదేశం (Delivery Hub) *</label>
+                    <label for="rfqDeliveryLocation" data-i18n="lbl_rfq_location">డెలివరీ లేదా సేకరణ ప్రదేశం *</label>
                     <input type="text" id="rfqDeliveryLocation" value="వరంగల్ ఎనుమాముల ప్రాసెసింగ్ యూనిట్" required>
                   </div>
 
                   <div class="form-row">
                     <div class="form-group">
-                      <label for="rfqGrade">నాణ్యతా నిబంధన (Minimum Grade) *</label>
+                      <label for="rfqGrade" data-i18n="lbl_grade">నాణ్యతా నిబంధన *</label>
                       <select id="rfqGrade">
-                        <option value="A">గ్రేడ్ A (తేమ 10% లోపు)</option>
-                        <option value="B">గ్రేడ్ B (ఫెయిర్ యావరేజ్)</option>
+                        <option value="A" data-i18n="grade_a_short">గ్రేడ్ A (ప్రీమియం)</option>
+                        <option value="B" data-i18n="grade_b_short">గ్రేడ్ B (స్టాండర్డ్)</option>
                       </select>
                     </div>
                     <div class="form-group">
-                      <label for="rfqDays">టెండర్ చెల్లుబాటు వ్యవధి *</label>
+                      <label for="rfqDays" data-i18n="lbl_rfq_validity">టెండర్ చెల్లుబాటు వ్యవధి *</label>
                       <select id="rfqDays">
                         <option value="7 Days">7 రోజులు</option>
                         <option value="15 Days">15 రోజులు</option>
@@ -295,15 +295,15 @@
                     </div>
                   </div>
 
-                  <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
-                    📢 బల్క్ టెండర్‌ను పబ్లిష్ చేయండి (Broadcast RFQ)
+                  <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;" data-i18n="btn_publish_rfq">
+                    📢 బల్క్ టెండర్‌ను పబ్లిష్ చేయండి
                   </button>
                 </form>
               </div>
 
               <!-- Right: Active RFQs Board -->
               <div class="lot-guide-sidebar">
-                <h3 class="sidebar-title">📋 ప్రస్తుతం లైవ్‌లో ఉన్న మీ సంస్థ టెండర్లు</h3>
+                <h3 class="sidebar-title" data-i18n="rfq_active_title">📋 ప్రస్తుతం లైవ్‌లో ఉన్న మీ సంస్థ టెండర్లు</h3>
                 <div class="rfq-board-grid" id="buyerRfqsBoard" style="display:flex; flex-direction:column; gap:1rem;">
                   <!-- Rendered via JS -->
                 </div>
@@ -312,11 +312,12 @@
           </div>
 
           <!-- TAB 5: MARKET INTELLIGENCE & ARBITRAGE SAVINGS -->
+          <!-- TAB 5: MARKET INTELLIGENCE & ARBITRAGE SAVINGS -->
           <div id="paneMarketArbitrage" class="tab-pane">
             <div class="section-banner">
               <div>
-                <h2 class="section-title">మార్కెట్ ఇంటెలిజెన్స్ & ప్రత్యక్ష సేకరణ పొదుపు కాలిక్యులేటర్</h2>
-                <p class="section-desc">సాంప్రదాయ వ్యవసాయ మార్కెట్ యార్డులతో పోలిస్తే కిసాన్ కనెక్ట్ ద్వారా నేరుగా రైతుల పొలం వద్ద సేకరించడం వల్ల మీ సంస్థకు ఎంత ఆదా అవుతుందో పరిశీలించండి.</p>
+                <h2 class="section-title" data-i18n="buyer_arbitrage_banner">మార్కెట్ ఇంటెలిజెన్స్ & ప్రత్యక్ష సేకరణ పొదుపు కాలిక్యులేటర్</h2>
+                <p class="section-desc" data-i18n="buyer_arbitrage_desc">సాంప్రదాయ వ్యవసాయ మార్కెట్ యార్డులతో పోలిస్తే కిసాన్ కనెక్ట్ ద్వారా నేరుగా రైతుల పొలం వద్ద సేకరించడం వల్ల మీ సంస్థకు ఎంత ఆదా అవుతుందో పరిశీలించండి.</p>
               </div>
             </div>
 
@@ -324,46 +325,46 @@
             <div class="arbitrage-calculator-box">
               <div class="arbitrage-calc-grid">
                 <div>
-                  <h3 style="font-size:1.25rem; font-weight:800; color:var(--primary-900); margin-bottom:0.75rem;">
+                  <h3 style="font-size:1.25rem; font-weight:800; color:var(--primary-900); margin-bottom:0.75rem;" data-i18n="calc_savings_header">
                     💰 మీ వార్షిక సేకరణ పొదుపును లెక్కించండి
                   </h3>
-                  <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.25rem;">
-                    సాంప్రదాయ మండిల్లో దళారుల కమీషన్ (4-6%), లోడింగ్ వ్యర్థాలు (2%), మరియు అదనపు హ్యాండ్లింగ్ చార్జీలను కిసాన్ కనెక్ట్ పూర్తిగా రద్దు చేస్తుంది.
+                  <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.25rem;" data-i18n="calc_savings_desc">
+                    సాంప్రదాయ మార్కెట్లలో దళారుల కమీషన్ 4-6 శాతం, లోడింగ్ వ్యర్థాలు 2 శాతం, మరియు అదనపు ఖర్చులను కిసాన్ కనెక్ట్ పూర్తిగా రద్దు చేస్తుంది.
                   </p>
 
                   <div class="form-group">
-                    <label for="calcCropSelect">పంట ఎంచుకోండి:</label>
+                    <label for="calcCropSelect" data-i18n="lbl_select_crop">పంట ఎంచుకోండి:</label>
                     <select id="calcCropSelect" onchange="recalculateArbitrage()">
-                      <option value="teja_chilli">తేజ మిర్చి (Teja Chilli - ₹21,650/Q)</option>
-                      <option value="paddy">తెలంగాణ సోనా వరి (Paddy - ₹2,440/Q)</option>
-                      <option value="cotton">పత్తి (Raw Cotton - ₹7,580/Q)</option>
-                      <option value="turmeric">నిజామాబాద్ పసుపు (Turmeric - ₹15,400/Q)</option>
+                      <option value="teja_chilli" data-i18n="crop_teja_chilli">తేజ మిర్చి</option>
+                      <option value="paddy" data-i18n="crop_paddy">తెలంగాణ సోనా వరి</option>
+                      <option value="cotton" data-i18n="crop_cotton">పత్తి</option>
+                      <option value="turmeric" data-i18n="crop_turmeric">నిజామాబాద్ పసుపు</option>
                     </select>
                   </div>
 
                   <div class="form-group">
-                    <label for="calcQuantityInput">మీ కొనుగోలు పరిమాణం (క్వింటాళ్లలో):</label>
+                    <label for="calcQuantityInput" data-i18n="lbl_purchase_qty">మీ కొనుగోలు పరిమాణం (క్వింటాళ్లలో):</label>
                     <input type="number" id="calcQuantityInput" value="250" min="10" step="10" oninput="recalculateArbitrage()">
                   </div>
                 </div>
 
                 <div class="savings-highlight-card">
-                  <span style="font-size:0.85rem; color:var(--text-muted); display:block;">ఈ డీల్‌లో మీ సంస్థకు లభించే నికర పొదుపు:</span>
+                  <span style="font-size:0.85rem; color:var(--text-muted); display:block;" data-i18n="lbl_net_savings_card">ఈ డీల్‌లో మీ సంస్థకు లభించే నికర పొదుపు:</span>
                   <div class="savings-big-val" id="calcSavingsAmount">₹2,70,625</div>
-                  <span class="demand-tag high" style="margin-top:0.5rem; display:inline-block;">సాంప్రదాయ మండి కమీషన్ల కంటే 9.2% ఆదా</span>
+                  <span class="demand-tag high" style="margin-top:0.5rem; display:inline-block;" data-i18n="lbl_savings_percent_tag">సాంప్రదాయ మండి కమీషన్ల కంటే 9.2% ఆదా</span>
 
                   <div style="margin-top:1.25rem; text-align:left; font-size:0.82rem; border-top:1px dashed var(--border-card); padding-top:0.75rem;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
-                      <span>రద్దయిన దళారి కమీషన్ (5%):</span>
+                      <span data-i18n="lbl_commission_saved">రద్దయిన దళారి కమీషన్ (5%):</span>
                       <strong id="calcCommissionSaved">₹2,70,625</strong>
                     </div>
                     <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
-                      <span>పొలం వద్ద ప్రత్యక్ష తూకం రక్షణ:</span>
-                      <strong style="color:var(--accent-green);">100% పారదర్శకత</strong>
+                      <span data-i18n="lbl_transparency_guarantee">పొలం వద్ద ప్రత్యక్ష తూకం రక్షణ:</span>
+                      <strong style="color:var(--accent-green);" data-i18n="lbl_transparency_100">100% పారదర్శకత</strong>
                     </div>
                     <div style="display:flex; justify-content:space-between;">
-                      <span>సేవ్ అయిన సమయం:</span>
-                      <strong>24 గంటలు</strong>
+                      <span data-i18n="lbl_time_saved">సేవ్ అయిన సమయం:</span>
+                      <strong data-i18n="lbl_hours_24">24 గంటలు</strong>
                     </div>
                   </div>
                 </div>
@@ -384,11 +385,11 @@
   <div class="modal-backdrop" id="placeBidModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closePlaceBidModal()">&times;</button>
-      <h3 class="modal-title">రైతు పంటపై బిడ్ వేయండి (Place Live Bid)</h3>
+      <h3 class="modal-title" data-i18n="place_bid_modal_title">రైతు పంటపై బిడ్ వేయండి</h3>
       <p class="modal-subtitle" id="placeBidSubtitle">రైతు రిజర్వ్ ధర: ₹21,000 / క్వింటాల్. ప్రస్తుత గరిష్ట బిడ్: ₹21,650</p>
 
       <div class="counter-input-box" style="margin-bottom:1.25rem;">
-        <label for="bidRateInput"><strong>మీ బిడ్ ధర (రూపాయలు / క్వింటాల్) *</strong></label>
+        <label for="bidRateInput"><strong><span data-i18n="bid_rate_label">మీ బిడ్ ధర (రూపాయలు / క్వింటాల్) *</span></strong></label>
         <div class="currency-input-wrapper">
           <span class="currency-symbol">₹</span>
           <input type="number" id="bidRateInput" value="21700" step="50" oninput="updateBidModalValuation()" required>
@@ -401,30 +402,30 @@
 
       <div style="background:var(--bg-subtle); padding:1rem; border-radius:var(--radius-md); margin-bottom:1.25rem;">
         <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
-          <span>మొత్తం పరిమాణం:</span>
+          <span data-i18n="lot_qty_label">మొత్తం పరిమాణం:</span>
           <strong id="modalLotQty">40 క్వింటాళ్లు</strong>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:0.95rem;">
-          <span>మొత్తం డీల్ విలువ (Escrow Lock):</span>
+          <span data-i18n="total_deal_valuation">మొత్తం డీల్ విలువ:</span>
           <strong style="color:var(--primary-800); font-size:1.15rem;" id="modalTotalValuation">₹8,68,000</strong>
         </div>
       </div>
 
       <div class="form-group" style="margin-bottom:1.25rem;">
-        <label style="font-weight:700; display:block; margin-bottom:0.5rem;">రవాణా వెసులుబాటు (Logistics Preference) *</label>
+        <label style="font-weight:700; display:block; margin-bottom:0.5rem;" data-i18n="bid_logistics_mode">రవాణా వెసులుబాటు *</label>
         <label class="custom-checkbox-row" style="margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
           <input type="radio" name="modalLogistics" value="buyer_vehicle" checked>
-          <span>🚛 మా సంస్థే సొంత లారీని పంపుతుంది (రైతుకు ఖర్చు ₹0 - రైతు ప్రాధాన్యత)</span>
+          <span data-i18n="opt_buyer_vehicle">🚛 మా సంస్థే సొంత లారీని పంపుతుంది (రైతుకు ఖర్చు ₹0)</span>
         </label>
         <label class="custom-checkbox-row" style="display:flex; align-items:center; gap:0.5rem;">
           <input type="radio" name="modalLogistics" value="platform_transport">
-          <span>🚚 కిసాన్ కనెక్ట్ ప్లాట్‌ఫామ్ రవాణాదారుడు కావాలి</span>
+          <span data-i18n="opt_platform_vehicle">🚚 కిసాన్ కనెక్ట్ ప్లాట్‌ఫామ్ రవాణాదారుడు కావాలి</span>
         </label>
       </div>
 
       <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
-        <button class="btn btn-secondary" onclick="closePlaceBidModal()">రద్దు చేయండి (Cancel)</button>
-        <button class="btn btn-primary" onclick="submitLiveBid()">బిడ్ సమర్పించండి (Confirm Bid) →</button>
+        <button class="btn btn-secondary" onclick="closePlaceBidModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
+        <button class="btn btn-primary" onclick="submitLiveBid()" data-i18n="btn_confirm_bid">బిడ్ సమర్పించండి →</button>
       </div>
     </div>
   </div>
@@ -435,34 +436,34 @@
   <div class="modal-backdrop" id="assignTruckModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeAssignTruckModal()">&times;</button>
-      <h3 class="modal-title">లారీ & డ్రైవర్ వివరాలు కేటాయించండి (Dispatch Logistics)</h3>
-      <p class="modal-subtitle" id="assignTruckSubtitle">ఆర్డర్ #KC-TS-2026-091 కోసం లారీని పంపించండి</p>
+      <h3 class="modal-title" data-i18n="assign_truck_title">లారీ & డ్రైవర్ వివరాలు కేటాయించండి</h3>
+      <p class="modal-subtitle" id="assignTruckSubtitle">ఆర్డర్ కోసం లారీని పంపించండి</p>
 
       <form onsubmit="handleAssignTruckSubmit(event)">
         <div class="form-group">
-          <label for="truckRegNumber">లారీ / వాహన రిజిస్ట్రేషన్ నంబర్ *</label>
+          <label for="truckRegNumber" data-i18n="lbl_vehicle_reg">లారీ / వాహన రిజిస్ట్రేషన్ నంబర్ *</label>
           <input type="text" id="truckRegNumber" value="TS 03 UB 8192" placeholder="e.g. TS 03 UB 8192" required>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="truckDriverName">డ్రైవర్ పేరు *</label>
-            <input type="text" id="truckDriverName" value="రాము యాదవ్ (Ramu Yadav)" required>
+            <label for="truckDriverName" data-i18n="lbl_driver_name">డ్రైవర్ పేరు *</label>
+            <input type="text" id="truckDriverName" value="రాము యాదవ్" required>
           </div>
           <div class="form-group">
-            <label for="truckDriverPhone">డ్రైవర్ మొబైల్ నంబర్ *</label>
+            <label for="truckDriverPhone" data-i18n="lbl_driver_mobile">డ్రైవర్ మొబైల్ నంబర్ *</label>
             <input type="tel" id="truckDriverPhone" value="9848123990" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="truckEta">పొలం వద్దకు చేరుకునే అంచనా సమయం *</label>
+          <label for="truckEta" data-i18n="lbl_truck_eta">పొలం వద్దకు చేరుకునే అంచనా సమయం *</label>
           <input type="text" id="truckEta" value="రేపు ఉదయం 10:30 గంటలకు" required>
         </div>
 
         <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end; margin-top:1.5rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeAssignTruckModal()">రద్దు చేయండి</button>
-          <button type="submit" class="btn btn-primary">🚛 లారీని డిస్పాచ్ చేయండి →</button>
+          <button type="button" class="btn btn-secondary" onclick="closeAssignTruckModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" data-i18n="btn_dispatch_truck">🚛 లారీని డిస్పాచ్ చేయండి →</button>
         </div>
       </form>
     </div>
@@ -478,9 +479,9 @@
       <div class="invoice-container" id="printableInvoiceArea">
         <div class="invoice-header-row">
           <div>
-            <h2 style="font-size:1.35rem; font-weight:800; color:var(--primary-900);">🌾 కిసాన్ కనెక్ట్ (Kissan Connect)</h2>
-            <small>తెలంగాణ వ్యవసాయ మార్కెట్ అధికారిక వేదిక • SIH-26132</small>
-            <p style="font-size:0.78rem; margin-top:0.35rem;">APMC Mandi Direct Farm-Gate Procurement Invoice</p>
+            <h2 style="font-size:1.35rem; font-weight:800; color:var(--primary-900);" data-i18n="hero_title">🌾 కిసాన్ కనెక్ట్</h2>
+            <small data-i18n="tagline_gov">తెలంగాణ వ్యవసాయ మార్కెట్ అధికారిక వేదిక • SIH-26132</small>
+            <p style="font-size:0.78rem; margin-top:0.35rem;" data-i18n="inv_title">రైతు పొలం వద్ద డైరెక్ట్ APMC ఇన్వాయిస్</p>
           </div>
           <div style="text-align:right;">
             <strong style="font-size:1.1rem;" id="invNumber">INV-TS-2026-901</strong>
@@ -490,26 +491,26 @@
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; font-size:0.82rem; margin-bottom:1.25rem;">
           <div>
-            <strong style="color:var(--text-muted); display:block;">కొనుగోలుదారు (Buyer):</strong>
+            <strong style="color:var(--text-muted); display:block;" data-i18n="buyer_lbl">కొనుగోలుదారు:</strong>
             <strong id="invBuyerName">ITC Agri Business Hub</strong><br>
             <span id="invBuyerGst">GSTIN: 36AAACI1234F1Z8</span><br>
-            <span>సికింద్రాబాద్ / వరంగల్ హబ్</span>
+            <span id="invBuyerHub">సికింద్రాబాద్ / వరంగల్ హబ్</span>
           </div>
           <div>
-            <strong style="color:var(--text-muted); display:block;">రైతు వివరాలు (Farmer):</strong>
-            <strong id="invFarmerName">మల్లారెడ్డి (Malla Reddy)</strong><br>
-            <span>జనగామ మండలం, వరంగల్ జిల్లా</span><br>
-            <span>రైతుబంధు ID: TS-RB-2024-91024</span>
+            <strong style="color:var(--text-muted); display:block;" data-i18n="buyer_farmer_lbl">రైతు వివరాలు:</strong>
+            <strong id="invFarmerName">మల్లారెడ్డి</strong><br>
+            <span id="invFarmerLoc">జనగామ మండలం, వరంగల్ జిల్లా</span><br>
+            <span id="invFarmerRythu">రైతుబంధు ID: TS-RB-2024-91024</span>
           </div>
         </div>
 
         <table class="invoice-table">
           <thead>
             <tr>
-              <th>వివరణ (Commodity)</th>
-              <th>పరిమాణం</th>
-              <th>ధర / క్వింటాల్</th>
-              <th>మొత్తం</th>
+              <th data-i18n="inv_commodity_col">వివరణ</th>
+              <th data-i18n="inv_qty_col">పరిమాణం</th>
+              <th data-i18n="inv_rate_col">ధర / క్వింటాల్</th>
+              <th data-i18n="inv_total_col">మొత్తం</th>
             </tr>
           </thead>
           <tbody id="invTableBody">
@@ -522,28 +523,28 @@
           </tbody>
           <tfoot>
             <tr>
-              <th colspan="3" style="text-align:right;">మొత్తం సరుకు విలువ:</th>
+              <th colspan="3" style="text-align:right;" data-i18n="inv_subtotal">మొత్తం సరుకు విలువ:</th>
               <th id="invTotalValue">₹8,66,000</th>
             </tr>
             <tr>
-              <th colspan="3" style="text-align:right;">తెలంగాణ APMC సెస్ (₹0 - డైరెక్ట్ ఫార్మ్ ఎగ్జెంప్షన్):</th>
+              <th colspan="3" style="text-align:right;" data-i18n="inv_apmc_cess">తెలంగాణ APMC సెస్ (₹0 - డైరెక్ట్ ఫార్మ్ ఎగ్జెంప్షన్):</th>
               <th>₹0.00</th>
             </tr>
             <tr>
-              <th colspan="3" style="text-align:right; font-size:1.05rem;">రైతుకు ఎస్క్రో ద్వారా చెల్లించిన నికర మొత్తం:</th>
+              <th colspan="3" style="text-align:right; font-size:1.05rem;" data-i18n="inv_net_payout">రైతుకు ఎస్క్రో ద్వారా చెల్లించిన నికర మొత్తం:</th>
               <th style="font-size:1.05rem; color:var(--primary-800);" id="invNetPayout">₹8,66,000</th>
             </tr>
           </tfoot>
         </table>
 
-        <div style="font-size:0.75rem; color:#64748B; border-top:1px solid #E2E8F0; padding-top:0.75rem;">
+        <div style="font-size:0.75rem; color:#64748B; border-top:1px solid #E2E8F0; padding-top:0.75rem;" data-i18n="inv_footer_note">
           ఈ ఇన్వాయిస్ తెలంగాణ వ్యవసాయ ఉత్పత్తుల చట్టం క్రింద పొలం వద్ద OTP ధృవీకరణ ద్వారా ఎస్క్రో రిలీజ్ చేయబడినది.
         </div>
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
-        <button class="btn btn-secondary" onclick="closeBuyerInvoiceModal()">మూసివేయండి (Close)</button>
-        <button class="btn btn-primary" onclick="window.print()">🖨️ ప్రింట్ / PDF డౌన్‌లోడ్</button>
+        <button class="btn btn-secondary" onclick="closeBuyerInvoiceModal()" data-i18n="btn_close">మూసివేయండి</button>
+        <button class="btn btn-primary" onclick="window.print()" data-i18n="btn_print_pdf">🖨️ ప్రింట్ / PDF డౌన్‌లోడ్</button>
       </div>
     </div>
   </div>

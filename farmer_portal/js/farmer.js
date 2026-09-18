@@ -351,28 +351,28 @@ function renderBiddingArena() {
               <span class="buyer-name">${bid.buyerName}</span>
               <span class="buyer-rating-badge">${bid.buyerRating || '4.8 ★'}</span>
             </div>
-            <span class="buyer-location">📍 ${bid.buyerLocation || 'తెలంగాణ'}</span>
+            <span class="buyer-location">📍 ${bid.buyerLocation || (currentLang === 'te' ? 'తెలంగాణ' : 'Telangana')}</span>
           </div>
 
           <div>
             <span class="bid-logistics-badge ${isBuyerVehicle ? 'buyer-vehicle' : 'platform-transporter'}">
-              ${logisticsText || '🚛 కొనుగోలుదారు రవాణా'}
+              ${logisticsText || (currentLang === 'te' ? '🚛 కొనుగోలుదారు రవాణా' : '🚛 Buyer Vehicle')}
             </span>
           </div>
 
           <div class="bid-pricing-summary">
-            <span class="bid-rate-per-q">₹${Number(bid.pricePerQ).toLocaleString('en-IN')} <small style="font-size:0.75rem; font-weight:600; color:var(--text-light);">/ క్వింటాల్</small></span>
-            <span class="bid-total-payout">మొత్తం: <strong>₹${totalPayout.toLocaleString('en-IN')}</strong></span>
+            <span class="bid-rate-per-q">₹${Number(bid.pricePerQ).toLocaleString('en-IN')} <small style="font-size:0.75rem; font-weight:600; color:var(--text-light);">/ ${currentLang === 'te' ? 'క్వింటాల్' : 'Quintal'}</small></span>
+            <span class="bid-total-payout">${currentLang === 'te' ? 'మొత్తం:' : 'Total:'} <strong>₹${totalPayout.toLocaleString('en-IN')}</strong></span>
           </div>
 
           <div class="bid-action-buttons">
-            <button class="btn btn-primary btn-sm" onclick="acceptBuyerBid('${lot.id}', '${bid.bidId}')" title="రైతు ఈ బిడ్‌ను ఆమోదిస్తారు">
+            <button class="btn btn-primary btn-sm" onclick="acceptBuyerBid('${lot.id}', '${bid.bidId}')" title="${currentLang === 'te' ? 'రైతు ఈ బిడ్‌ను ఆమోదిస్తారు' : 'Accept this bid'}">
               ✓ ${currentLang === 'te' ? 'ఆమోదించు' : 'Accept'}
             </button>
             <button class="btn btn-secondary btn-sm" onclick="openCounterModal('${lot.id}', '${bid.bidId}', ${bid.pricePerQ})">
               💬 ${currentLang === 'te' ? 'కౌంటర్' : 'Counter'}
             </button>
-            <button class="btn btn-outline btn-sm" onclick="rejectBuyerBid('${lot.id}', '${bid.bidId}')" title="తిరస్కరించు">
+            <button class="btn btn-outline btn-sm" onclick="rejectBuyerBid('${lot.id}', '${bid.bidId}')" title="${currentLang === 'te' ? 'తిరస్కరించు' : 'Reject'}">
               ✕
             </button>
           </div>
@@ -389,32 +389,32 @@ function renderBiddingArena() {
               <img src="${lot.image}" alt="${cropTitle}" onerror="this.src='../shared/assets/crops/teja_chilli.jpg'">
               <div class="lot-status-tag">
                 <span class="live-dot" style="background:#fff; width:6px; height:6px;"></span>
-                <span>లైవ్ బిడ్డింగ్ వార్</span>
+                <span>${currentLang === 'te' ? 'లైవ్ బిడ్డింగ్ వార్' : 'Live Bidding War'}</span>
               </div>
             </div>
 
             <div class="lot-specs-summary">
               <div class="lot-spec-item">
-                <span>పరిమాణం (Qty):</span>
-                <strong>${lot.quantity} క్వింటాళ్లు</strong>
+                <span>${currentLang === 'te' ? 'పరిమాణం (Qty):' : 'Quantity:'}</span>
+                <strong>${lot.quantity} ${currentLang === 'te' ? 'క్వింటాళ్లు' : 'Quintals'}</strong>
               </div>
               <div class="lot-spec-item">
-                <span>గ్రేడ్ / నాణ్యత:</span>
-                <strong>గ్రేడ్ ${lot.grade} (తేమ ${lot.moisture || '10%'})</strong>
+                <span>${currentLang === 'te' ? 'గ్రేడ్ / నాణ్యత:' : 'Grade / Quality:'}</span>
+                <strong>${currentLang === 'te' ? 'గ్రేడ్' : 'Grade'} ${lot.grade} (${currentLang === 'te' ? 'తేమ' : 'Moisture'} ${lot.moisture || '10%'})</strong>
               </div>
               <div class="lot-spec-item">
-                <span>ప్రదేశం:</span>
+                <span>${currentLang === 'te' ? 'ప్రదేశం:' : 'Location:'}</span>
                 <strong>${location}</strong>
               </div>
               <div class="lot-spec-item">
-                <span>నిల్వ:</span>
+                <span>${currentLang === 'te' ? 'నిల్వ:' : 'Storage:'}</span>
                 <strong>${storage}</strong>
               </div>
             </div>
           </div>
 
           <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-card); font-size: 0.78rem; color: var(--text-muted);">
-            రైతు లాట్ ఐడీ: <strong>${lot.id}</strong>
+            ${currentLang === 'te' ? 'రైతు లాట్ ఐడీ:' : 'Lot ID:'} <strong>${lot.id}</strong>
           </div>
         </div>
 
@@ -428,11 +428,11 @@ function renderBiddingArena() {
 
             <div class="lot-financials-group">
               <div class="financial-col">
-                <div class="fin-label">మీ రిజర్వ్ ధర (Ask)</div>
+                <div class="fin-label">${currentLang === 'te' ? 'మీ రిజర్వ్ ధర (Ask)' : 'Reserve Price (Ask)'}</div>
                 <div class="fin-val">₹${Number(lot.reservePrice).toLocaleString('en-IN')}</div>
               </div>
               <div class="financial-col">
-                <div class="fin-label">ప్రస్తుత గరిష్ట బిడ్ (Top Bid)</div>
+                <div class="fin-label">${currentLang === 'te' ? 'ప్రస్తుత గరిష్ట బిడ్ (Top Bid)' : 'Current Top Bid'}</div>
                 <div class="fin-val highlight">₹${Number(lot.highestBid).toLocaleString('en-IN')}</div>
               </div>
             </div>
@@ -440,11 +440,11 @@ function renderBiddingArena() {
 
           <div class="bids-table-header">
             <div class="bids-table-title">
-              <span>వచ్చిన బిడ్‌లు (${(lot.bids || []).length})</span>
-              <small style="color: var(--text-muted); font-weight: normal;">• రైతుకు నచ్చిన బిడ్‌ను మాత్రమే ఎంచుకునే పూర్తి స్వేచ్ఛ ఉంది</small>
+              <span>${currentLang === 'te' ? 'వచ్చిన బిడ్‌లు' : 'Incoming Bids'} (${(lot.bids || []).length})</span>
+              <small style="color: var(--text-muted); font-weight: normal;">• ${currentLang === 'te' ? 'రైతుకు నచ్చిన బిడ్‌ను మాత్రమే ఎంచుకునే పూర్తి స్వేచ్ఛ ఉంది' : 'Farmer holds full autonomy to accept any bid'}</small>
             </div>
             <div class="auction-timer-badge">
-              ⏳ ముగింపు: <strong id="timer-${lot.id}">${lot.auctionEndsIn || '12h : 00m : 00s'}</strong>
+              ⏳ ${currentLang === 'te' ? 'ముగింపు:' : 'Ends In:'} <strong id="timer-${lot.id}">${lot.auctionEndsIn || '12h : 00m : 00s'}</strong>
             </div>
           </div>
 
@@ -480,10 +480,10 @@ function acceptBuyerBid(lotId, bidId) {
   if (bNameEl) bNameEl.textContent = bid.buyerName;
 
   const cqEl = document.getElementById('acceptModalCropQty');
-  if (cqEl) cqEl.textContent = `${cropTitle} (${lot.quantity} క్వింటాళ్లు)`;
+  if (cqEl) cqEl.textContent = currentLang === 'te' ? `${cropTitle} (${lot.quantity} క్వింటాళ్లు)` : `${cropTitle} (${lot.quantity} Quintals)`;
 
   const pqEl = document.getElementById('acceptModalPriceQ');
-  if (pqEl) pqEl.textContent = `₹${bid.pricePerQ.toLocaleString('en-IN')}/Q`;
+  if (pqEl) pqEl.textContent = currentLang === 'te' ? `₹${bid.pricePerQ.toLocaleString('en-IN')}/క్వింటాల్` : `₹${bid.pricePerQ.toLocaleString('en-IN')}/Q`;
 
   const logEl = document.getElementById('acceptModalLogistics');
   if (logEl) logEl.textContent = currentLang === 'te' ? (bid.logisticsTextTe || '🚛 కొనుగోలుదారు సొంత వాహనం') : (bid.logisticsTextEn || '🚛 Buyer Vehicle');
@@ -692,6 +692,15 @@ function handleCreateLotSubmit(e) {
   if (window.FarmerDB) {
     window.FarmerDB.createLot(newLot);
   }
+
+  // Also persist to SQLite backend
+  try {
+    fetch('/api/lots', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newLot)
+    }).catch(() => {});
+  } catch (e) {}
 
   broadcastMarketEvent({
     type: 'NEW_LOT_CREATED',
@@ -904,40 +913,42 @@ function updateHoldSellAdvice() {
   }
 
   if (comparisonGrid) {
+    const isEn = currentLang === 'en';
     comparisonGrid.innerHTML = `
       <div class="comparison-card">
-        <div class="comparison-card-title">1. ఇప్పుడే మార్కెట్లో అమ్మితే (Sell Today)</div>
-        <div class="comparison-big-rate">₹${data.currentMandiPrice.toLocaleString('en-IN')} <small style="font-size:0.8rem; font-weight:500;">/ క్వింటాల్</small></div>
+        <div class="comparison-card-title">${isEn ? '1. If Sold in Market Today' : '1. ఇప్పుడే మార్కెట్లో అమ్మితే'}</div>
+        <div class="comparison-big-rate">₹${data.currentMandiPrice.toLocaleString('en-IN')} <small style="font-size:0.8rem; font-weight:500;">/ ${isEn ? 'Quintal' : 'క్వింటాల్'}</small></div>
         <ul class="comparison-meta-list">
-          <li>• తక్షణ నగదు లభ్యత</li>
-          <li>• వేర్‌హౌస్ నిల్వ చార్జీలు: ₹0</li>
-          <li>• వాతావరణం లేదా పురుగుల రిస్క్: లేదు</li>
+          <li>• ${isEn ? 'Instant Cash Realization' : 'తక్షణ నగదు లభ్యత'}</li>
+          <li>• ${isEn ? 'Warehouse Storage Cost: ₹0' : 'వేర్‌హౌస్ నిల్వ చార్జీలు: ₹0'}</li>
+          <li>• ${isEn ? 'Spoilage & Pest Risk: None' : 'వాతావరణం లేదా పురుగుల రిస్క్: లేదు'}</li>
         </ul>
       </div>
 
       <div class="comparison-card" style="border-color: var(--primary-600); background: #FAFDFB;">
-        <div class="comparison-card-title">2. TSWC గోదాములో 15 రోజులు నిల్వ చేస్తే (Hold 15 Days)</div>
-        <div class="comparison-big-rate" style="color: var(--primary-700);">₹${data.projected15DayPrice.toLocaleString('en-IN')} <small style="font-size:0.8rem; font-weight:500;">/ క్వింటాల్</small></div>
+        <div class="comparison-card-title">${isEn ? '2. If Held in TSWC Warehouse for 15 Days' : '2. TSWC గోదాములో 15 రోజులు నిల్వ చేస్తే'}</div>
+        <div class="comparison-big-rate" style="color: var(--primary-700);">₹${data.projected15DayPrice.toLocaleString('en-IN')} <small style="font-size:0.8rem; font-weight:500;">/ ${isEn ? 'Quintal' : 'క్వింటాల్'}</small></div>
         <ul class="comparison-meta-list">
-          <li>• అంచనా ధర పెరుగుదల: <strong>+₹${(data.projected15DayPrice - data.currentMandiPrice).toLocaleString('en-IN')}/Q</strong></li>
-          <li>• ప్రభుత్వ గోదాము అద్దె: <strong>-₹${data.tswcRentPerQ}/Q</strong></li>
-          <li style="color: var(--accent-green); font-weight: 700;">• అదనపు నికర లాభం: +₹${data.netGainPerQ.toLocaleString('en-IN')} / క్వింటాల్</li>
+          <li>• ${isEn ? 'Projected Price Appreciation:' : 'అంచనా ధర పెరుగుదల:'} <strong>+₹${(data.projected15DayPrice - data.currentMandiPrice).toLocaleString('en-IN')}/Q</strong></li>
+          <li>• ${isEn ? 'Govt Warehouse Tariff:' : 'ప్రభుత్వ గోదాము అద్దె:'} <strong>-₹${data.tswcRentPerQ}/Q</strong></li>
+          <li style="color: var(--accent-green); font-weight: 700;">• ${isEn ? 'Net Additional Gain:' : 'అదనపు నికర లాభం:'} +₹${data.netGainPerQ.toLocaleString('en-IN')} / ${isEn ? 'Quintal' : 'క్వింటాల్'}</li>
         </ul>
       </div>
     `;
   }
 
   if (warehouseGrid) {
+    const isEn = currentLang === 'en';
     warehouseGrid.innerHTML = data.nearbyTSWC.map(w => `
       <div class="warehouse-card">
         <div class="wh-name">🏛️ ${w.name}</div>
-        <div class="wh-dist">📍 మీ పొలం నుండి దూరం: <strong>${w.dist}</strong></div>
+        <div class="wh-dist">📍 ${isEn ? 'Distance from Farm:' : 'మీ పొలం నుండి దూరం:'} <strong>${w.dist}</strong></div>
         <div class="wh-stat-row">
-          <span>లభ్యత:</span>
+          <span>${isEn ? 'Availability:' : 'లభ్యత:'}</span>
           <strong style="color: #16A34A;">${w.capacity}</strong>
         </div>
         <div class="wh-stat-row">
-          <span>ప్రభుత్వ అద్దె:</span>
+          <span>${isEn ? 'Govt Storage Rate:' : 'ప్రభుత్వ అద్దె:'}</span>
           <strong>${w.rate}</strong>
         </div>
       </div>
@@ -953,74 +964,76 @@ function renderOrdersEscrow() {
   if (!container) return;
 
   const orders = window.FarmerDB ? window.FarmerDB.getOrders() : [];
+  const isEn = currentLang === 'en';
 
   if (orders.length === 0) {
-    container.innerHTML = `<p style="padding: 2rem; text-align: center; color: var(--text-muted);">యాక్టివ్ ఎస్క్రో ఆర్డర్లు ఏవీ లేవు.</p>`;
+    container.innerHTML = `<p style="padding: 2rem; text-align: center; color: var(--text-muted);">${isEn ? 'No active escrow orders found.' : 'యాక్టివ్ ఎస్క్రో ఆర్డర్లు ఏవీ లేవు.'}</p>`;
     return;
   }
 
   container.innerHTML = orders.map(order => {
+    const cropTitle = isEn ? (order.cropNameEn || order.cropNameTe) : order.cropNameTe;
     return `
       <div class="order-card" id="order-${order.orderId}">
         <div class="order-header-row">
           <div class="order-id-group">
-            <h4>${order.cropNameTe}</h4>
-            <span>ఆర్డర్ ఐడీ: <strong>#${order.orderId}</strong> • కొనుగోలుదారు: <strong>${order.buyerName}</strong></span>
+            <h4>${cropTitle}</h4>
+            <span>${isEn ? 'Order ID:' : 'ఆర్డర్ ఐడీ:'} <strong>#${order.orderId}</strong> • ${isEn ? 'Buyer:' : 'కొనుగోలుదారు:'} <strong>${order.buyerName}</strong></span>
           </div>
           <div class="order-escrow-badge">
-            🛡️ ఎస్క్రోలో భద్రంగా ఉంది: ₹${Number(order.totalEscrowAmount).toLocaleString('en-IN')}
+            🛡️ ${isEn ? 'Secured in Escrow:' : 'ఎస్క్రోలో భద్రంగా ఉంది:'} ₹${Number(order.totalEscrowAmount).toLocaleString('en-IN')}
           </div>
         </div>
 
         <div class="milestone-stepper">
           <div class="stepper-step ${order.currentStep >= 1 ? 'done' : ''}">
             <div class="step-circle">${order.currentStep > 1 ? '✓' : '1'}</div>
-            <div class="step-label">1. బిడ్ ఆమోదం (Deal Accepted)</div>
+            <div class="step-label">${isEn ? '1. Deal Accepted' : '1. బిడ్ ఆమోదం'}</div>
           </div>
           <div class="stepper-step ${order.currentStep >= 2 ? (order.currentStep > 2 ? 'done' : 'active') : ''}">
             <div class="step-circle">${order.currentStep > 2 ? '✓' : '2'}</div>
-            <div class="step-label">2. ఎస్క్రో డిపాజిట్ (Funds Locked)</div>
+            <div class="step-label">${isEn ? '2. Funds Locked' : '2. ఎస్క్రో డిపాజిట్'}</div>
           </div>
           <div class="stepper-step ${order.currentStep >= 3 ? (order.currentStep > 3 ? 'done' : 'active') : ''}">
             <div class="step-circle">${order.currentStep > 3 ? '✓' : '3'}</div>
-            <div class="step-label">3. లారీ రాక (Truck En Route)</div>
+            <div class="step-label">${isEn ? '3. Truck En Route' : '3. లారీ రాక'}</div>
           </div>
           <div class="stepper-step ${order.currentStep >= 4 ? (order.currentStep > 4 ? 'done' : 'active') : ''}">
             <div class="step-circle">${order.currentStep > 4 ? '✓' : '4'}</div>
-            <div class="step-label">4. పొలం వద్ద OTP (Farm-Gate OTP)</div>
+            <div class="step-label">${isEn ? '4. Farm-Gate OTP' : '4. పొలం వద్ద OTP'}</div>
           </div>
           <div class="stepper-step ${order.currentStep >= 5 ? 'done' : ''}">
             <div class="step-circle">${order.currentStep >= 5 ? '✓' : '5'}</div>
-            <div class="step-label">5. బ్యాంక్ చెల్లింపు విడుదల (Paid)</div>
+            <div class="step-label">${isEn ? '5. Payment Released' : '5. బ్యాంక్ చెల్లింపు విడుదల'}</div>
           </div>
         </div>
 
         <div class="order-footer-details">
           <div>
             <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
-              🚛 కేటాయించిన వాహనం: <strong>${order.vehicleNumber || 'వాహనం కేటాయించబడుతోంది'}</strong> • డ్రైవర్: <strong>${order.driverName || 'సమీప డ్రైవర్'}</strong>
+              🚛 ${isEn ? 'Assigned Vehicle:' : 'కేటాయించిన వాహనం:'} <strong>${order.vehicleNumber || (isEn ? 'Vehicle being assigned' : 'వాహనం కేటాయించబడుతోంది')}</strong> • ${isEn ? 'Driver:' : 'డ్రైవర్:'} <strong>${order.driverName || (isEn ? 'Nearby driver' : 'సమీప డ్రైవర్')}</strong>
             </div>
             <div style="font-size: 0.85rem; color: var(--text-muted);">
-              ⏱️ రాక సమయం: <strong>${order.estimatedArrival || 'త్వరలో నిర్ణయించబడుతుంది'}</strong>
+              ⏱️ ${isEn ? 'Estimated Arrival:' : 'రాక సమయం:'} <strong>${order.estimatedArrival || (isEn ? 'To be updated shortly' : 'త్వరలో నిర్ణయించబడుతుంది')}</strong>
             </div>
           </div>
 
           <div class="order-otp-action-box">
             ${order.currentStep < 5 ? `
               <div>
-                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">పొలం వద్ద డ్రైవర్‌కు చూపించాల్సిన OTP:</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">${isEn ? 'Farm-Gate OTP for Driver:' : 'పొలం వద్ద డ్రైవర్‌కు చూపించాల్సిన OTP:'}</span>
                 <span class="farm-otp-pill">${order.farmGateOtp}</span>
               </div>
               <button class="btn btn-primary btn-sm" onclick="openOtpVerifyModal('${order.orderId}', '${order.farmGateOtp}')">
-                🔓 లోడింగ్ ధృవీకరించు (Verify OTP)
+                🔓 ${isEn ? 'Verify Loading & OTP' : 'లోడింగ్ ధృవీకరించండి'}
               </button>
             ` : `
               <div style="display:flex; gap:0.5rem; align-items:center;">
                 <span style="color: var(--accent-green); font-weight: 700; font-size: 0.95rem;">
-                  ✅ చెల్లింపు పూర్తయింది (Paid)
+                  ✅ ${isEn ? 'Payment Completed' : 'చెల్లింపు పూర్తయింది'}
                 </span>
                 <button class="btn btn-outline btn-sm" onclick="openEscrowReceiptModal('${order.orderId}')">
-                  📄 రశీదు చూడండి
+                  📄 ${isEn ? 'View Receipt' : 'రశీదు చూడండి'}
                 </button>
               </div>
             `}
@@ -1050,9 +1063,10 @@ function openOtpVerifyModal(orderId, expectedOtp) {
     input.focus();
   }
 
+  const isEn = (localStorage.getItem('kissan_lang') === 'en');
   const hint = document.getElementById('otpValidationHint');
   if (hint) {
-    hint.textContent = expectedOtp ? `డెమో OTP: ${expectedOtp} (ఆటో-ఫిల్ చేయబడింది)` : '';
+    hint.textContent = expectedOtp ? (isEn ? `Demo OTP: ${expectedOtp} (Auto-filled)` : `డెమో కోడ్: ${expectedOtp} (ఆటో-ఫిల్ చేయబడింది)`) : '';
     hint.style.color = '#166534';
   }
 
@@ -1073,11 +1087,12 @@ function closeOtpVerifyModal() {
 function submitOtpVerification() {
   const input = document.getElementById('inputVerifyOtpCode');
   const code = input ? input.value.trim() : '';
+  const isEn = (localStorage.getItem('kissan_lang') === 'en');
 
   if (!code || code.length < 4) {
     const hint = document.getElementById('otpValidationHint');
     if (hint) {
-      hint.textContent = 'దయచేసి 4 అంకెల OTP నమోదు చేయండి.';
+      hint.textContent = isEn ? 'Please enter 4-digit OTP.' : 'దయచేసి 4 అంకెల కోడ్ నమోదు చేయండి.';
       hint.style.color = '#DC2626';
     }
     return;
@@ -1086,7 +1101,7 @@ function submitOtpVerification() {
   if (pendingVerifyExpectedOtp && code !== pendingVerifyExpectedOtp) {
     const hint = document.getElementById('otpValidationHint');
     if (hint) {
-      hint.textContent = `తప్పు OTP. సరైన OTP: ${pendingVerifyExpectedOtp}`;
+      hint.textContent = isEn ? `Incorrect OTP. Correct OTP: ${pendingVerifyExpectedOtp}` : `తప్పు కోడ్. సరైన కోడ్: ${pendingVerifyExpectedOtp}`;
       hint.style.color = '#DC2626';
     }
     return;
@@ -1119,11 +1134,12 @@ function openEscrowReceiptModal(orderId) {
   if (utrEl) utrEl.textContent = `UTR-RBI-202609-${Math.floor(10000 + Math.random() * 90000)}`;
 
   if (order) {
+    const isEn = (localStorage.getItem('kissan_lang') === 'en');
     const buyerEl = document.getElementById('receiptBuyerName');
     if (buyerEl) buyerEl.textContent = order.buyerName || 'ITC Agri Business Hub';
 
     const cropEl = document.getElementById('receiptCropTitle');
-    if (cropEl) cropEl.textContent = order.cropNameTe || 'తేజ మిర్చి';
+    if (cropEl) cropEl.textContent = isEn ? (order.cropNameEn || order.cropName || 'Teja Chilli') : (order.cropNameTe || 'తేజ మిర్చి');
 
     const qtyEl = document.getElementById('receiptQty');
     if (qtyEl) qtyEl.textContent = `${order.quantity || 40} Q`;
@@ -1454,97 +1470,117 @@ function runInlineAiQualityScan() {
 const TELANGANA_WEATHER_DATA = {
   warangal: {
     districtTe: 'వరంగల్ & జనగామ పరిసరాలు',
+    districtEn: 'Warangal & Jangaon Region',
     temp: 32,
-    conditionTe: 'పాక్షిక మేఘావృతం (Partly Cloudy)',
+    conditionTe: 'పాక్షిక మేఘావృతం',
+    conditionEn: 'Partly Cloudy',
     icon: '⛅',
     humidity: '64%',
-    rainChance: '25% (తక్కువ)',
-    dryingIndex: '85% (చాలా అనుకూలం)',
+    rainChance: '25%',
+    dryingIndex: '85%',
     alarmActive: true,
     alarmTitleTe: 'అకాల వర్ష హెచ్చరిక: రాబోయే 36 గంటల్లో వర్ష సూచన!',
+    alarmTitleEn: 'Unseasonal Rain Warning: Showers forecast in next 36 hours!',
     alarmDescTe: 'వరంగల్ మరియు జనగామ మండలాల్లో తేలికపాటి నుండి మోస్తరు వర్షాలు మరియు ఈదురుగాలులు వీచే అవకాశం ఉంది. కల్లాలలో ఆరబోసిన తేజ మిర్చి మరియు ధాన్యంపై టార్పాలిన్ పట్టాలు కప్పి భద్రపరచండి.',
+    alarmDescEn: 'Light to moderate showers with gusty winds forecast across Warangal and Jangaon mandals. Cover drying chilli and grain heaps with tarpaulins immediately.',
     forecast: [
-      { dayTe: 'ఈరోజు', icon: '⛅', tempMax: 33, tempMin: 23, rain: '20%', dryingClass: 'good', dryingTe: 'అనుకూలం' },
-      { dayTe: 'రేపు', icon: '🌧️', tempMax: 29, tempMin: 22, rain: '65%', dryingClass: 'poor', dryingTe: 'రిస్క్ - పట్టాలు కప్పండి' },
-      { dayTe: 'శుక్రవారం', icon: '🌦️', tempMax: 30, tempMin: 22, rain: '45%', dryingClass: 'moderate', dryingTe: 'మితం' },
-      { dayTe: 'శనివారం', icon: '☀️', tempMax: 34, tempMin: 24, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'ఆదివారం', icon: '☀️', tempMax: 35, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' }
+      { dayTe: 'ఈరోజు', dayEn: 'Today', icon: '⛅', tempMax: 33, tempMin: 23, rain: '20%', dryingClass: 'good', dryingTe: 'అనుకూలం', dryingEn: 'Favorable' },
+      { dayTe: 'రేపు', dayEn: 'Tomorrow', icon: '🌧️', tempMax: 29, tempMin: 22, rain: '65%', dryingClass: 'poor', dryingTe: 'రిస్క్ - పట్టాలు కప్పండి', dryingEn: 'Risk - Cover Heaps' },
+      { dayTe: 'శుక్రవారం', dayEn: 'Friday', icon: '🌦️', tempMax: 30, tempMin: 22, rain: '45%', dryingClass: 'moderate', dryingTe: 'మితం', dryingEn: 'Moderate' },
+      { dayTe: 'శనివారం', dayEn: 'Saturday', icon: '☀️', tempMax: 34, tempMin: 24, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'ఆదివారం', dayEn: 'Sunday', icon: '☀️', tempMax: 35, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' }
     ]
   },
   khammam: {
-    districtTe: 'ఖమ్మం మిర్చి బెల్ట్ (Khammam APMC)',
+    districtTe: 'ఖమ్మం మిర్చి బెల్ట్',
+    districtEn: 'Khammam Chilli Belt',
     temp: 34,
-    conditionTe: 'ప్రకాశవంతమైన ఎండ (Sunny & Hot)',
+    conditionTe: 'ప్రకాశవంతమైన ఎండ',
+    conditionEn: 'Sunny & Hot',
     icon: '☀️',
     humidity: '52%',
-    rainChance: '10% (అతి తక్కువ)',
-    dryingIndex: '95% (అత్యుత్తమ ఎండ)',
+    rainChance: '10%',
+    dryingIndex: '95%',
     alarmActive: false,
     alarmTitleTe: 'వాతావరణం అనుకూలం: అకాల వర్షాల రిస్క్ లేదు',
+    alarmTitleEn: 'Optimal Weather: Zero rain risk for drying crops',
     alarmDescTe: 'ఖమ్మం మార్కెట్ యార్డ్ మరియు చుట్టుపక్కల మండలాల్లో పూర్తి ఎండ ఉంది. మిర్చిని కల్లాలలో ఎలాంటి భయం లేకుండా ఆరబోసుకోవచ్చు.',
+    alarmDescEn: 'Full sunshine across Khammam market yard and surrounding mandals. Chilli can be dried on yards with zero risk.',
     forecast: [
-      { dayTe: 'ఈరోజు', icon: '☀️', tempMax: 35, tempMin: 24, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'రేపు', icon: '☀️', tempMax: 36, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'శుక్రవారం', icon: '⛅', tempMax: 34, tempMin: 23, rain: '15%', dryingClass: 'good', dryingTe: 'అనుకూలం' },
-      { dayTe: 'శనివారం', icon: '⛅', tempMax: 33, tempMin: 23, rain: '20%', dryingClass: 'good', dryingTe: 'అనుకూలం' },
-      { dayTe: 'ఆదివారం', icon: '☀️', tempMax: 35, tempMin: 24, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' }
+      { dayTe: 'ఈరోజు', dayEn: 'Today', icon: '☀️', tempMax: 35, tempMin: 24, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'రేపు', dayEn: 'Tomorrow', icon: '☀️', tempMax: 36, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'శుక్రవారం', dayEn: 'Friday', icon: '⛅', tempMax: 34, tempMin: 23, rain: '15%', dryingClass: 'good', dryingTe: 'అనుకూలం', dryingEn: 'Favorable' },
+      { dayTe: 'శనివారం', dayEn: 'Saturday', icon: '⛅', tempMax: 33, tempMin: 23, rain: '20%', dryingClass: 'good', dryingTe: 'అనుకూలం', dryingEn: 'Favorable' },
+      { dayTe: 'ఆదివారం', dayEn: 'Sunday', icon: '☀️', tempMax: 35, tempMin: 24, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' }
     ]
   },
   nizamabad: {
     districtTe: 'నిజామాబాద్ పసుపు & సోయా హబ్',
+    districtEn: 'Nizamabad Turmeric & Soya Hub',
     temp: 31,
-    conditionTe: 'మేఘావృతం & తేమ (Humid Overcast)',
+    conditionTe: 'మేఘావృతం & తేమ',
+    conditionEn: 'Humid Overcast',
     icon: '☁️',
     humidity: '72%',
-    rainChance: '40% (మితం)',
-    dryingIndex: '60% (మితం)',
+    rainChance: '40%',
+    dryingIndex: '60%',
     alarmActive: true,
     alarmTitleTe: 'తేమ హెచ్చరిక: పసుపు ఉడకబెట్టే ప్రక్రియలో జాగ్రత్తలు',
+    alarmTitleEn: 'Moisture Alert: Exercise caution during turmeric curing',
     alarmDescTe: 'గాలిలో తేమ ఎక్కువగా ఉండటం వల్ల నిజామాబాద్ మరియు ఆర్మూర్ ప్రాంతాల్లో పసుపు ఆరడానికి సాధారణం కంటే ఎక్కువ సమయం పడుతుంది.',
+    alarmDescEn: 'High humidity in Nizamabad and Armoor requires longer sun-drying durations for boiled turmeric bulbs.',
     forecast: [
-      { dayTe: 'ఈరోజు', icon: '☁️', tempMax: 31, tempMin: 22, rain: '35%', dryingClass: 'moderate', dryingTe: 'మితం' },
-      { dayTe: 'రేపు', icon: '🌦️', tempMax: 29, tempMin: 21, rain: '50%', dryingClass: 'poor', dryingTe: 'రిస్క్' },
-      { dayTe: 'శుక్రవారం', icon: '⛅', tempMax: 32, tempMin: 22, rain: '25%', dryingClass: 'good', dryingTe: 'అనుకూలం' },
-      { dayTe: 'శనివారం', icon: '☀️', tempMax: 33, tempMin: 23, rain: '10%', dryingClass: 'good', dryingTe: 'మంచిది' },
-      { dayTe: 'ఆదివారం', icon: '☀️', tempMax: 34, tempMin: 23, rain: '10%', dryingClass: 'good', dryingTe: 'మంచిది' }
+      { dayTe: 'ఈరోజు', dayEn: 'Today', icon: '☁️', tempMax: 31, tempMin: 22, rain: '35%', dryingClass: 'moderate', dryingTe: 'మితం', dryingEn: 'Moderate' },
+      { dayTe: 'రేపు', dayEn: 'Tomorrow', icon: '🌦️', tempMax: 29, tempMin: 21, rain: '50%', dryingClass: 'poor', dryingTe: 'రిస్క్', dryingEn: 'Risk' },
+      { dayTe: 'శుక్రవారం', dayEn: 'Friday', icon: '⛅', tempMax: 32, tempMin: 22, rain: '25%', dryingClass: 'good', dryingTe: 'అనుకూలం', dryingEn: 'Favorable' },
+      { dayTe: 'శనివారం', dayEn: 'Saturday', icon: '☀️', tempMax: 33, tempMin: 23, rain: '10%', dryingClass: 'good', dryingTe: 'మంచిది', dryingEn: 'Good' },
+      { dayTe: 'ఆదివారం', dayEn: 'Sunday', icon: '☀️', tempMax: 34, tempMin: 23, rain: '10%', dryingClass: 'good', dryingTe: 'మంచిది', dryingEn: 'Good' }
     ]
   },
   nalgonda: {
     districtTe: 'మిర్యాలగూడ & సూర్యాపేట వరి ప్రాంతం',
+    districtEn: 'Miryalaguda & Suryapet Paddy Belt',
     temp: 33,
     conditionTe: 'ఎండ & స్థిరమైన గాలి',
+    conditionEn: 'Sunny & Breeze',
     icon: '☀️',
     humidity: '58%',
-    rainChance: '15% (తక్కువ)',
-    dryingIndex: '90% (వరి కోతలకు అనుకూలం)',
+    rainChance: '15%',
+    dryingIndex: '90%',
     alarmActive: false,
     alarmTitleTe: 'వరి కోతలకు అత్యంత అనుకూల వాతావరణం',
+    alarmTitleEn: 'Ideal Weather for Paddy Harvesting & Threshing',
     alarmDescTe: 'మిర్యాలగూడ యార్డులో వరి కోత మరియు కల్లాలు ఆరబెట్టడానికి వాతావరణం చాలా అనుకూలంగా ఉంది. తేమ త్వరగా తగ్గుతుంది.',
+    alarmDescEn: 'Dry breeze in Miryalaguda allows quick moisture reduction down to fair average quality standards.',
     forecast: [
-      { dayTe: 'ఈరోజు', icon: '☀️', tempMax: 34, tempMin: 23, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'రేపు', icon: '☀️', tempMax: 34, tempMin: 23, rain: '15%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'శుక్రవారం', icon: '⛅', tempMax: 33, tempMin: 22, rain: '20%', dryingClass: 'good', dryingTe: 'అనుకూలం' },
-      { dayTe: 'శనివారం', icon: '☀️', tempMax: 35, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'ఆదివారం', icon: '☀️', tempMax: 35, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' }
+      { dayTe: 'ఈరోజు', dayEn: 'Today', icon: '☀️', tempMax: 34, tempMin: 23, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'రేపు', dayEn: 'Tomorrow', icon: '☀️', tempMax: 34, tempMin: 23, rain: '15%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'శుక్రవారం', dayEn: 'Friday', icon: '⛅', tempMax: 33, tempMin: 22, rain: '20%', dryingClass: 'good', dryingTe: 'అనుకూలం', dryingEn: 'Favorable' },
+      { dayTe: 'శనివారం', dayEn: 'Saturday', icon: '☀️', tempMax: 35, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'ఆదివారం', dayEn: 'Sunday', icon: '☀️', tempMax: 35, tempMin: 24, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' }
     ]
   },
   adilabad: {
     districtTe: 'ఆదిలాబాద్ కాటన్ జోన్',
+    districtEn: 'Adilabad Cotton Zone',
     temp: 30,
     conditionTe: 'పొడి వాతావరణం & ఆహ్లాదకరమైన గాలి',
+    conditionEn: 'Dry & Pleasant Breeze',
     icon: '🌤️',
     humidity: '48%',
-    rainChance: '10% (తక్కువ)',
-    dryingIndex: '92% (పత్తికి అత్యుత్తమం)',
+    rainChance: '10%',
+    dryingIndex: '92%',
     alarmActive: false,
     alarmTitleTe: 'పత్తి తీతకు అత్యంత అనుకూలం',
+    alarmTitleEn: 'Ideal Conditions for Cotton Picking',
     alarmDescTe: 'పత్తి కాయల్లో తేమ 8% లోపు ఉండటానికి పొడి వాతావరణం దోహదపడుతుంది. జిన్నింగ్ మిల్లులు ప్రీమియం చెల్లిస్తాయి.',
+    alarmDescEn: 'Dry sunny atmosphere ensures cotton lint moisture remains strictly below 8% for top ginning premium.',
     forecast: [
-      { dayTe: 'ఈరోజు', icon: '🌤️', tempMax: 31, tempMin: 20, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'రేపు', icon: '☀️', tempMax: 32, tempMin: 21, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'శుక్రవారం', icon: '☀️', tempMax: 32, tempMin: 21, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' },
-      { dayTe: 'శనివారం', icon: '⛅', tempMax: 31, tempMin: 20, rain: '15%', dryingClass: 'good', dryingTe: 'అనుకూలం' },
-      { dayTe: 'ఆదివారం', icon: '☀️', tempMax: 33, tempMin: 21, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది' }
+      { dayTe: 'ఈరోజు', dayEn: 'Today', icon: '🌤️', tempMax: 31, tempMin: 20, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'రేపు', dayEn: 'Tomorrow', icon: '☀️', tempMax: 32, tempMin: 21, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'శుక్రవారం', dayEn: 'Friday', icon: '☀️', tempMax: 32, tempMin: 21, rain: '10%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' },
+      { dayTe: 'శనివారం', dayEn: 'Saturday', icon: '⛅', tempMax: 31, tempMin: 20, rain: '15%', dryingClass: 'good', dryingTe: 'అనుకూలం', dryingEn: 'Favorable' },
+      { dayTe: 'ఆదివారం', dayEn: 'Sunday', icon: '☀️', tempMax: 33, tempMin: 21, rain: '5%', dryingClass: 'good', dryingTe: 'చాలా మంచిది', dryingEn: 'Very Good' }
     ]
   }
 };
@@ -1554,22 +1590,22 @@ let tempKycUploads = {};
 window.lastVerifiedIfscData = null;
 
 const WMO_CODE_MAP = {
-  0: { desc: 'స్పష్టమైన ఆకాశం (Clear Sky)', icon: '☀️', drying: 'చాలా మంచిది (95%)', dryClass: 'good' },
-  1: { desc: 'ప్రధానంగా నిర్మలమైన ఆకాశం (Mainly Clear)', icon: '🌤️', drying: 'అనుకూలం (90%)', dryClass: 'good' },
-  2: { desc: 'పాక్షిక మేఘావృతం (Partly Cloudy)', icon: '⛅', drying: 'మంచిది (85%)', dryClass: 'good' },
-  3: { desc: 'పూర్తి మేఘావృతం (Overcast)', icon: '☁️', drying: 'మితం (60%)', dryClass: 'moderate' },
-  45: { desc: 'పొగమంచు (Foggy)', icon: '🌫️', drying: 'మితం (50%)', dryClass: 'moderate' },
-  48: { desc: 'తేమతో కూడిన పొగమంచు (Depositing Rime Fog)', icon: '🌫️', drying: 'తక్కువ (45%)', dryClass: 'poor' },
-  51: { desc: 'తేలికపాటి చిరుజల్లులు (Light Drizzle)', icon: '🌦️', drying: 'రిస్క్ - పట్టాలు కప్పండి (30%)', dryClass: 'poor' },
-  53: { desc: 'మోస్తరు చినుకులు (Moderate Drizzle)', icon: '🌦️', drying: 'రిస్క్ - పట్టాలు కప్పండి (25%)', dryClass: 'poor' },
-  55: { desc: 'దట్టమైన చిరుజల్లులు (Dense Drizzle)', icon: '🌧️', drying: 'రిస్క్ - పట్టాలు కప్పండి (20%)', dryClass: 'poor' },
-  61: { desc: 'తేలికపాటి వర్షం (Slight Rain)', icon: '🌧️', drying: 'ప్రమాదం - కల్లాలు కప్పండి (15%)', dryClass: 'poor' },
-  63: { desc: 'మోస్తరు వర్షం (Moderate Rain)', icon: '🌧️', drying: 'ప్రమాదం - కల్లాలు కప్పండి (10%)', dryClass: 'poor' },
-  65: { desc: 'భారీ వర్షం (Heavy Rain)', icon: '⛈️', drying: 'అత్యంత ప్రమాదం (5%)', dryClass: 'poor' },
-  80: { desc: 'వర్షపు జల్లులు (Rain Showers)', icon: '🌦️', drying: 'రిస్క్ (20%)', dryClass: 'poor' },
-  81: { desc: 'మోస్తరు వర్షపు జల్లులు (Moderate Showers)', icon: '🌧️', drying: 'ప్రమాదం (15%)', dryClass: 'poor' },
-  82: { desc: 'ఈదురుగాలులతో భారీ వర్షం (Violent Showers)', icon: '⛈️', drying: 'అత్యంత ప్రమాదం (0%)', dryClass: 'poor' },
-  95: { desc: 'ఉరుములు, మెరుపులతో కూడిన తుఫాను (Thunderstorm)', icon: '⚡', drying: 'కల్లాలు పూర్తిగా భద్రపరచండి', dryClass: 'poor' }
+  0: { descTe: 'స్పష్టమైన ఆకాశం', descEn: 'Clear Sky', icon: '☀️', dryingTe: 'చాలా మంచిది (95%)', dryingEn: 'Very Good (95%)', dryClass: 'good' },
+  1: { descTe: 'ప్రధానంగా నిర్మలమైన ఆకాశం', descEn: 'Mainly Clear', icon: '🌤️', dryingTe: 'అనుకూలం (90%)', dryingEn: 'Favorable (90%)', dryClass: 'good' },
+  2: { descTe: 'పాక్షిక మేఘావృతం', descEn: 'Partly Cloudy', icon: '⛅', dryingTe: 'మంచిది (85%)', dryingEn: 'Good (85%)', dryClass: 'good' },
+  3: { descTe: 'పూర్తి మేఘావృతం', descEn: 'Overcast', icon: '☁️', dryingTe: 'మితం (60%)', dryingEn: 'Moderate (60%)', dryClass: 'moderate' },
+  45: { descTe: 'పొగమంచు', descEn: 'Foggy', icon: '🌫️', dryingTe: 'మితం (50%)', dryingEn: 'Moderate (50%)', dryClass: 'moderate' },
+  48: { descTe: 'తేమతో కూడిన పొగమంచు', descEn: 'Depositing Rime Fog', icon: '🌫️', dryingTe: 'తక్కువ (45%)', dryingEn: 'Low (45%)', dryClass: 'poor' },
+  51: { descTe: 'తేలికపాటి చిరుజల్లులు', descEn: 'Light Drizzle', icon: '🌦️', dryingTe: 'రిస్క్ - పట్టాలు కప్పండి', dryingEn: 'Risk - Cover Heaps', dryClass: 'poor' },
+  53: { descTe: 'మోస్తరు చినుకులు', descEn: 'Moderate Drizzle', icon: '🌦️', dryingTe: 'రిస్క్ - పట్టాలు కప్పండి', dryingEn: 'Risk - Cover Heaps', dryClass: 'poor' },
+  55: { descTe: 'దట్టమైన చిరుజల్లులు', descEn: 'Dense Drizzle', icon: '🌧️', dryingTe: 'రిస్క్ - పట్టాలు కప్పండి', dryingEn: 'Risk - Cover Heaps', dryClass: 'poor' },
+  61: { descTe: 'తేలికపాటి వర్షం', descEn: 'Slight Rain', icon: '🌧️', dryingTe: 'ప్రమాదం - కల్లాలు కప్పండి', dryingEn: 'Danger - Cover Drying Yard', dryClass: 'poor' },
+  63: { descTe: 'మోస్తరు వర్షం', descEn: 'Moderate Rain', icon: '🌧️', dryingTe: 'ప్రమాదం - కల్లాలు కప్పండి', dryingEn: 'Danger - Cover Drying Yard', dryClass: 'poor' },
+  65: { descTe: 'భారీ వర్షం', descEn: 'Heavy Rain', icon: '⛈️', dryingTe: 'అత్యంత ప్రమాదం', dryingEn: 'Severe Risk - Evacuate Yard', dryClass: 'poor' },
+  80: { descTe: 'వర్షపు జల్లులు', descEn: 'Rain Showers', icon: '🌦️', dryingTe: 'రిస్క్', dryingEn: 'Risk', dryClass: 'poor' },
+  81: { descTe: 'మోస్తరు వర్షపు జల్లులు', descEn: 'Moderate Showers', icon: '🌧️', dryingTe: 'ప్రమాదం', dryingEn: 'Danger', dryClass: 'poor' },
+  82: { descTe: 'ఈదురుగాలులతో భారీ వర్షం', descEn: 'Violent Showers', icon: '⛈️', dryingTe: 'అత్యంత ప్రమాదం', dryingEn: 'Severe Risk', dryClass: 'poor' },
+  95: { descTe: 'ఉరుములు, మెరుపులతో కూడిన తుఫాను', descEn: 'Thunderstorm', icon: '⚡', dryingTe: 'కల్లాలు పూర్తిగా భద్రపరచండి', dryingEn: 'Secure Produce Completely', dryClass: 'poor' }
 };
 
 // -----------------------------------------------------------------------------
@@ -1866,26 +1902,31 @@ async function fetchRealTimeWeather(lat, lon, placeName, district, accuracy = 15
         const tMax = Math.round(data.daily.temperature_2m_max[idx]);
         const tMin = Math.round(data.daily.temperature_2m_min[idx]);
         const rProb = data.daily.precipitation_probability_max ? data.daily.precipitation_probability_max[idx] : 10;
+        const curLang = localStorage.getItem('kissan_lang') || 'te';
+        const isEn = curLang === 'en';
 
         return `
           <div class="forecast-day-card">
             <div class="forecast-day-name">${dayLabel}</div>
             <div class="forecast-day-icon">${info.icon}</div>
             <div class="forecast-temp-range">${tMax}° / ${tMin}°C</div>
-            <div style="font-size:0.75rem; color:var(--text-light); margin-top:0.25rem;">వర్షం: ${rProb}%</div>
+            <div style="font-size:0.75rem; color:var(--text-light); margin-top:0.25rem;">${isEn ? 'Rain' : 'వర్షం'}: ${rProb}%</div>
             <span class="forecast-drying-pill ${info.dryClass}">${info.desc.split(' ')[0]}</span>
           </div>
         `;
       }).join('');
     }
 
-    showToast(`🌦️ ప్రత్యక్ష వాతావరణం: ${placeName} (${Math.round(current.temperature)}°C)`);
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    showToast(curLang === 'en' ? `🌦️ Live Weather: ${placeName} (${Math.round(current.temperature)}°C)` : `🌦️ ప్రత్యక్ష వాతావరణం: ${placeName} (${Math.round(current.temperature)}°C)`);
   } catch (err) {
     console.warn('[Weather] Open-Meteo fetch failed:', err);
   }
 }
 
 function updateWeatherDistrictUI() {
+  const currentLang = localStorage.getItem('kissan_lang') || 'te';
+  const isEn = currentLang === 'en';
   const select = document.getElementById('weatherDistrictSelect');
   if (!select) return;
   const distKey = select.value;
@@ -1908,13 +1949,13 @@ function updateWeatherDistrictUI() {
   const data = TELANGANA_WEATHER_DATA[distKey] || TELANGANA_WEATHER_DATA.warangal;
 
   const locEl = document.getElementById('weatherLocationName');
-  if (locEl) locEl.textContent = data.districtTe;
+  if (locEl) locEl.textContent = isEn ? (data.districtEn || data.districtTe) : data.districtTe;
 
   const sourceEl = document.getElementById('weatherDataSourceText');
-  if (sourceEl) sourceEl.textContent = 'తెలంగాణ వ్యవసాయ వాతావరణ కేంద్రం • జిల్లా స్థాయి సూచన';
+  if (sourceEl) sourceEl.textContent = isEn ? 'Telangana Agro-Weather Center • District Forecast' : 'తెలంగాణ వ్యవసాయ వాతావరణ కేంద్రం • జిల్లా స్థాయి సూచన';
 
   const condEl = document.getElementById('weatherCondText');
-  if (condEl) condEl.textContent = `${data.icon} ${data.conditionTe}`;
+  if (condEl) condEl.textContent = `${data.icon} ${isEn ? (data.conditionEn || data.conditionTe) : data.conditionTe}`;
 
   const iconEl = document.getElementById('weatherMainIcon');
   if (iconEl) iconEl.textContent = data.icon;
@@ -1929,7 +1970,7 @@ function updateWeatherDistrictUI() {
   if (rainEl) rainEl.textContent = data.rainChance;
 
   const dryEl = document.getElementById('weatherDryingIndex');
-  if (dryEl) dryEl.textContent = data.dryingIndex;
+  if (dryEl) dryEl.textContent = isEn ? (data.dryingIndexEn || data.dryingIndex) : data.dryingIndex;
 
   // Alarm Banner
   const alarmBanner = document.getElementById('rainAlarmBanner');
@@ -1940,16 +1981,16 @@ function updateWeatherDistrictUI() {
       alarmBanner.style.display = 'flex';
       alarmBanner.style.background = '#FEF2F2';
       alarmBanner.style.borderColor = '#FCA5A5';
-      alarmTitle.textContent = data.alarmTitleTe;
-      alarmDesc.textContent = data.alarmDescTe;
+      alarmTitle.textContent = isEn ? (data.alarmTitleEn || data.alarmTitleTe) : data.alarmTitleTe;
+      alarmDesc.textContent = isEn ? (data.alarmDescEn || data.alarmDescTe) : data.alarmDescTe;
     } else {
       alarmBanner.style.display = 'flex';
       alarmBanner.style.background = '#F0FDF4';
       alarmBanner.style.borderColor = '#86EFAC';
       alarmTitle.style.color = '#166534';
       alarmDesc.style.color = '#14532D';
-      alarmTitle.textContent = data.alarmTitleTe;
-      alarmDesc.textContent = data.alarmDescTe;
+      alarmTitle.textContent = isEn ? (data.alarmTitleEn || data.alarmTitleTe) : data.alarmTitleTe;
+      alarmDesc.textContent = isEn ? (data.alarmDescEn || data.alarmDescTe) : data.alarmDescTe;
     }
   }
 
@@ -1958,11 +1999,11 @@ function updateWeatherDistrictUI() {
   if (forecastGrid) {
     forecastGrid.innerHTML = data.forecast.map(f => `
       <div class="forecast-day-card">
-        <div class="forecast-day-name">${f.dayTe}</div>
+        <div class="forecast-day-name">${isEn ? (f.dayEn || f.dayTe) : f.dayTe}</div>
         <div class="forecast-day-icon">${f.icon}</div>
         <div class="forecast-temp-range">${f.tempMax}° / ${f.tempMin}°C</div>
-        <div style="font-size:0.75rem; color:var(--text-light); margin-top:0.25rem;">వర్షం: ${f.rain}</div>
-        <span class="forecast-drying-pill ${f.dryingClass}">${f.dryingTe}</span>
+        <div style="font-size:0.75rem; color:var(--text-light); margin-top:0.25rem;">${isEn ? 'Rain' : 'వర్షం'}: ${f.rain}</div>
+        <span class="forecast-drying-pill ${f.dryingClass}">${isEn ? (f.dryingEn || f.dryingTe) : f.dryingTe}</span>
       </div>
     `).join('');
   }
@@ -2206,6 +2247,8 @@ function handleDocFileChange(e, docType) {
 }
 
 function renderKycDocumentsStatus() {
+  const currentLang = localStorage.getItem('kissan_lang') || 'te';
+  const isEn = currentLang === 'en';
   const docs = getStoredKycDocs();
   const docTypes = ['aadhaar', 'dharani', 'bank', 'pan', 'location_proof'];
   let verifiedCount = 0;
@@ -2225,11 +2268,11 @@ function renderKycDocumentsStatus() {
       }
       if (statusTag) {
         statusTag.className = 'doc-status-tag verified';
-        statusTag.textContent = '✓ ధృవీకరించబడింది (Verified)';
+        statusTag.textContent = isEn ? '✓ Verified' : '✓ ధృవీకరించబడింది';
       }
       if (previewBar) previewBar.style.display = 'flex';
       if (nameEl) nameEl.textContent = doc.fileName || `${type}.pdf`;
-      if (sizeEl) sizeEl.textContent = `${doc.fileSize || '350 KB'} • ${doc.date || 'ఇటీవల'}`;
+      if (sizeEl) sizeEl.textContent = `${doc.fileSize || '350 KB'} • ${doc.date || (isEn ? 'Recent' : 'ఇటీవల')}`;
 
       // Populate input values
       if (type === 'aadhaar') {
@@ -2280,7 +2323,7 @@ function renderKycDocumentsStatus() {
       if (card) card.classList.remove('is-verified');
       if (statusTag) {
         statusTag.className = 'doc-status-tag pending';
-        statusTag.textContent = '⏳ అప్‌లోడ్ చేయండి';
+        statusTag.textContent = isEn ? '⏳ Upload Required' : '⏳ అప్‌లోడ్ చేయండి';
       }
       if (previewBar) previewBar.style.display = 'none';
     }
@@ -2304,15 +2347,15 @@ function renderKycDocumentsStatus() {
   if (percent === 100) {
     if (pill) pill.className = 'kyc-badge-pill verified';
     if (badgeIcon) badgeIcon.textContent = '🥇';
-    if (badgeText) badgeText.textContent = '100% కిసాన్ గోల్డ్ ధృవీకరణ పూర్తయింది (Gold Verified Farmer)';
+    if (badgeText) badgeText.textContent = isEn ? '100% Kissan Gold Verification Complete' : '100% కిసాన్ గోల్డ్ ధృవీకరణ పూర్తయింది';
   } else if (percent >= 60) {
     if (pill) pill.className = 'kyc-badge-pill';
     if (badgeIcon) badgeIcon.textContent = '🥈';
-    if (badgeText) badgeText.textContent = `మధ్యంతర ధృవీకరణ (${percent}% పూర్తయింది)`;
+    if (badgeText) badgeText.textContent = isEn ? `Intermediate Verification (${percent}% Complete)` : `మధ్యంతర ధృవీకరణ (${percent}% పూర్తయింది)`;
   } else {
     if (pill) pill.className = 'kyc-badge-pill';
     if (badgeIcon) badgeIcon.textContent = '🟡';
-    if (badgeText) badgeText.textContent = `ప్రాథమిక నమోదు (${percent}% పూర్తయింది)`;
+    if (badgeText) badgeText.textContent = isEn ? `Basic Registration (${percent}% Complete)` : `ప్రాథమిక నమోదు (${percent}% పూర్తయింది)`;
   }
 }
 
@@ -2505,16 +2548,23 @@ function openDocPreviewModal(docType) {
   const infoEl = document.getElementById('previewModalFileInfo');
   const dlBtn = document.getElementById('btnDownloadPreviewDoc');
 
-  const titles = {
-    aadhaar: 'ఆధార్ కార్డ్ పత్రం (Aadhaar Card)',
-    dharani: 'ధరణి పట్టాదారు పాస్‌బుక్ (Dharani Agri Title)',
-    bank: 'బ్యాంక్ పాస్‌బుక్ / రద్దు చేసిన చెక్ (Bank Proof)',
-    pan: 'పాన్ కార్డ్ (PAN Card)',
-    location_proof: 'లొకేషన్ / విద్యుత్ బిల్లు (Proof of Location)'
+  const isEn = (localStorage.getItem('kissan_lang') === 'en');
+  const titles = isEn ? {
+    aadhaar: 'Aadhaar Card Document',
+    dharani: 'Dharani Land Title Passbook',
+    bank: 'Bank Passbook / Cancelled Cheque',
+    pan: 'PAN Card Document',
+    location_proof: 'Location / Electricity Bill'
+  } : {
+    aadhaar: 'ఆధార్ కార్డ్ పత్రం',
+    dharani: 'ధరణి పట్టాదారు పాస్‌బుక్',
+    bank: 'బ్యాంక్ పాస్‌బుక్ / రద్దు చేసిన చెక్',
+    pan: 'పాన్ కార్డ్ పత్రం',
+    location_proof: 'లొకేషన్ / విద్యుత్ బిల్లు'
   };
 
-  if (titleEl) titleEl.textContent = `📄 ${titles[docType] || 'పత్రం ప్రివ్యూ'}`;
-  if (infoEl) infoEl.textContent = `ఫైల్ పేరు: ${doc.fileName || 'document'} • సైజు: ${doc.fileSize || 'తెలియదు'}`;
+  if (titleEl) titleEl.textContent = `📄 ${titles[docType] || (isEn ? 'Document Preview' : 'పత్రం పరిశీలన')}`;
+  if (infoEl) infoEl.textContent = isEn ? `File: ${doc.fileName || 'document'} • Size: ${doc.fileSize || 'Unknown'}` : `ఫైల్ పేరు: ${doc.fileName || 'document'} • పరిమాణం: ${doc.fileSize || 'తెలియదు'}`;
   if (dlBtn) {
     dlBtn.href = doc.fileData;
     dlBtn.download = doc.fileName || `${docType}_document`;

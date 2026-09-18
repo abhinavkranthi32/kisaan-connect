@@ -209,26 +209,32 @@ async function renderBuyerLots(filter = {}) {
     const json = await res.json();
 
     const lots = json.lots || [];
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
+
     const countBadge = document.getElementById('activeLotsCountBadge');
-    if (countBadge) countBadge.textContent = `${lots.length} లాట్లు`;
+    if (countBadge) countBadge.textContent = isEn ? `${lots.length} Lots` : `${lots.length} లాట్లు`;
 
     if (lots.length === 0) {
       grid.innerHTML = `
         <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
           <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🌾</div>
-          <h4 style="font-size:1.1rem; color:var(--primary-900);">ప్రస్తుతం అమ్మకానికి అందుబాటులో పంట లాట్లు లేవు</h4>
-          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:0.25rem;">(No harvest lots available yet in the database)</p>
-          <button class="btn btn-secondary" style="margin-top:1rem;" onclick="document.getElementById('buyerCropFilter').value='all'; document.getElementById('buyerGradeFilter').value='all'; document.getElementById('buyerSearchInput').value=''; filterBuyerLots();">ఫిల్టర్లను రీసెట్ చేయండి</button>
+          <h4 style="font-size:1.1rem; color:var(--primary-900);">${isEn ? 'No harvest lots available yet' : 'ప్రస్తుతం అమ్మకానికి అందుబాటులో పంట లాట్లు లేవు'}</h4>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:0.25rem;">${isEn ? 'Check back soon as farmers list new lots' : 'రైతులు కొత్త లాట్లను నమోదు చేసిన వెంటనే ఇక్కడ కనిపిస్తాయి'}</p>
+          <button class="btn btn-secondary" style="margin-top:1rem;" onclick="document.getElementById('buyerCropFilter').value='all'; document.getElementById('buyerGradeFilter').value='all'; document.getElementById('buyerSearchInput').value=''; filterBuyerLots();">${isEn ? 'Reset Filters' : 'ఫిల్టర్లను రీసెట్ చేయండి'}</button>
         </div>
       `;
       return;
     }
 
     grid.innerHTML = lots.map(lot => {
-      const cropTitle = currentLang === 'te' ? lot.crop_name_te : lot.crop_name_en;
-      const variety = currentLang === 'te' ? lot.variety_te : lot.variety_en;
-      const location = currentLang === 'te' ? lot.location_te : lot.location_en;
+      const cropTitle = isEn ? (lot.crop_name_en || lot.crop_name_te) : lot.crop_name_te;
+      const variety = isEn ? (lot.variety_en || lot.variety_te) : lot.variety_te;
+      const location = isEn ? (lot.location_en || lot.location_te) : lot.location_te;
       const bidsCount = (lot.bids || []).length;
+      const auctionTag = isEn ? `Live Auction (${bidsCount} Bids)` : `లైవ్ వేలం (${bidsCount} బిడ్‌లు)`;
+      const gradeText = isEn ? `Grade ${lot.grade}` : `గ్రేడ్ ${lot.grade}`;
+      const qtyText = isEn ? `${lot.quantity_quintals} Quintals` : `${lot.quantity_quintals} క్వింటాళ్లు`;
 
       return `
         <div class="harvest-market-card">
@@ -236,9 +242,9 @@ async function renderBuyerLots(filter = {}) {
             <img src="${lot.image_url || '/shared/assets/crops/teja_chilli.jpg'}" alt="${cropTitle}" onerror="this.src='/shared/assets/crops/teja_chilli.jpg'">
             <div class="harvest-card-tag">
               <span class="live-dot" style="background:#4ADE80;"></span>
-              <span>లైవ్ వేలం (${bidsCount} బిడ్‌లు)</span>
+              <span>${auctionTag}</span>
             </div>
-            <div class="harvest-grade-pill">గ్రేడ్ ${lot.grade}</div>
+            <div class="harvest-grade-pill">${gradeText}</div>
           </div>
 
           <div class="harvest-card-body">
@@ -247,53 +253,55 @@ async function renderBuyerLots(filter = {}) {
 
             <div class="harvest-meta-list">
               <div class="harvest-meta-item">
-                <span>పరిమాణం (Qty):</span>
-                <strong>${lot.quantity_quintals} క్వింటాళ్లు</strong>
+                <span>${isEn ? 'Quantity:' : 'పరిమాణం:'}</span>
+                <strong>${qtyText}</strong>
               </div>
               <div class="harvest-meta-item">
-                <span>తేమ శాతం (Moisture):</span>
+                <span>${isEn ? 'Moisture:' : 'తేమ శాతం:'}</span>
                 <strong>${lot.moisture_pct || '10%'}</strong>
               </div>
               <div class="harvest-meta-item">
-                <span>రైతు ప్రదేశం:</span>
+                <span>${isEn ? 'Farm Location:' : 'రైతు ప్రదేశం:'}</span>
                 <strong>${location}</strong>
               </div>
               <div class="harvest-meta-item">
-                <span>రైతు పేరు:</span>
-                <strong>${lot.farmer_name}</strong>
+                <span>${isEn ? 'Farmer Name:' : 'రైతు పేరు:'}</span>
+                <strong>${isEn && lot.farmer_name === 'మల్లారెడ్డి' ? 'Malla Reddy' : lot.farmer_name}</strong>
               </div>
             </div>
 
             <div class="harvest-pricing-row">
               <div class="rate-col">
-                <span>రైతు రిజర్వ్ ధర:</span>
+                <span>${isEn ? 'Farmer Reserve Price:' : 'రైతు రిజర్వ్ ధర:'}</span>
                 <div class="big-price">₹${Number(lot.reserve_price).toLocaleString('en-IN')}</div>
               </div>
               <div class="rate-col" style="text-align:right;">
-                <span>ప్రస్తుత గరిష్ట బిడ్:</span>
+                <span>${isEn ? 'Current Highest Bid:' : 'ప్రస్తుత గరిష్ట బిడ్:'}</span>
                 <div class="big-price top-bid">₹${Number(lot.highest_bid).toLocaleString('en-IN')}</div>
               </div>
             </div>
 
             <div class="harvest-card-actions">
               <button class="btn btn-primary btn-block" onclick="openPlaceBidModal('${lot.id}')">
-                ⚡ బిడ్ వేయండి (Place Real Bid)
+                ⚡ ${isEn ? 'Place Bid' : 'బిడ్ వేయండి'}
               </button>
             </div>
 
             <div style="font-size:0.72rem; color:var(--text-light); text-align:center; margin-top:0.6rem;">
-              మూలం: ధృవీకరించిన రైతు డేటాబేస్ • లాట్ ఐడీ: #${lot.id}
+              ${isEn ? `Source: Verified Farmer Database • Lot ID: #${lot.id}` : `మూలం: ధృవీకరించిన రైతు డేటాబేస్ • లాట్ ఐడీ: #${lot.id}`}
             </div>
           </div>
         </div>
       `;
     }).join('');
   } catch (err) {
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
     grid.innerHTML = `
       <div style="grid-column: 1/-1; text-align:center; padding: 2.5rem; background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: var(--radius-lg); color:#991B1B;">
-        <h4>⚠️ లైవ్ డేటా పొందలేకపోయాము</h4>
-        <p style="font-size:0.85rem; margin-top:0.25rem;">(Unable to fetch live data from backend server)</p>
-        <button class="btn btn-secondary btn-sm" style="margin-top:0.75rem;" onclick="renderBuyerLots()">🔄 మళ్లీ ప్రయత్నించండి</button>
+        <h4>⚠️ ${isEn ? 'Unable to fetch live data' : 'లైవ్ డేటా పొందలేకపోయాము'}</h4>
+        <p style="font-size:0.85rem; margin-top:0.25rem;">${isEn ? 'Backend server connection error' : 'సర్వర్ కనెక్షన్ లోపం ఏర్పడింది'}</p>
+        <button class="btn btn-secondary btn-sm" style="margin-top:0.75rem;" onclick="renderBuyerLots()">🔄 ${isEn ? 'Try Again' : 'మళ్లీ ప్రయత్నించండి'}</button>
       </div>
     `;
   }
@@ -311,13 +319,21 @@ async function openPlaceBidModal(lotId) {
     if (!lot) return;
 
     selectedLotForBidding = lot;
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
 
-    document.getElementById('placeBidSubtitle').innerHTML = `
-      రైతు లాట్: <strong>${currentLang === 'te' ? lot.crop_name_te : lot.crop_name_en}</strong> (${lot.quantity_quintals} క్వింటాళ్లు)<br>
+    const cropName = isEn ? (lot.crop_name_en || lot.crop_name_te) : lot.crop_name_te;
+    const qtyUnit = isEn ? `${lot.quantity_quintals} Quintals` : `${lot.quantity_quintals} క్వింటాళ్లు`;
+
+    document.getElementById('placeBidSubtitle').innerHTML = isEn ? `
+      Crop Lot: <strong>${cropName}</strong> (${qtyUnit})<br>
+      Farmer Reserve Price: <strong>₹${Number(lot.reserve_price).toLocaleString('en-IN')}</strong> • Current Top Bid: <strong style="color:#B45309;">₹${Number(lot.highest_bid).toLocaleString('en-IN')}</strong>
+    ` : `
+      రైతు లాట్: <strong>${cropName}</strong> (${qtyUnit})<br>
       రైతు రిజర్వ్ కనీస ధర: <strong>₹${Number(lot.reserve_price).toLocaleString('en-IN')}</strong> • ప్రస్తుత టాప్ బిడ్: <strong style="color:#B45309;">₹${Number(lot.highest_bid).toLocaleString('en-IN')}</strong>
     `;
 
-    document.getElementById('modalLotQty').textContent = `${lot.quantity_quintals} క్వింటాళ్లు`;
+    document.getElementById('modalLotQty').textContent = qtyUnit;
 
     const rateInput = document.getElementById('bidRateInput');
     rateInput.value = Number(lot.highest_bid) + 50;
@@ -326,7 +342,8 @@ async function openPlaceBidModal(lotId) {
     updateBidModalValuation();
     document.getElementById('placeBidModal').classList.add('active');
   } catch (err) {
-    showToast('లాట్ వివరాలు లోడ్ చేయడంలో విఫలమైంది.');
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    showToast(curLang === 'en' ? 'Failed to load lot details.' : 'లాట్ వివరాలు లోడ్ చేయడంలో విఫలమైంది.');
   }
 }
 
@@ -415,20 +432,23 @@ async function renderMyBids() {
   `;
 
   try {
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
+
     const res = await fetch(`/api/bids/buyer/${currentBuyer.id}`);
     const json = await res.json();
     const bids = json.bids || [];
 
     const badge = document.getElementById('myActiveBidsBadge');
-    if (badge) badge.textContent = `${bids.length} బిడ్‌లు`;
+    if (badge) badge.textContent = isEn ? `${bids.length} Bids` : `${bids.length} బిడ్‌లు`;
 
     if (bids.length === 0) {
       container.innerHTML = `
         <div style="text-align: center; padding: 3rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
           <div style="font-size:2.2rem; margin-bottom:0.5rem;">📋</div>
-          <h4 style="font-size:1.05rem; color:var(--primary-900);">మీరు ఇంకా ఏ పంట లాట్‌పై బిడ్ వేయలేదు</h4>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">(No active bids found in database for ${currentBuyer.name})</p>
-          <button class="btn btn-primary" style="margin-top:1rem;" onclick="switchBuyerTab('farmLots')">పంటల వేలాన్ని పరిశీలించండి →</button>
+          <h4 style="font-size:1.05rem; color:var(--primary-900);">${isEn ? 'You have not placed bids on any harvest lots yet' : 'మీరు ఇంకా ఏ పంట లాట్‌పై బిడ్ వేయలేదు'}</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">${isEn ? 'Explore live harvest lots to place competitive bids' : 'రైతుల పంటల వేలాన్ని పరిశీలించి బిడ్‌లు వేయండి'}</p>
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="switchBuyerTab('farmLots')">${isEn ? 'Explore Live Harvests →' : 'పంటల వేలాన్ని పరిశీలించండి →'}</button>
         </div>
       `;
       return;
@@ -439,38 +459,42 @@ async function renderMyBids() {
       let statusAction = '';
 
       if (bid.status === 'leading') {
-        statusLabel = `<span class="bid-status-tag leading">🟢 గరిష్ట బిడ్ (Leading)</span>`;
-        statusAction = `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:700;">రైతు ఆమోదం కోసం వేచి చూస్తున్నారు</span>`;
+        statusLabel = isEn ? `<span class="bid-status-tag leading">🟢 Winning Bid</span>` : `<span class="bid-status-tag leading">🟢 గరిష్ట బిడ్</span>`;
+        statusAction = `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:700;">${isEn ? 'Awaiting farmer acceptance' : 'రైతు ఆమోదం కోసం వేచి చూస్తున్నారు'}</span>`;
       } else {
-        statusLabel = `<span class="bid-status-tag outbid">🔴 ఎక్కువ బిడ్ వచ్చింది (Outbid)</span>`;
+        statusLabel = isEn ? `<span class="bid-status-tag outbid">🔴 Outbid by Competitor</span>` : `<span class="bid-status-tag outbid">🔴 ఎక్కువ బిడ్ వచ్చింది</span>`;
         statusAction = `
           <button class="btn btn-danger btn-sm" onclick="quickRaiseBid('${bid.lotId}', ${bid.highestPrice + 100})">
-            🚀 ₹${(bid.highestPrice + 100).toLocaleString('en-IN')} తో మళ్లీ బిడ్ వేయండి
+            🚀 ${isEn ? `Raise Bid to ₹${(bid.highestPrice + 100).toLocaleString('en-IN')}` : `₹${(bid.highestPrice + 100).toLocaleString('en-IN')} తో మళ్లీ బిడ్ వేయండి`}
           </button>
         `;
       }
 
+      const cropName = isEn ? (bid.cropNameEn || bid.cropNameTe) : bid.cropNameTe;
+      const farmerName = isEn && bid.farmerName === 'మల్లారెడ్డి' ? 'Malla Reddy' : bid.farmerName;
+      const qtyText = isEn ? `${bid.quantity} Quintals (Grade ${bid.grade})` : `${bid.quantity} క్వింటాళ్లు (గ్రేడ్ ${bid.grade})`;
+
       return `
         <div class="my-bid-card">
           <div>
-            <h4 style="font-size:1.05rem; font-weight:800; color:var(--primary-900);">${bid.cropNameTe}</h4>
-            <span style="font-size:0.8rem; color:var(--text-muted);">రైతు: <strong>${bid.farmerName}</strong> • ${bid.farmerLocation}</span>
+            <h4 style="font-size:1.05rem; font-weight:800; color:var(--primary-900);">${cropName}</h4>
+            <span style="font-size:0.8rem; color:var(--text-muted);">${isEn ? 'Farmer:' : 'రైతు:'} <strong>${farmerName}</strong> • ${bid.farmerLocation}</span>
             <div style="margin-top:0.25rem;">${statusLabel}</div>
-            <small style="font-size:0.72rem; color:var(--text-light); display:block; margin-top:0.2rem;">బిడ్ ఐడీ: #${bid.bidId}</small>
+            <small style="font-size:0.72rem; color:var(--text-light); display:block; margin-top:0.2rem;">${isEn ? 'Bid ID:' : 'బిడ్ ఐడీ:'} #${bid.bidId}</small>
           </div>
 
           <div>
-            <span style="font-size:0.75rem; color:var(--text-light); display:block;">పరిమాణం:</span>
-            <strong>${bid.quantity} క్వింటాళ్లు (గ్రేడ్ ${bid.grade})</strong>
+            <span style="font-size:0.75rem; color:var(--text-light); display:block;">${isEn ? 'Quantity:' : 'పరిమాణం:'}</span>
+            <strong>${qtyText}</strong>
           </div>
 
           <div>
-            <span style="font-size:0.75rem; color:var(--text-light); display:block;">మీ బిడ్ ధర:</span>
+            <span style="font-size:0.75rem; color:var(--text-light); display:block;">${isEn ? 'Your Bid Price:' : 'మీ బిడ్ ధర:'}</span>
             <strong style="font-size:1.15rem; color:var(--primary-800);">₹${Number(bid.myPrice).toLocaleString('en-IN')}</strong> / Q
           </div>
 
           <div>
-            <span style="font-size:0.75rem; color:var(--text-light); display:block;">మొత్తం డీల్ విలువ:</span>
+            <span style="font-size:0.75rem; color:var(--text-light); display:block;">${isEn ? 'Total Valuation:' : 'మొత్తం డీల్ విలువ:'}</span>
             <strong>₹${Number(bid.totalValuation).toLocaleString('en-IN')}</strong>
           </div>
 
@@ -481,7 +505,8 @@ async function renderMyBids() {
       `;
     }).join('');
   } catch (err) {
-    container.innerHTML = `<p style="padding:2rem; text-align:center; color:#DC2626;">బిడ్‌లను పొందడంలో లోపం ఏర్పడింది.</p>`;
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    container.innerHTML = `<p style="padding:2rem; text-align:center; color:#DC2626;">${curLang === 'en' ? 'Failed to load your bids.' : 'బిడ్‌లను పొందడంలో లోపం ఏర్పడింది.'}</p>`;
   }
 }
 
@@ -516,79 +541,85 @@ async function renderProcurementOrders() {
   if (!container || !currentBuyer) return;
 
   try {
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
+
     const res = await fetch(`/api/orders/buyer/${currentBuyer.id}`);
     const json = await res.json();
     const orders = json.orders || [];
 
     const badge = document.getElementById('buyerOrdersBadge');
-    if (badge) badge.textContent = `${orders.length} ఆర్డర్లు`;
+    if (badge) badge.textContent = isEn ? `${orders.length} Orders` : `${orders.length} ఆర్డర్లు`;
 
     if (orders.length === 0) {
       container.innerHTML = `
         <div style="text-align: center; padding: 3rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
           <div style="font-size:2rem; margin-bottom:0.5rem;">📦</div>
-          <h4 style="font-size:1.05rem; color:var(--primary-900);">ఖరారైన సేకరణ ఆర్డర్లు ఏవీ లేవు</h4>
-          <p style="color:var(--text-muted); font-size:0.85rem;">(No active procurement orders in database for ${currentBuyer.name})</p>
+          <h4 style="font-size:1.05rem; color:var(--primary-900);">${isEn ? 'No confirmed procurement orders' : 'ఖరారైన సేకరణ ఆర్డర్లు ఏవీ లేవు'}</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem;">${isEn ? 'Orders will appear here once farmers accept your bids' : 'రైతులు మీ బిడ్‌లను ఆమోదించిన వెంటనే ఇక్కడ కనిపిస్తాయి'}</p>
         </div>
       `;
       return;
     }
 
     container.innerHTML = orders.map(order => {
+      const cropName = isEn ? (order.crop_name_en || order.crop_name_te) : order.crop_name_te;
+      const farmerName = isEn ? 'Malla Reddy (+91 98480 55210)' : 'మల్లారెడ్డి (+91 98480 55210)';
+
       return `
         <div class="order-card" id="buyer-order-${order.id}">
           <div class="order-header-row">
             <div class="order-id-group">
-              <h4>${order.crop_name_te}</h4>
-              <span>ఆర్డర్ ఐడీ: <strong>#${order.id}</strong> • రైతు: <strong>మల్లారెడ్డి (+91 98480 55210)</strong></span>
+              <h4>${cropName}</h4>
+              <span>${isEn ? 'Order ID:' : 'ఆర్డర్ ఐడీ:'} <strong>#${order.id}</strong> • ${isEn ? 'Farmer:' : 'రైతు:'} <strong>${farmerName}</strong></span>
             </div>
             <div class="order-escrow-badge" style="background:#EFF6FF; color:#1D4ED8; border-color:rgba(29,78,216,0.2);">
-              🔒 ఎస్క్రో లాక్ చేయబడింది: ₹${Number(order.total_escrow_amount).toLocaleString('en-IN')}
+              🔒 ${isEn ? 'Escrow Locked:' : 'ఎస్క్రో లాక్ చేయబడింది:'} ₹${Number(order.total_escrow_amount).toLocaleString('en-IN')}
             </div>
           </div>
 
           <div class="milestone-stepper">
             <div class="stepper-step ${order.current_step >= 1 ? 'done' : ''}">
               <div class="step-circle">${order.current_step > 1 ? '✓' : '1'}</div>
-              <div class="step-label">1. డీల్ ఆమోదం</div>
+              <div class="step-label">${isEn ? '1. Deal Accepted' : '1. డీల్ ఆమోదం'}</div>
             </div>
             <div class="stepper-step ${order.current_step >= 2 ? (order.current_step > 2 ? 'done' : 'active') : ''}">
               <div class="step-circle">${order.current_step > 2 ? '✓' : '2'}</div>
-              <div class="step-label">2. ఎస్క్రో నిధులు లాక్</div>
+              <div class="step-label">${isEn ? '2. Escrow Funds Locked' : '2. ఎస్క్రో నిధులు లాక్'}</div>
             </div>
             <div class="stepper-step ${order.current_step >= 3 ? (order.current_step > 3 ? 'done' : 'active') : ''}">
               <div class="step-circle">${order.current_step > 3 ? '✓' : '3'}</div>
-              <div class="step-label">3. లారీ డిస్పాచ్</div>
+              <div class="step-label">${isEn ? '3. Truck Dispatched' : '3. లారీ డిస్పాచ్'}</div>
             </div>
             <div class="stepper-step ${order.current_step >= 4 ? (order.current_step > 4 ? 'done' : 'active') : ''}">
               <div class="step-circle">${order.current_step > 4 ? '✓' : '4'}</div>
-              <div class="step-label">4. పొలం వద్ద తూకం & OTP</div>
+              <div class="step-label">${isEn ? '4. Farm-Gate Weighment & OTP' : '4. పొలం వద్ద తూకం & OTP'}</div>
             </div>
             <div class="stepper-step ${order.current_step >= 5 ? 'done' : ''}">
               <div class="step-circle">${order.current_step >= 5 ? '✓' : '5'}</div>
-              <div class="step-label">5. డెలివరీ & ఇన్వాయిస్</div>
+              <div class="step-label">${isEn ? '5. Delivery & Invoice' : '5. డెలివరీ & ఇన్వాయిస్'}</div>
             </div>
           </div>
 
           <div class="order-footer-details">
             <div>
               <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
-                🚛 కేటాయించిన లారీ: <strong>${order.vehicle_reg || 'ఇంకా కేటాయించలేదు'}</strong>
+                🚛 ${isEn ? 'Assigned Truck:' : 'కేటాయించిన లారీ:'} <strong>${order.vehicle_reg || (isEn ? 'Not Yet Assigned' : 'ఇంకా కేటాయించలేదు')}</strong>
               </div>
               <div style="font-size: 0.85rem; color: var(--text-muted);">
-                👨‍✈️ డ్రైవర్ వివరాలు: <strong>${order.driver_name || 'డ్రైవర్‌ను కేటాయించండి'} (${order.driver_phone || ''})</strong>
+                👨‍✈️ ${isEn ? 'Driver Details:' : 'డ్రైవర్ వివరాలు:'} <strong>${order.driver_name || (isEn ? 'Assign Driver' : 'డ్రైవర్‌ను కేటాయించండి')} (${order.driver_phone || ''})</strong>
               </div>
             </div>
 
             <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
               <button class="btn btn-outline btn-sm" onclick="openAssignTruckModal('${order.id}')">
-                🚛 లారీ కేటాయించండి
+                🚛 ${isEn ? 'Assign Truck' : 'లారీ కేటాయించండి'}
               </button>
               <button class="btn btn-secondary btn-sm" onclick="promptBuyerOtp('${order.id}', '${order.farm_gate_otp}')">
-                🔑 OTP ఎంటర్ చేయండి
+                🔑 ${isEn ? 'Enter OTP' : 'OTP ఎంటర్ చేయండి'}
               </button>
               <button class="btn btn-primary btn-sm" onclick="openBuyerInvoiceModal('${order.id}')">
-                📄 ఇన్వాయిస్ చూడండి
+                📄 ${isEn ? 'View Invoice' : 'ఇన్వాయిస్ చూడండి'}
               </button>
             </div>
           </div>
@@ -596,18 +627,25 @@ async function renderProcurementOrders() {
       `;
     }).join('');
   } catch (err) {
-    container.innerHTML = `<p style="padding:2rem; text-align:center; color:#DC2626;">ఆర్డర్లు లోడ్ చేయడంలో లోపం ఏర్పడింది.</p>`;
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    container.innerHTML = `<p style="padding:2rem; text-align:center; color:#DC2626;">${curLang === 'en' ? 'Failed to load procurement orders.' : 'ఆర్డర్లు లోడ్ చేయడంలో లోపం ఏర్పడింది.'}</p>`;
   }
 }
 
 function openAssignTruckModal(orderId) {
   selectedOrderForTruck = orderId;
-  document.getElementById('acceptTripSubtitle').textContent = `ఆర్డర్ #${orderId} కోసం రవాణా వాహనం కేటాయించండి`;
-  document.getElementById('acceptTripModal').classList.add('active');
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
+  const sub = document.getElementById('assignTruckSubtitle');
+  if (sub) {
+    sub.textContent = curLang === 'en' ? `Dispatch truck for Order #${orderId}` : `ఆర్డర్ #${orderId} కోసం లారీని పంపించండి`;
+  }
+  const modal = document.getElementById('assignTruckModal');
+  if (modal) modal.classList.add('active');
 }
 
 function closeAssignTruckModal() {
-  document.getElementById('acceptTripModal').classList.remove('active');
+  const modal = document.getElementById('assignTruckModal');
+  if (modal) modal.classList.remove('active');
   selectedOrderForTruck = null;
 }
 
@@ -619,6 +657,7 @@ async function handleAssignTruckSubmit(e) {
 
   if (!selectedOrderForTruck) return;
 
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
   try {
     const res = await fetch(`/api/orders/${selectedOrderForTruck}/assign-truck`, {
       method: 'POST',
@@ -628,15 +667,19 @@ async function handleAssignTruckSubmit(e) {
     if (res.ok) {
       closeAssignTruckModal();
       renderProcurementOrders();
-      showToast(`🚛 లారీ ${reg} ఆర్డర్ #${selectedOrderForTruck} కు డేటాబేస్‌లో కేటాయించబడింది!`);
+      showToast(curLang === 'en' ? `🚛 Truck ${reg} successfully assigned to Order #${selectedOrderForTruck}!` : `🚛 లారీ ${reg} ఆర్డర్ #${selectedOrderForTruck} కు డేటాబేస్‌లో కేటాయించబడింది!`);
     }
   } catch (err) {
-    showToast('వాహనం కేటాయింపు విఫలమైంది.');
+    showToast(curLang === 'en' ? 'Vehicle assignment failed.' : 'వాహనం కేటాయింపు విఫలమైంది.');
   }
 }
 
 async function promptBuyerOtp(orderId, expectedOtp) {
-  const entered = prompt(`రైతు పొలం వద్ద తూకం వేసిన తర్వాత లభించిన 4 అంకెల OTP ని నమోదు చేయండి: (డెమో OTP: ${expectedOtp})`);
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
+  const promptMsg = curLang === 'en'
+    ? `Enter the 4-digit OTP provided by the farmer after digital weighment: (Demo OTP: ${expectedOtp})`
+    : `రైతు పొలం వద్ద తూకం వేసిన తర్వాత లభించిన 4 అంకెల OTP ని నమోదు చేయండి: (డెమో OTP: ${expectedOtp})`;
+  const entered = prompt(promptMsg);
   if (!entered) return;
 
   try {
@@ -649,12 +692,12 @@ async function promptBuyerOtp(orderId, expectedOtp) {
     if (res.ok) {
       loadBuyerProfiles();
       renderProcurementOrders();
-      showToast(`✅ ${json.message}`);
+      showToast(`✅ ${curLang === 'en' ? 'OTP verified! Escrow payment released to farmer.' : json.message}`);
     } else {
-      showToast(`❌ ${json.message || 'తప్పు OTP నమోదు చేశారు'}`);
+      showToast(`❌ ${json.message || (curLang === 'en' ? 'Invalid OTP entered' : 'తప్పు OTP నమోదు చేశారు')}`);
     }
   } catch (e) {
-    showToast('OTP వెరిఫికేషన్ విఫలమైంది.');
+    showToast(curLang === 'en' ? 'OTP verification failed.' : 'OTP వెరిఫికేషన్ విఫలమైంది.');
   }
 }
 
@@ -665,21 +708,27 @@ async function openBuyerInvoiceModal(orderId) {
     const order = (json.orders || []).find(o => o.id === orderId);
     if (!order) return;
 
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
+
     const invNum = `INV-TS-${order.id.replace(/[^0-9]/g, '')}`;
     document.getElementById('invNumber').textContent = invNum;
     document.getElementById('invBuyerName').textContent = currentBuyer.name;
-    document.getElementById('invFarmerName').textContent = 'మల్లారెడ్డి (Malla Reddy)';
+    document.getElementById('invFarmerName').textContent = isEn ? 'Malla Reddy' : 'మల్లారెడ్డి';
 
     const total = Number(order.total_escrow_amount);
     document.getElementById('invTotalValue').textContent = `₹${total.toLocaleString('en-IN')}`;
     document.getElementById('invNetPayout').textContent = `₹${total.toLocaleString('en-IN')}`;
 
+    const cropName = isEn ? (order.crop_name_en || order.crop_name_te || 'Agricultural Produce') : (order.crop_name_te || 'వ్యవసాయ పంట');
+    const qtyText = isEn ? `${order.quantity_quintals || 40} Quintals` : `${order.quantity_quintals || 40} క్వింటాళ్లు`;
+
     const tbody = document.getElementById('invTableBody');
     if (tbody) {
       tbody.innerHTML = `
         <tr>
-          <td>${order.crop_name_te || 'వ్యవసాయ పంట'}</td>
-          <td>${order.quantity_quintals || 40} క్వింటాళ్లు</td>
+          <td>${cropName}</td>
+          <td>${qtyText}</td>
           <td>₹${Number(order.agreed_rate).toLocaleString('en-IN')}</td>
           <td>₹${total.toLocaleString('en-IN')}</td>
         </tr>
@@ -688,7 +737,8 @@ async function openBuyerInvoiceModal(orderId) {
 
     document.getElementById('buyerInvoiceModal').classList.add('active');
   } catch (e) {
-    showToast('ఇన్వాయిస్ వివరాలు లోడ్ చేయడంలో విఫలమైంది.');
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    showToast(curLang === 'en' ? 'Failed to load invoice details.' : 'ఇన్వాయిస్ వివరాలు లోడ్ చేయడంలో విఫలమైంది.');
   }
 }
 
@@ -741,34 +791,44 @@ async function renderBuyerRfqs() {
   if (!board) return;
 
   try {
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    const isEn = curLang === 'en';
+
     const res = await fetch('/api/rfqs');
     const json = await res.json();
     const rfqs = json.rfqs || [];
 
     if (rfqs.length === 0) {
-      board.innerHTML = `<p style="padding:2rem; text-align:center; color:var(--text-muted);">ప్రస్తుతం యాక్టివ్ కొనుగోలు టెండర్లు ఏవీ లేవు.</p>`;
+      board.innerHTML = `<p style="padding:2rem; text-align:center; color:var(--text-muted);">${isEn ? 'No active bulk purchase tenders at the moment.' : 'ప్రస్తుతం యాక్టివ్ కొనుగోలు టెండర్లు ఏవీ లేవు.'}</p>`;
       return;
     }
 
-    board.innerHTML = rfqs.map(r => `
-      <div class="rfq-card">
-        <div class="rfq-card-header">
-          <strong style="color:var(--primary-900); font-size:1.05rem;">${r.crop_name_te || r.crop_key}</strong>
-          <span class="bid-status-tag leading">యాక్టివ్ టెండర్</span>
+    board.innerHTML = rfqs.map(r => {
+      const cropName = isEn ? (r.crop_name_en || r.crop_name_te || r.crop_key) : (r.crop_name_te || r.crop_key);
+      const statusTag = isEn ? 'Active Tender' : 'యాక్టివ్ టెండర్';
+      const qtyText = isEn ? `${r.target_qty} Quintals` : `${r.target_qty} క్వింటాళ్లు`;
+
+      return `
+        <div class="rfq-card">
+          <div class="rfq-card-header">
+            <strong style="color:var(--primary-900); font-size:1.05rem;">${cropName}</strong>
+            <span class="bid-status-tag leading">${statusTag}</span>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">
+            ${isEn ? 'Buyer:' : 'కొనుగోలుదారు:'} <strong>${r.buyer_name}</strong> • ${isEn ? 'Quantity:' : 'పరిమాణం:'} <strong>${qtyText}</strong>
+          </div>
+          <div style="font-size:0.85rem; color:var(--primary-800); font-weight:700; margin-top:0.25rem;">
+            ${isEn ? 'Offer Price:' : 'ఆఫర్ ధర:'} ₹${Number(r.offer_price).toLocaleString('en-IN')}/Q
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-light); margin-top:0.25rem;">
+            📍 ${isEn ? 'Delivery:' : 'డెలివరీ:'} ${r.delivery_mandi} • ⏳ ${isEn ? 'Validity:' : 'గడువు:'} ${r.valid_until}
+          </div>
         </div>
-        <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">
-          కొనుగోలుదారు: <strong>${r.buyer_name}</strong> • పరిమాణం: <strong>${r.target_qty} క్వింటాళ్లు</strong>
-        </div>
-        <div style="font-size:0.85rem; color:var(--primary-800); font-weight:700; margin-top:0.25rem;">
-          ఆఫర్ ధర: ₹${Number(r.offer_price).toLocaleString('en-IN')}/Q
-        </div>
-        <div style="font-size:0.8rem; color:var(--text-light); margin-top:0.25rem;">
-          📍 డెలివరీ: ${r.delivery_mandi} • ⏳ గడువు: ${r.valid_until}
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } catch (e) {
-    board.innerHTML = `<p style="padding:2rem; text-align:center; color:var(--text-muted);">టెండర్లు లోడ్ చేయడంలో విఫలమైంది.</p>`;
+    const curLang = localStorage.getItem('kissan_lang') || 'te';
+    board.innerHTML = `<p style="padding:2rem; text-align:center; color:var(--text-muted);">${curLang === 'en' ? 'Failed to load tenders.' : 'టెండర్లు లోడ్ చేయడంలో విఫలమైంది.'}</p>`;
   }
 }
 

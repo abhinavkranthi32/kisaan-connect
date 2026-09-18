@@ -203,6 +203,56 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { status: 'success', lot });
   }
 
+  // 4b. Create Harvest Lot (Farmer -> Backend -> DB -> Broadcast)
+  if (method === 'POST' && pathname === '/api/lots') {
+    try {
+      const body = await parseBody(req);
+      const lotId = body.id || `LOT-TS-${Date.now().toString().slice(-4)}`;
+      let requestedFarmerId = body.farmerId || 'USR-FARM-01';
+      let farmer = db.prepare('SELECT id, name, phone FROM farmers WHERE id = ?').get(requestedFarmerId);
+      if (!farmer) {
+        farmer = db.prepare('SELECT id, name, phone FROM farmers LIMIT 1').get();
+      }
+      const farmerId = farmer ? farmer.id : 'USR-FARM-01';
+      const farmerName = body.farmerName || (farmer ? farmer.name : 'మల్లారెడ్డి (Malla Reddy)');
+      const farmerPhone = body.farmerPhone || (farmer ? farmer.phone : '+91 98480 55210');
+      const cropKey = body.cropKey || 'teja_chilli';
+      const cropNameTe = body.cropNameTe || 'పంట';
+      const cropNameEn = body.cropNameEn || 'Crop';
+      const varietyTe = body.varietyTe || '';
+      const varietyEn = body.varietyEn || '';
+      const quantity = Number(body.quantity || body.quantity_quintals || 50);
+      const grade = body.grade || 'A';
+      const moisture = body.moisture || body.moisture_pct || '10%';
+      const locationTe = body.locationTe || body.location_te || 'తెలంగాణ';
+      const locationEn = body.locationEn || body.location_en || 'Telangana';
+      const storageTe = body.storageTe || body.storage_type_te || 'పొలంలో ఉంది (Farm Gate)';
+      const storageEn = body.storageEn || body.storage_type_en || 'Farm Gate Pickup';
+      const reservePrice = Number(body.reservePrice || body.reserve_price || 20000);
+      const image = body.image || body.image_url || '/shared/assets/crops/teja_chilli.jpg';
+
+      db.prepare(`
+        INSERT INTO harvest_lots (
+          id, farmer_id, farmer_name, farmer_phone, crop_key, crop_name_te, crop_name_en,
+          variety_te, variety_en, quantity_quintals, grade, moisture_pct, location_te, location_en,
+          storage_type_te, storage_type_en, reserve_price, highest_bid, image_url, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+      `).run(
+        lotId, farmerId, farmerName, farmerPhone, cropKey, cropNameTe, cropNameEn,
+        varietyTe, varietyEn, quantity, grade, moisture, locationTe, locationEn,
+        storageTe, storageEn, reservePrice, reservePrice, image
+      );
+
+      const createdLot = db.prepare('SELECT * FROM harvest_lots WHERE id = ?').get(lotId);
+      createdLot.bids = [];
+      broadcastEvent('NEW_LOT', { lot: createdLot });
+
+      return sendJson(res, 201, { status: 'success', message: 'Harvest lot listed successfully', lot: createdLot });
+    } catch (err) {
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
   // 5. Submit Bid (Buyer -> Backend -> DB -> Broadcast)
   if (method === 'POST' && pathname === '/api/bids') {
     try {
@@ -461,22 +511,27 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ---------------------------------------------------------------------------
-  // STATIC FILE SERVING
+  // STATIC FILE SERVING & ROUTE RE-WRITING
   // ---------------------------------------------------------------------------
-  let safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
-  if (safePath === '/' || safePath === '') {
-    safePath = '/main_portal/index.html';
-  } else if (safePath === '/farmer_portal' || safePath === '/farmer_portal/') {
-    safePath = '/farmer_portal/index.html';
-  } else if (safePath === '/buyer_portal' || safePath === '/buyer_portal/') {
-    safePath = '/buyer_portal/index.html';
-  } else if (safePath === '/logistics_portal' || safePath === '/logistics_portal/') {
-    safePath = '/logistics_portal/index.html';
-  } else if (safePath === '/main_portal' || safePath === '/main_portal/') {
-    safePath = '/main_portal/index.html';
+  const rawPath = (pathname || '/').replace(/\\/g, '/').replace(/\/+/g, '/');
+
+  // Friendly redirect for root
+  if (rawPath === '' || rawPath === '/') {
+    res.writeHead(302, { 'Location': '/main_portal/' });
+    res.end();
+    return;
   }
 
-  const filePath = path.join(PUBLIC_DIR, safePath);
+  // Redirect extensionless portal routes to trailing slash so relative assets resolve cleanly
+  const portalShortcuts = ['/main_portal', '/farmer_portal', '/buyer_portal', '/logistics_portal'];
+  if (portalShortcuts.includes(rawPath)) {
+    res.writeHead(302, { 'Location': `${rawPath}/` });
+    res.end();
+    return;
+  }
+
+  let safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
+  let filePath = path.join(PUBLIC_DIR, safePath);
 
   // Security check: ensure path is within PUBLIC_DIR
   if (!filePath.startsWith(PUBLIC_DIR)) {
@@ -486,10 +541,20 @@ const server = http.createServer(async (req, res) => {
   }
 
   fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
+    if (err) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('File Not Found');
       return;
+    }
+
+    // If request is a directory, automatically look for index.html inside it
+    if (stats.isDirectory()) {
+      filePath = path.join(filePath, 'index.html');
+      if (!fs.existsSync(filePath)) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('File Not Found');
+        return;
+      }
     }
 
     const ext = path.extname(filePath).toLowerCase();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kissan Connect | రవాణా వేదిక (Logistics Portal)</title>
+  <title data-i18n="page_title_logistics">కిసాన్ కనెక్ట్ | రవాణాదారు పోర్టల్</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
   <aside class="mandi-ticker-bar" id="mandiTickerBar">
     <div class="ticker-label">
       <span class="live-dot"></span>
-      <span>తెలంగాణ మార్కెట్ ధరలు (Live Mandi Rates)</span>
+      <span data-i18n="ticker_title">తెలంగాణ ప్రత్యక్ష మార్కెట్ ధరలు</span>
     </div>
     <div class="ticker-track-wrapper">
       <div class="ticker-track" id="tickerTrack"></div>
@@ -38,38 +38,38 @@
       <!-- Top Nav -->
       <header class="logistics-top-navbar">
         <div class="brand-left">
-          <a href="../main_portal/index.html" style="text-decoration:none;" class="brand-logo-text">🌾 కిసాన్ కనెక్ట్</a>
-          <span class="portal-badge" style="background:#FEF3C7; color:#B45309; border-color:rgba(180,83,9,0.2);">🚛 రవాణాదారు పోర్టల్ (Logistics Fleet)</span>
+          <a href="../main_portal/index.html" style="text-decoration:none;" class="brand-logo-text" data-i18n="hero_title">🌾 కిసాన్ కనెక్ట్</a>
+          <span class="portal-badge" style="background:#FEF3C7; color:#B45309; border-color:rgba(180,83,9,0.2);" data-i18n="badge_logistics_portal">🚛 రవాణాదారు పోర్టల్</span>
         </div>
 
         <div class="nav-right-actions">
           <div class="escrow-quick-pill">
             <span class="escrow-dot" style="background:#16A34A;"></span>
-            <span>సంపాదించిన మొత్తం:</span>
+            <span data-i18n="total_earned_label">సంపాదించిన మొత్తం:</span>
             <strong id="logisticsEarnings">₹48,200</strong>
           </div>
           <a href="../main_portal/index.html" class="btn btn-outline btn-sm switch-role-btn">
-            🚪 <span>పాత్ర మార్చండి (Switch Role)</span>
+            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి</span>
           </a>
         </div>
       </header>
 
       <div class="section-banner" style="margin-top:1rem; margin-bottom:1.25rem;">
         <div>
-          <h2 class="section-title">గ్రామీణ వ్యవసాయ రవాణా ట్రిప్పుల వేదిక (Haulage Trips)</h2>
-          <p class="section-desc">రైతుల పొలాల వద్ద నుండి మిల్లులు మరియు గోదాములకు పంటలను తరలించే ట్రిప్పులను ఆమోదించండి. OTP ఆధారిత లోడింగ్ ద్వారా తక్షణ రవాణా చార్జీలు పొందండి.</p>
+          <h2 class="section-title" data-i18n="logistics_trips_title">గ్రామీణ వ్యవసాయ రవాణా ట్రిప్పుల వేదిక</h2>
+          <p class="section-desc" data-i18n="logistics_trips_desc">రైతుల పొలాల వద్ద నుండి మిల్లులు మరియు గోదాములకు పంటలను తరలించే ట్రిప్పులను ఆమోదించండి. OTP ఆధారిత లోడింగ్ ద్వారా తక్షణ రవాణా చార్జీలు పొందండి.</p>
         </div>
         <div class="banner-actions">
-          <button class="btn btn-outline btn-sm" onclick="renderLogisticsTrips()">🔄 రిఫ్రెష్ ట్రిప్పులు</button>
+          <button class="btn btn-outline btn-sm" onclick="renderLogisticsTrips()" data-i18n="btn_refresh_trips">🔄 రిఫ్రెష్ ట్రిప్పులు</button>
         </div>
       </div>
 
       <!-- Trip Filters Row -->
       <div class="trip-filters-row" style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm trip-filter-btn active" id="btnFilterAll" onclick="setTripFilter('all')">అన్నీ (All Trips)</button>
-        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterAvailable" onclick="setTripFilter('available')">⚡ అందుబాటులో ఉన్నవి (Available)</button>
-        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterAssigned" onclick="setTripFilter('assigned')">🚛 కేటాయించబడినవి (Assigned)</button>
-        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterDelivered" onclick="setTripFilter('delivered')">✅ పూర్తయినవి (Delivered)</button>
+        <button class="btn btn-primary btn-sm trip-filter-btn active" id="btnFilterAll" onclick="setTripFilter('all')" data-i18n="filter_all_trips">అన్నీ</button>
+        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterAvailable" onclick="setTripFilter('available')" data-i18n="filter_available_trips">⚡ అందుబాటులో ఉన్నవి</button>
+        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterAssigned" onclick="setTripFilter('assigned')" data-i18n="filter_assigned_trips">🚛 కేటాయించబడినవి</button>
+        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterDelivered" onclick="setTripFilter('delivered')" data-i18n="filter_delivered_trips">✅ పూర్తయినవి</button>
       </div>
 
       <!-- Trips Grid -->
@@ -83,27 +83,27 @@
   <div class="modal-backdrop" id="acceptTripModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeAcceptTripModal()">&times;</button>
-      <h3 class="modal-title">రవాణా ట్రిప్ ఆమోదించండి (Accept Trip)</h3>
+      <h3 class="modal-title" data-i18n="accept_trip_title">రవాణా ట్రిప్ ఆమోదించండి</h3>
       <p class="modal-subtitle" id="acceptTripSubtitle">ట్రిప్ వివరాలు</p>
 
       <form onsubmit="handleAcceptTripSubmit(event)">
         <div class="form-group">
-          <label>కేటాయించే వాహనం రిజిస్ట్రేషన్ *</label>
+          <label data-i18n="lbl_vehicle_reg">కేటాయించే వాహనం రిజిస్ట్రేషన్ *</label>
           <input type="text" id="tripVehicleReg" value="TS 03 UB 8192" required>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>డ్రైవర్ పేరు *</label>
+            <label data-i18n="lbl_driver_name">డ్రైవర్ పేరు *</label>
             <input type="text" id="tripDriverName" value="రాము యాదవ్" required>
           </div>
           <div class="form-group">
-            <label>మొబైల్ నంబర్ *</label>
+            <label data-i18n="lbl_driver_mobile">మొబైల్ నంబర్ *</label>
             <input type="tel" id="tripDriverPhone" value="9848123990" required>
           </div>
         </div>
         <div class="modal-actions-row" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeAcceptTripModal()">రద్దు చేయండి</button>
-          <button type="submit" class="btn btn-primary">✓ ట్రిప్ ఆమోదించు</button>
+          <button type="button" class="btn btn-secondary" onclick="closeAcceptTripModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" data-i18n="btn_accept_trip">✓ ట్రిప్ ఆమోదించు</button>
         </div>
       </form>
     </div>

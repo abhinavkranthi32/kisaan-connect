@@ -52,6 +52,9 @@ function renderLogisticsTrips() {
   const grid = document.getElementById('logisticsTripsGrid');
   if (!grid) return;
 
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
+  const isEn = curLang === 'en';
+
   let trips = window.LogisticsDB ? window.LogisticsDB.getTrips() : [];
 
   if (currentTripFilter !== 'all') {
@@ -62,8 +65,8 @@ function renderLogisticsTrips() {
     grid.innerHTML = `
       <div style="grid-column: 1/-1; text-align:center; padding: 3rem; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
         <div style="font-size:2.5rem; margin-bottom:0.5rem;">🚚</div>
-        <p>ఎంచుకున్న కేటగిరీలో ట్రిప్పులు ఏవీ లేవు.</p>
-        <button class="btn btn-secondary btn-sm" onclick="setTripFilter('all')">అన్ని ట్రిప్పులను చూడండి</button>
+        <p>${isEn ? 'No haulage trips found in this category.' : 'ఎంచుకున్న కేటగిరీలో ట్రిప్పులు ఏవీ లేవు.'}</p>
+        <button class="btn btn-secondary btn-sm" onclick="setTripFilter('all')">${isEn ? 'View All Trips' : 'అన్ని ట్రిప్పులను చూడండి'}</button>
       </div>
     `;
     return;
@@ -74,14 +77,14 @@ function renderLogisticsTrips() {
     const isAssigned = t.status === 'assigned' || t.status === 'in_transit';
     const isDelivered = t.status === 'delivered';
 
-    let statusText = 'లభ్యంగా ఉంది';
+    let statusText = isEn ? 'Available for Haulage' : 'లభ్యంగా ఉంది';
     let statusClass = 'high';
 
     if (isAssigned) {
-      statusText = 'రవాణాలో ఉంది (Assigned)';
+      statusText = isEn ? 'In Transit' : 'రవాణాలో ఉంది';
       statusClass = 'normal';
     } else if (isDelivered) {
-      statusText = 'పూర్తయింది (Delivered)';
+      statusText = isEn ? 'Delivered' : 'పూర్తయింది';
       statusClass = 'success';
     }
 
@@ -90,7 +93,7 @@ function renderLogisticsTrips() {
         <div class="trip-card-header">
           <div>
             <h4 style="font-size:1.1rem; font-weight:800; color:var(--primary-900);">${t.cropName}</h4>
-            <span style="font-size:0.75rem; color:var(--text-muted);">ట్రిప్ ఐడీ: #${t.tripId}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${isEn ? 'Trip ID:' : 'ట్రిప్ ఐడీ:'} #${t.tripId}</span>
           </div>
           <span class="demand-tag ${statusClass}">
             ${statusText}
@@ -99,41 +102,41 @@ function renderLogisticsTrips() {
 
         <div class="trip-route-visual">
           <div class="trip-route-line">
-            <span>📍 బయలుదేరే స్థలం:</span>
+            <span>${isEn ? '📍 Origin / Farm:' : '📍 బయలుదేరే స్థలం:'}</span>
             <strong>${t.origin}</strong>
           </div>
           <div class="trip-route-line">
-            <span>🏁 గమ్యస్థానం:</span>
+            <span>${isEn ? '🏁 Destination:' : '🏁 గమ్యస్థానం:'}</span>
             <strong>${t.destination}</strong>
           </div>
           <div style="font-size:0.75rem; color:var(--text-light); margin-top:0.25rem;">
-            అంచనా దూరం: <strong>${t.distanceKm} కి.మీ</strong> • వాహనం: <strong>${t.vehicleType}</strong>
+            ${isEn ? 'Est. Distance:' : 'అంచనా దూరం:'} <strong>${t.distanceKm} ${isEn ? 'km' : 'కి.మీ'}</strong> • ${isEn ? 'Vehicle:' : 'వాహనం:'} <strong>${t.vehicleType}</strong>
           </div>
           ${t.assignedVehicle ? `
             <div style="font-size:0.78rem; color:var(--primary-700); margin-top:0.35rem; background:var(--primary-50); padding:0.3rem 0.6rem; border-radius:6px;">
-              🚛 కేటాయించబడింది: <strong>${t.assignedVehicle}</strong> (${t.driverName || 'డ్రైవర్'})
+              🚛 ${isEn ? 'Assigned Vehicle:' : 'కేటాయించబడింది:'} <strong>${t.assignedVehicle}</strong> (${t.driverName || (isEn ? 'Driver' : 'డ్రైవర్')})
             </div>
           ` : ''}
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border-card); padding-top:0.75rem; margin-top:0.5rem;">
           <div>
-            <span style="font-size:0.75rem; color:var(--text-light); display:block;">రవాణా చార్జీలు:</span>
+            <span style="font-size:0.75rem; color:var(--text-light); display:block;">${isEn ? 'Guaranteed Freight:' : 'రవాణా చార్జీలు:'}</span>
             <strong style="font-size:1.25rem; color:var(--primary-800);">₹${Number(t.freightOffer).toLocaleString('en-IN')}</strong>
           </div>
 
           <div>
             ${isAvailable ? `
               <button class="btn btn-primary btn-sm" onclick="openAcceptTripModal('${t.tripId}')">
-                ✓ ట్రిప్ తీసుకోండి
+                ✓ ${isEn ? 'Accept Trip' : 'ట్రిప్ తీసుకోండి'}
               </button>
             ` : (isAssigned ? `
               <button class="btn btn-outline btn-sm" onclick="promptTripOtp('${t.tripId}', '${t.pickupOtp}')">
-                🔑 OTP ధృవీకరించు
+                🔑 ${isEn ? 'Verify Pickup OTP' : 'OTP ధృవీకరించు'}
               </button>
             ` : `
               <span style="color:var(--accent-green); font-weight:700; font-size:0.85rem;">
-                ✓ ఛార్జీలు చెల్లించబడ్డాయి
+                ✓ ${isEn ? 'Freight Payout Released' : 'ఛార్జీలు చెల్లించబడ్డాయి'}
               </span>
             `)}
           </div>
@@ -145,7 +148,10 @@ function renderLogisticsTrips() {
 
 function openAcceptTripModal(tripId) {
   selectedTripForAccept = tripId;
-  document.getElementById('acceptTripSubtitle').textContent = `ట్రిప్ #${tripId} కోసం డ్రైవర్ వివరాలు నమోదు చేయండి`;
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
+  document.getElementById('acceptTripSubtitle').textContent = curLang === 'en'
+    ? `Enter driver details for Trip #${tripId}`
+    : `ట్రిప్ #${tripId} కోసం డ్రైవర్ వివరాలు నమోదు చేయండి`;
   document.getElementById('acceptTripModal').classList.add('active');
 }
 
@@ -164,20 +170,25 @@ function handleAcceptTripSubmit(e) {
     window.LogisticsDB.acceptTrip(selectedTripForAccept, reg, name, phone);
   }
 
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
   closeAcceptTripModal();
   renderLogisticsTrips();
-  showToast('🚛 ట్రిప్ విజయవంతంగా మీ ఫ్లీట్‌కు కేటాయించబడింది!');
+  showToast(curLang === 'en' ? '🚛 Trip successfully assigned to your fleet!' : '🚛 ట్రిప్ విజయవంతంగా మీ ఫ్లీట్‌కు కేటాయించబడింది!');
 }
 
 function promptTripOtp(tripId, expectedOtp) {
-  const entered = prompt(`సరుకు లోడ్ చేసిన తర్వాత రైతు ఇచ్చిన 4 అంకెల OTP నమోదు చేయండి: (డెమో OTP: ${expectedOtp})`, expectedOtp || '');
+  const curLang = localStorage.getItem('kissan_lang') || 'te';
+  const promptMsg = curLang === 'en'
+    ? `Enter the 4-digit pickup OTP provided by the farmer after produce loading: (Demo OTP: ${expectedOtp})`
+    : `సరుకు లోడ్ చేసిన తర్వాత రైతు ఇచ్చిన 4 అంకెల OTP నమోదు చేయండి: (డెమో OTP: ${expectedOtp})`;
+  const entered = prompt(promptMsg, expectedOtp || '');
   if (entered) {
     if (window.LogisticsDB.verifyOtp(tripId, entered.trim())) {
       renderLogisticsTrips();
       updateLogisticsEarningsUI();
-      showToast('💰 OTP ధృవీకరించబడింది! రవాణా ఛార్జీలు మీ ఖాతాకు జమ అయ్యాయి.');
+      showToast(curLang === 'en' ? '💰 OTP verified! Freight payout credited to your account.' : '💰 OTP ధృవీకరించబడింది! రవాణా ఛార్జీలు మీ ఖాతాకు జమ అయ్యాయి.');
     } else {
-      showToast('❌ తప్పు OTP.');
+      showToast(curLang === 'en' ? '❌ Invalid OTP.' : '❌ తప్పు OTP.');
     }
   }
 }

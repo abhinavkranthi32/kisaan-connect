@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "init-db": "node db/init_db.js",
-    "test": "node scratch/test_real_api.js"
+    "init-db": "node db/init_db.js"
   },
   "keywords": [
     "agritech",
