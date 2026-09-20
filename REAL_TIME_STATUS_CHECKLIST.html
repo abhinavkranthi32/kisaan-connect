@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kissan Connect — Real-Time Status & Roadmap Checklist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --primary: #15803D;
+      --primary-light: #DCFCE7;
+      --primary-dark: #14532D;
+      --accent: #2563EB;
+      --accent-light: #DBEAFE;
+      --warning: #D97706;
+      --warning-light: #FEF3C7;
+      --success: #16A34A;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2.5rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header-card {
+      background: linear-gradient(135deg, #14532D 0%, #15803D 50%, #166534 100%);
+      color: #FFFFFF;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-card::after {
+      content: "⚡ REAL-TIME ENGINE";
+      position: absolute;
+      right: -20px;
+      bottom: -15px;
+      font-size: 3rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.05);
+      letter-spacing: 2px;
+      pointer-events: none;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .header-card h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.85);
+      margin-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 1rem;
+    }
+
+    .meta-item strong {
+      color: #FFFFFF;
+    }
+
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-action {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.6rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-action:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      transform: translateY(-1px);
+    }
+
+    .btn-action.primary {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary);
+    }
+
+    .btn-action.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      border-bottom: 2px solid #F1F5F9;
+      padding-bottom: 0.85rem;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag-completed {
+      background: #DCFCE7;
+      color: #15803D;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tag-pending {
+      background: #FEF3C7;
+      color: #B45309;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .check-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .check-group-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-list {
+      list-style: none;
+    }
+
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 0.75rem 0.5rem;
+      border-radius: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .item:hover {
+      background: #F8FAFC;
+    }
+
+    .item-icon {
+      font-size: 1.1rem;
+      line-height: 1.4;
+      flex-shrink: 0;
+    }
+
+    .item-content {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .item-title {
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .item-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #F1F5F9;
+      color: #0F172A;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background: #F8FAFC;
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge-phase {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      font-size: 0.8rem;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #FFFFFF;
+      }
+      .actions-bar {
+        display: none;
+      }
+      .header-card {
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .section-card {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Actions -->
+    <div class="actions-bar">
+      <button class="btn-action" onclick="window.print()">
+        🖨️ Print / Save as PDF
+      </button>
+      <button class="btn-action primary" onclick="copyDocumentLink()">
+        📋 Copy Share Note
+      </button>
+    </div>
+
+    <!-- Header Card -->
+    <header class="header-card">
+      <div class="badge-pill">⚡ Architecture & Delivery Status</div>
+      <h1>Kissan Connect — Real-Time Readiness Checklist</h1>
+      <p>Telangana Agricultural Market Linkage Platform (SIH Platform)</p>
+      <div class="header-meta">
+        <div class="meta-item"><strong>Date:</strong> September 20, 2026</div>
+        <div class="meta-item"><strong>Backend:</strong> Node.js Native SSE (`/api/events`)</div>
+        <div class="meta-item"><strong>Database:</strong> Centralized SQLite (`data/kissan.db`)</div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: WHAT IS COMPLETED -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span>✅</span> 1. What is Completed & Working in Real Time
+        </div>
+        <span class="tag-completed">Fully Functional</span>
+      </div>
+
+      <!-- Engine -->
+      <div class="check-group">
+        <div class="check-group-title">⚙️ A. Central Real-Time Engine (<code>server.js</code>)</div>
+        <ul class="item-list">
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">SSE Event Stream Endpoint (<code>GET /api/events</code>)</div>
+              <div class="item-desc">Native HTTP streaming (zero external framework dependency), headers configured with <code>text/event-stream</code>, <code>no-cache</code>, and cross-origin permissions.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">25-Second Heartbeat Ping</div>
+              <div class="item-desc">Sends <code>: ping\n\n</code> periodically to prevent mobile telecom gateways and proxies from closing idle TCP sockets.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Authenticated Client Mapping & Role Separation</div>
+              <div class="item-desc">Maps connection tokens to genuine user IDs and roles (<code>farmer</code>, <code>buyer</code>, <code>logistics</code>, <code>admin</code>) for targeted event routing.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Instant Snapshot on Handshake</div>
+              <div class="item-desc">Immediately pushes live active harvest lots and available logistics trips upon connection establishment.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Targeted Privacy Filtering (<code>authFilter</code>)</div>
+              <div class="item-desc">Dispatches sensitive bid details strictly to the affected farmer, bidder, and admin, while emitting public price updates to the rest of the market.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Procurement Lifecycle -->
+      <div class="check-group">
+        <div class="check-group-title">🌾 B. End-to-End Procurement Lifecycle Synchronization</div>
+        <ul class="item-list">
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Instant Lot Creation (Farmer → Buyer)</div>
+              <div class="item-desc">When a farmer posts a harvest lot, <code>NEW_LOT</code> / <code>listing.created</code> fires; Buyer marketplace auto-renders the new lot without manual reload.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Real-Time Bidding & Audio Alert (Buyer → Farmer)</div>
+              <div class="item-desc">When a buyer bids, <code>NEW_BID</code> / <code>bid.created</code> triggers an audio chime, Telugu popup alert, and table update on the farmer's screen.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Deal Acceptance & Escrow Lock (Farmer → Logistics)</div>
+              <div class="item-desc">Accepting a bid locks buyer escrow, cancels competing bids, generates a pickup OTP, and pushes <code>ORDER_CREATED</code> directly to the Transporter board.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Fleet Dispatch & Driver Assignment (Logistics → Farmer/Buyer)</div>
+              <div class="item-desc">Transporter accepting trip emits <code>TRIP_ASSIGNED</code> & <code>ORDER_UPDATED</code>; Buyer and farmer see the driver's name and vehicle registration live.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">✅</span>
+            <div class="item-content">
+              <div class="item-title">Pickup OTP Delivery & Instant Escrow Settlement</div>
+              <div class="item-desc">Verifying OTP at destination emits <code>ORDER_DELIVERED</code> & <code>ESCROW_RELEASED</code>; Farmer wallet balance credits immediately with audit logging.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 2: WHAT IS LEFT TO DO -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span>🚀</span> 2. What is Left to Do (Production Readiness Gaps)
+        </div>
+        <span class="tag-pending">Action Items</span>
+      </div>
+
+      <!-- Priority 1 -->
+      <div class="check-group">
+        <div class="check-group-title">⚡ Priority 1: Client-Side Fixes & Tickers (Immediate)</div>
+        <ul class="item-list">
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Fix Buyer Portal SSE Token (<code>buyer.js</code>)</div>
+              <div class="item-desc">Pass session token so buyer connects as authenticated user rather than <code>guest</code>, enabling targeted private alerts.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Real-Time Competing Bid Updates for Other Buyers</div>
+              <div class="item-desc">Add listener for <code>listing.updated</code> in <code>buyer.js</code> so competing buyers see highest bids update live without reloading.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Dynamic Wallet Balance Refresh</div>
+              <div class="item-desc">Listen to <code>wallet_balance_updated</code> on both buyer and farmer screens to update balance badges instantly on escrow lock/release.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Priority 2 -->
+      <div class="check-group">
+        <div class="check-group-title">🚛 Priority 2: Real-Time Logistics & GPS Tracking</div>
+        <ul class="item-list">
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Driver Telemetry Endpoint (<code>POST /api/trips/:id/telemetry</code>)</div>
+              <div class="item-desc">Accept driver GPS updates (latitude, longitude, speed, heading) and broadcast <code>transport.location_updated</code> to maps.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Driver Mobile Geo-Beacon</div>
+              <div class="item-desc">Use browser <code>navigator.geolocation.watchPosition</code> in <code>logistics_portal</code> to stream truck coordinates every 10–15s while en route.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Live Moving Truck Map Marker</div>
+              <div class="item-desc">Add Leaflet/OpenStreetMap truck animation on buyer and farmer tracking screens showing live location and dynamic ETA.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Priority 3 & 4 -->
+      <div class="check-group">
+        <div class="check-group-title">📡 Priority 3 & 4: Rural Network Resilience & External Services</div>
+        <ul class="item-list">
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Missed Events Replay (<code>Last-Event-ID</code>)</div>
+              <div class="item-desc">Store the last 100 events in an in-memory ring buffer. Replay missed bids/orders if a rural 4G connection drops and reconnects.</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Real SMS Gateway Integration (Fast2SMS / Twilio / MSG91)</div>
+              <div class="item-desc">Dispatch critical alerts via mobile SMS for farmers who don't have browser tabs open (OTP, winning bid, truck arrival).</div>
+            </div>
+          </li>
+          <li class="item">
+            <span class="item-icon">⏳</span>
+            <div class="item-content">
+              <div class="item-title">Live Agmarknet Mandi Pricing (Data.gov.in)</div>
+              <div class="item-desc">Populate <code>DATA_GOV_IN_API_KEY</code> in <code>.env</code> to activate live wholesale price streams directly from government APMC mandis.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 3: IMPLEMENTATION SCHEDULE -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span>📅</span> 3. Recommended Phased Implementation Matrix
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Target Tasks</th>
+            <th>Component</th>
+            <th>Est. Effort</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-phase">Phase 1</span></td>
+            <td>Buyer SSE auth token fix, <code>listing.updated</code> ticker, live wallet balance, visual connection indicator</td>
+            <td>Portals & UI</td>
+            <td><strong>30 mins</strong></td>
+          </tr>
+          <tr>
+            <td><span class="badge-phase">Phase 2</span></td>
+            <td><code>POST /api/trips/:id/telemetry</code>, driver GPS watcher, live Leaflet map truck movement</td>
+            <td>Logistics & GPS</td>
+            <td><strong>1 hour</strong></td>
+          </tr>
+          <tr>
+            <td><span class="badge-phase">Phase 3</span></td>
+            <td><code>Last-Event-ID</code> ring buffer for rural dropout recovery & auto-replay</td>
+            <td>Network Engine</td>
+            <td><strong>45 mins</strong></td>
+          </tr>
+          <tr>
+            <td><span class="badge-phase">Phase 4</span></td>
+            <td>Fast2SMS / Twilio SMS gateway, Gov Agmarknet API key, persistent hosting configuration</td>
+            <td>External Services</td>
+            <td><strong>45 mins</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    function copyDocumentLink() {
+      const summaryText = `*Kissan Connect — Real-Time Implementation Status*\\n\\n` +
+        `✅ *COMPLETED & WORKING IN REAL TIME:*\\n` +
+        `- Native Server-Sent Events (SSE) Hub (/api/events) with 25s heartbeat\\n` +
+        `- Live Harvest Lot Creation (Farmer -> Buyer instant listing)\\n` +
+        `- Real-time Bidding with audio chime & Telugu toast alerts\\n` +
+        `- Deal Acceptance, Buyer Escrow Locking, and instant Haulage Trip broadcast\\n` +
+        `- Vehicle dispatch updates and OTP-based instant wallet settlement\\n\\n` +
+        `⏳ *LEFT TO DO FOR FULL REAL-TIME PRODUCTION:*\\n` +
+        `- Fix Buyer Portal SSE token & add competing bid price ticker (Phase 1)\\n` +
+        `- Live GPS driver telemetry endpoint & moving truck map marker (Phase 2)\\n` +
+        `- Rural network reconnection buffer (Last-Event-ID replay) (Phase 3)\\n` +
+        `- SMS Gateway (Twilio/Fast2SMS) for real phone notifications (Phase 4)`;
+      
+      navigator.clipboard.writeText(summaryText).then(() => {
+        alert('Copied summary note to clipboard! You can paste it directly to your friend.');
+      }).catch(() => {
+        alert('Please select and copy the text manually.');
+      });
+    }
+  </script>
+</body>
+</html>

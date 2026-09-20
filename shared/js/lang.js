@@ -922,15 +922,53 @@ const TRANSLATIONS = {
   }
 };
 
-// 4. Global Translation Lookup Helper
-function t(key, fallback) {
-  if (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) {
-    return TRANSLATIONS[currentLang][key];
+function sanitizeForLang(text, lang) {
+  if (!text || typeof text !== 'string') return text || '';
+  const current = lang || (typeof window !== 'undefined' && window.currentLang) || 'te';
+
+  if (current === 'en') {
+    // Extract English text inside parenthesis e.g. "మల్లారెడ్డి (Malla Reddy)" -> "Malla Reddy"
+    const match = text.match(/\(([^)]+)\)/);
+    if (match && /[a-zA-Z]/.test(match[1])) {
+      return match[1].trim();
+    }
+    // Remove Telugu characters & residual brackets
+    if (/[\u0C00-\u0C7F]/.test(text)) {
+      let cleaned = text.replace(/[\u0C00-\u0C7F]/g, '').replace(/[()]/g, '').trim();
+      if (cleaned.length > 0) return cleaned;
+
+      const knownEnMap = {
+        'తేజ మిర్చి': 'Teja Red Chilli',
+        'వరి': 'Paddy',
+        'పత్తి': 'Raw Cotton',
+        'పసుపు': 'Turmeric',
+        'మొక్కజొన్న': 'Maize',
+        'కందులు': 'Red Gram',
+        'జనగామ': 'Jangaon',
+        'వరంగల్': 'Warangal',
+        'మిర్యాలగూడ': 'Miryalaguda',
+        'ఖమ్మం': 'Khammam',
+        'నిజామాబాద్': 'Nizamabad',
+        'సికింద్రాబాద్': 'Secunderabad',
+        'మల్లారెడ్డి': 'Malla Reddy'
+      };
+      for (const [teKey, enVal] of Object.entries(knownEnMap)) {
+        if (text.includes(teKey)) return text.replace(teKey, enVal).replace(/[\u0C00-\u0C7F]/g, '').trim();
+      }
+      return 'Agricultural Produce';
+    }
+    return text;
+  } else if (current === 'te') {
+    // Extract Telugu part before parenthesis e.g. "మల్లారెడ్డి (Malla Reddy)" -> "మల్లారెడ్డి"
+    if (text.includes('(') && /[\u0C00-\u0C7F]/.test(text)) {
+      const parts = text.split('(');
+      if (parts[0] && /[\u0C00-\u0C7F]/.test(parts[0])) {
+        return parts[0].trim();
+      }
+    }
+    return text;
   }
-  if (TRANSLATIONS['en'] && TRANSLATIONS['en'][key]) {
-    return TRANSLATIONS['en'][key];
-  }
-  return fallback || key;
+  return text;
 }
 
 // 5. MASTER LANGUAGE SWITCHER
@@ -1029,7 +1067,7 @@ function setLanguage(lang, shouldBroadcast = true) {
       displayFarmerName.textContent = lang === 'en' ? 'Malla Reddy' : 'మల్లారెడ్డి';
     }
     const topLocationCleanText = document.getElementById('topLocationCleanText');
-    if (topLocationCleanText && topLocationCleanText.textContent.includes('జనగామ') || topLocationCleanText.textContent.includes('Jangaon')) {
+    if (topLocationCleanText && (topLocationCleanText.textContent.includes('జనగామ') || topLocationCleanText.textContent.includes('Jangaon'))) {
       topLocationCleanText.textContent = lang === 'en' ? 'Jangaon, Warangal' : 'జనగామ, వరంగల్';
     }
   }
@@ -1081,4 +1119,5 @@ if (typeof window !== 'undefined') {
   window.setLanguage = setLanguage;
   window.currentLang = currentLang;
   window.t = t;
+  window.sanitizeForLang = sanitizeForLang;
 }

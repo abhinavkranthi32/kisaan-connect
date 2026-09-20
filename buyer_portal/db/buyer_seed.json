@@ -31,32 +31,5 @@
       "rating": "4.7 ★ (41 డీల్స్)"
     }
   ],
-  "activeBids": [
-    {
-      "bidId": "BID-901",
-      "lotId": "LOT-TS-401",
-      "buyerId": "USR-BUY-01",
-      "cropName": "తేజ మిర్చి (Teja Chilli)",
-      "farmerName": "మల్లారెడ్డి",
-      "farmerLocation": "జనగామ మండలం, వరంగల్",
-      "quantity": 40,
-      "pricePerQ": 21650,
-      "totalValuation": 866000,
-      "logisticsMode": "buyer_vehicle",
-      "status": "leading"
-    },
-    {
-      "bidId": "BID-881",
-      "lotId": "LOT-TS-402",
-      "buyerId": "USR-BUY-02",
-      "cropName": "తెలంగాణ సోనా వరి",
-      "farmerName": "మల్లారెడ్డి",
-      "farmerLocation": "మిర్యాలగూడ పరిసరాలు",
-      "quantity": 120,
-      "pricePerQ": 2440,
-      "totalValuation": 292800,
-      "logisticsMode": "buyer_vehicle",
-      "status": "leading"
-    }
-  ]
+  "activeBids": []
 }

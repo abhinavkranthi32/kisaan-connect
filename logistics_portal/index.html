@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="page_title_logistics">కిసాన్ కనెక్ట్ | రవాణాదారు పోర్టల్</title>
+  <title data-i18n="page_title_logistics">లాజిస్టిక్స్ & రవాణా నెట్‌వర్క్ | కిసాన్ కనెక్ట్</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,11 +16,11 @@
 </head>
 <body>
 
-  <!-- Top Ticker Bar -->
+  <!-- Top Mandi Intel Ticker -->
   <aside class="mandi-ticker-bar" id="mandiTickerBar">
     <div class="ticker-label">
       <span class="live-dot"></span>
-      <span data-i18n="ticker_title">తెలంగాణ ప్రత్యక్ష మార్కెట్ ధరలు</span>
+      <span data-i18n="ticker_title">తెలంగాణ రవాణా & మార్కెట్ కనెక్ట్</span>
     </div>
     <div class="ticker-track-wrapper">
       <div class="ticker-track" id="tickerTrack"></div>
@@ -32,54 +32,56 @@
     </div>
   </aside>
 
-  <main id="appContainer">
-    <section id="logisticsPortalView" class="view-section active">
-      
-      <!-- Top Nav -->
-      <header class="logistics-top-navbar">
-        <div class="brand-left">
-          <a href="../main_portal/index.html" style="text-decoration:none;" class="brand-logo-text" data-i18n="hero_title">🌾 కిసాన్ కనెక్ట్</a>
-          <span class="portal-badge" style="background:#FEF3C7; color:#B45309; border-color:rgba(180,83,9,0.2);" data-i18n="badge_logistics_portal">🚛 రవాణాదారు పోర్టల్</span>
-        </div>
+  <!-- Navbar -->
+  <header class="portal-nav">
+    <div class="portal-nav-brand">
+      <a href="/main_portal/index.html" class="nav-brand-link">
+        <span class="brand-icon">🌾</span>
+        <span class="brand-title">కిసాన్ కనెక్ట్</span>
+      </a>
+      <span class="portal-badge" data-i18n="badge_logistics_hub">రూరల్ ట్రాన్స్‌పోర్ట్ & ఫ్లీట్ హబ్</span>
+    </div>
+    <div class="portal-nav-user">
+      <span class="user-avatar">🚛</span>
+      <div class="user-meta">
+        <strong class="user-name">రాము యాదవ్ (ఫ్లీట్ మేనేజర్)</strong>
+        <span class="user-role" data-i18n="role_fleet_operator">ధృవీకరించబడిన రవాణాదారు</span>
+      </div>
+      <a href="/main_portal/index.html" class="btn btn-outline btn-sm" data-i18n="btn_exit_main">← ప్రధాన వేదిక</a>
+    </div>
+  </header>
 
-        <div class="nav-right-actions">
-          <div class="escrow-quick-pill">
-            <span class="escrow-dot" style="background:#16A34A;"></span>
-            <span data-i18n="total_earned_label">సంపాదించిన మొత్తం:</span>
-            <strong id="logisticsEarnings">₹48,200</strong>
-          </div>
-          <a href="../main_portal/index.html" class="btn btn-outline btn-sm switch-role-btn">
-            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి</span>
-          </a>
-        </div>
-      </header>
-
-      <div class="section-banner" style="margin-top:1rem; margin-bottom:1.25rem;">
+  <!-- Main Content -->
+  <main class="portal-main-container">
+    <section class="trips-board-section">
+      <div class="board-header">
         <div>
-          <h2 class="section-title" data-i18n="logistics_trips_title">గ్రామీణ వ్యవసాయ రవాణా ట్రిప్పుల వేదిక</h2>
-          <p class="section-desc" data-i18n="logistics_trips_desc">రైతుల పొలాల వద్ద నుండి మిల్లులు మరియు గోదాములకు పంటలను తరలించే ట్రిప్పులను ఆమోదించండి. OTP ఆధారిత లోడింగ్ ద్వారా తక్షణ రవాణా చార్జీలు పొందండి.</p>
+          <h2 class="board-title" data-i18n="haulage_trips_title">తెలంగాణ వ్యవసాయ ఉత్పత్తుల రవాణా ఆర్డర్లు</h2>
+          <p class="board-subtitle" data-i18n="haulage_trips_sub">పొలాల నుండి మిల్లులు మరియు మార్కెట్ యార్డులకు రవాణా ట్రిప్పులను ఆమోదించండి. తక్షణ ఎస్క్రో విడుదల.</p>
         </div>
-        <div class="banner-actions">
-          <button class="btn btn-outline btn-sm" onclick="renderLogisticsTrips()" data-i18n="btn_refresh_trips">🔄 రిఫ్రెష్ ట్రిప్పులు</button>
+        <div class="board-kpi-badge">
+          <span data-i18n="total_earnings_lbl">మొత్తం రవాణా ఆదాయం:</span>
+          <strong id="logisticsEarnings">₹48,200</strong>
         </div>
       </div>
 
-      <!-- Trip Filters Row -->
-      <div class="trip-filters-row" style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm trip-filter-btn active" id="btnFilterAll" onclick="setTripFilter('all')" data-i18n="filter_all_trips">అన్నీ</button>
+      <!-- Filters -->
+      <div class="trips-filter-bar">
+        <button class="btn btn-primary btn-sm trip-filter-btn active" id="btnFilterAll" onclick="setTripFilter('all')" data-i18n="filter_all_trips">అన్ని ట్రిప్పులు</button>
         <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterAvailable" onclick="setTripFilter('available')" data-i18n="filter_available_trips">⚡ అందుబాటులో ఉన్నవి</button>
+        <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterCommunity" onclick="setTripFilter('community')" data-i18n="filter_community_trips">🏘️ కమ్యూనిటీ పూల్స్</button>
         <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterAssigned" onclick="setTripFilter('assigned')" data-i18n="filter_assigned_trips">🚛 కేటాయించబడినవి</button>
         <button class="btn btn-secondary btn-sm trip-filter-btn" id="btnFilterDelivered" onclick="setTripFilter('delivered')" data-i18n="filter_delivered_trips">✅ పూర్తయినవి</button>
       </div>
 
       <!-- Trips Grid -->
       <div class="trips-board-grid" id="logisticsTripsGrid">
-        <!-- Rendered via JS -->
+        <!-- Rendered via JS from Central SQLite Backend -->
       </div>
     </section>
   </main>
 
-  <!-- Assign Trip Modal -->
+  <!-- Modal: Assign Trip to Driver -->
   <div class="modal-backdrop" id="acceptTripModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeAcceptTripModal()">&times;</button>
@@ -103,7 +105,107 @@
         </div>
         <div class="modal-actions-row" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
           <button type="button" class="btn btn-secondary" onclick="closeAcceptTripModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
-          <button type="submit" class="btn btn-primary" data-i18n="btn_accept_trip">✓ ట్రిప్ ఆమోదించు</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitAcceptTrip" data-i18n="btn_accept_trip">✓ ట్రిప్ ఆమోదించు</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Submit Transport Bid for Community Pooled Order -->
+  <div class="modal-backdrop" id="submitTransportBidModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeSubmitTransportBidModal()">&times;</button>
+      <h3 class="modal-title" data-i18n="bid_transport_title">రవాణా బిడ్ సమర్పించండి</h3>
+      <p class="modal-subtitle" id="bidTransportSubtitle">కమ్యూనిటీ పూల్ ఆర్డర్ వివరాలు</p>
+
+      <form onsubmit="handleTransportBidSubmit(event)">
+        <input type="hidden" id="bidTransportReqId">
+        <div class="form-group">
+          <label data-i18n="lbl_vehicle_type">వాహనం రకం (Vehicle Type) *</label>
+          <select id="bidVehicleType" required class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid var(--border-card);">
+            <option value="Mini Truck / Auto (1-2 Ton)">మిని ట్రక్ / టాటా ఏస్ (1-2 టన్నులు)</option>
+            <option value="Pickup LCV (2-5 Ton)" selected>పికప్ LCV (2-5 టన్నులు)</option>
+            <option value="Multi-Axle Truck (10+ Ton)">10-టన్నుల హెవీ మల్టీ-యాక్సిల్ లారీ</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="lbl_vehicle_cap">లభించే లోడింగ్ సామర్థ్యం (kg) *</label>
+            <input type="number" id="bidVehicleCapacity" value="1500" min="50" required>
+          </div>
+          <div class="form-group">
+            <label data-i18n="lbl_bid_price">మొత్తం రవాణా ఛార్జ్ (₹ Freight Price) *</label>
+            <input type="number" id="bidFreightPrice" placeholder="ఉదా: 3500" min="100" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_estimated_delivery_time">అంచనా డెలివరీ సమయం / విండో *</label>
+          <input type="text" id="bidEstDeliveryTime" placeholder="ఉదా: రేపు ఉదయం 10:00 లోపు" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_route_notes">పికప్ రూట్ & ప్రత్యేక రవాణా సౌకర్యాలు</label>
+          <textarea id="bidRouteNotes" rows="2" placeholder="ఉదా: గ్రామాల్లో కోల్డ్ రూట్ రవాణా & నేరుగా లోడింగ్ సదుపాయం కలదు"></textarea>
+        </div>
+        <div class="modal-actions-row" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeSubmitTransportBidModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitTransportBid" data-i18n="btn_submit_bid">✓ బిడ్ సమర్పించు</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Verify Pickup OTP -->
+  <div class="modal-backdrop" id="verifyPickupOtpModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeVerifyPickupOtpModal()">&times;</button>
+      <h3 class="modal-title" data-i18n="verify_otp_title">రైతు లోడింగ్ OTP ధృవీకరణ</h3>
+      <p class="modal-subtitle" id="verifyOtpSubtitle">పంట లోడింగ్ పూర్తయిన తర్వాత రైతు ఇచ్చిన 4 అంకెల OTP నమోదు చేయండి.</p>
+
+      <form onsubmit="handleVerifyPickupOtpSubmit(event)">
+        <div class="form-group">
+          <label data-i18n="lbl_pickup_otp">4-అంకెల పికప్ OTP *</label>
+          <input type="text" id="pickupOtpInput" maxlength="6" style="font-size:1.5rem; letter-spacing:0.25rem; text-align:center; font-weight:700;" placeholder="1234" required autofocus>
+        </div>
+        <div class="modal-actions-row" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeVerifyPickupOtpModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitPickupOtp" data-i18n="btn_confirm_pickup">✓ OTP ధృవీకరించు & చెల్లింపు విడుదల</button>
+        </div>
+  </div>
+
+  <!-- Modal: Transport Loading & Milestone Verification -->
+  <div class="modal-backdrop" id="loadingMilestoneModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeLoadingMilestoneModal()">&times;</button>
+      <h3 class="modal-title">🚚 రవాణా లోడింగ్ దశల ధృవీకరణ (Loading Milestone)</h3>
+      <p class="modal-subtitle">పంట లోడింగ్ పరిమాణం సరిచూసి రవాణా ప్రారంభించండి (ట్రిప్ ప్రారంభంలో రైతుకు ఎస్క్రో విడుదల జమవుతుంది)</p>
+
+      <form onsubmit="handleLoadingMilestoneSubmit(event)">
+        <input type="hidden" id="milestoneTransportReqId">
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>మారిన రవాణా దశ (Transport Milestone) *</label>
+          <select id="milestoneStatusSelect" class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid #CBD5E1;" required>
+            <option value="arrived_at_pickup">📍 పొలం/పికప్ లొకేషన్‌కు చేరుకున్నారు (arrived_at_pickup)</option>
+            <option value="loading_started">📦 పంట లారీ లోడింగ్ ప్రారంభమైంది (loading_started)</option>
+            <option value="loading_completed">✅ తూకం వేసి లోడింగ్ పూర్తయింది (loading_completed)</option>
+            <option value="loaded_verified">🔍 తూకం & నాణ్యత సరిచూడబడింది (loaded_verified)</option>
+            <option value="in_transit" selected>🚛 లారీ బయలుదేరింది / ప్రయాణంలో ఉంది (in_transit - ⚡ రైతుకు ఎస్క్రో పేఅవుట్ విడుదల!)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>వాస్తవంగా లోడ్ అయిన పరిమాణం (Actual Loaded Qty in Quintals/kg) *</label>
+          <input type="number" id="milestoneLoadedQtyInput" placeholder="ఉదా: 50" min="0.1" step="0.1" required style="font-size:1.1rem; font-weight:700;">
+          <small style="color:var(--text-muted); display:block; margin-top:0.35rem;">
+            ఒకవేళ ఆమోదించిన పరిమాణం కంటే తక్కువ లోడ్ అయితే, మిగిలిన ఎస్క్రో అమౌంట్ కొనుగోలుదారుకు రీఫండ్ అవుతుంది.
+          </small>
+        </div>
+
+        <div class="modal-actions-row" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeLoadingMilestoneModal()">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitMilestone" style="background:#2563EB; border:none;">
+            ✓ దశ ధృవీకరించు & చెల్లింపు విడుదల చేయి
+          </button>
         </div>
       </form>
     </div>
@@ -111,8 +213,8 @@
 
   <div id="toastNotification" class="toast-popup"></div>
 
-  <script src="/integrated_db/integrated_db.js"></script>
-  <script src="/logistics_portal/db/logistics_db.js"></script>
+  <!-- Scripts -->
+  <script src="/shared/js/api.js"></script>
   <script src="/shared/js/data.js"></script>
   <script src="/shared/js/lang.js"></script>
   <script src="/logistics_portal/js/logistics.js"></script>

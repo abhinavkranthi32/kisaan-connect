@@ -7,44 +7,5 @@
     "rythuBandhuId": "TS-RB-2024-91024",
     "walletBalance": 148500
   },
-  "harvestLots": [
-    {
-      "id": "LOT-TS-401",
-      "cropKey": "teja_chilli",
-      "cropNameTe": "తేజ మిర్చి (Teja Red Chilli)",
-      "cropNameEn": "Teja Red Chilli",
-      "varietyTe": "తేజ స్పెషల్ ఎగుమతి రకం",
-      "varietyEn": "Teja Special Export Grade",
-      "quantity": 40,
-      "grade": "A",
-      "moisture": "9.2%",
-      "locationTe": "జనగామ మండలం, వరంగల్ జిల్లా",
-      "locationEn": "Jangaon Mandal, Warangal Dist",
-      "storageTe": "పొలంలోనే ఉంది (Farm Gate)",
-      "storageEn": "Farm Gate Pickup",
-      "reservePrice": 21000,
-      "highestBid": 21650,
-      "auctionEndsIn": "03h : 42m : 18s",
-      "image": "../shared/assets/crops/teja_chilli.jpg"
-    },
-    {
-      "id": "LOT-TS-402",
-      "cropKey": "paddy",
-      "cropNameTe": "తెలంగాణ సోనా వరి (Telangana Sona Paddy)",
-      "cropNameEn": "Telangana Sona Paddy (RNR)",
-      "varietyTe": "RNR 15048 సూపర్ ఫైన్",
-      "varietyEn": "RNR 15048 Super Fine Grain",
-      "quantity": 120,
-      "grade": "A",
-      "moisture": "13.5%",
-      "locationTe": "మిర్యాలగూడ పరిసరాలు, నల్గొండ జిల్లా",
-      "locationEn": "Miryalaguda, Nalgonda Dist",
-      "storageTe": "ఇంటి గోదాము (Village Shed)",
-      "storageEn": "Village Shed",
-      "reservePrice": 2320,
-      "highestBid": 2440,
-      "auctionEndsIn": "08h : 15m : 00s",
-      "image": "../shared/assets/crops/paddy.jpg"
-    }
-  ]
+  "harvestLots": []
 }

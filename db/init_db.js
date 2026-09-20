@@ -19,19 +19,105 @@ function initDatabase() {
   console.log('Connecting to SQLite database:', DB_PATH);
   const db = new DatabaseSync(DB_PATH);
 
+  // Configure SQLite Engine Pragmas for Production Concurrency & Safety
+  db.exec('PRAGMA foreign_keys = ON;');
+  db.exec('PRAGMA journal_mode = WAL;');
+  db.exec('PRAGMA synchronous = NORMAL;');
+  db.exec('PRAGMA busy_timeout = 5000;');
+
   // Read schema
   const schemaSql = fs.readFileSync(SCHEMA_PATH, 'utf8');
   db.exec(schemaSql);
-  console.log('✅ SQLite Schema applied successfully.');
+  try {
+    db.exec('ALTER TABLE logistics_trips ADD COLUMN delivered_at DATETIME;');
+  } catch (e) {}
 
-  // Check if buyers already exist
-  const existingBuyers = db.prepare('SELECT COUNT(*) as count FROM buyers').get();
-  if (existingBuyers.count === 0) {
-    console.log('Populating initial verified APMC buyers & registered farmers...');
+  // Automatically ensure all migrations are applied idempotently
+  const { runMigrations } = require('./migrate');
+  runMigrations(db);
 
-    // Verified commercial buyers with authentic APMC licenses & Telangana GSTINs
+  console.log('✅ SQLite Schema and migrations applied successfully.');
+
+  // Check if users already exist
+  const existingUsers = db.prepare('SELECT COUNT(*) as count FROM users').get();
+  if (existingUsers.count === 0) {
+    console.log('Populating authentic users, buyers, farmers, lots, bids, orders, trips, and audit logs...');
+
+    // 1. Unified Users
+    const insertUser = db.prepare(`
+      INSERT INTO users (id, name, phone, role, avatar, kyc_status, organization, city)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    insertUser.run(
+      'USR-FARM-01',
+      'మల్లారెడ్డి (Malla Reddy)',
+      '+91 98480 55210',
+      'farmer',
+      '👨‍🌾',
+      'verified',
+      'తెలంగాణ రైతు వేదిక',
+      'జనగామ, వరంగల్'
+    );
+
+    insertUser.run(
+      'USR-BUY-01',
+      'ITC Agri Business Hub',
+      '+91 94401 22891',
+      'buyer',
+      '🏢',
+      'verified',
+      'ITC Agri Business Division',
+      'సికింద్రాబాద్ / వరంగల్'
+    );
+
+    insertUser.run(
+      'USR-BUY-02',
+      'శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్',
+      '+91 98482 11090',
+      'buyer',
+      '🌾',
+      'verified',
+      'శ్రీ కృష్ణ ఆగ్రో ప్రోడక్ట్స్',
+      'మిర్యాలగూడ'
+    );
+
+    insertUser.run(
+      'USR-BUY-03',
+      'ఖమ్మం స్పైసెస్ ఎక్స్‌పోర్టర్స్',
+      '+91 98480 33211',
+      'buyer',
+      '🌶️',
+      'verified',
+      'తెలంగాణ స్పైస్ ఎక్స్‌పోర్ట్స్ కార్పొరేషన్',
+      'ఖమ్మం'
+    );
+
+    insertUser.run(
+      'USR-LOG-01',
+      'రాము యాదవ్ (రూరల్ ఫ్లీట్ లారీ)',
+      '+91 98481 23990',
+      'logistics',
+      '🚛',
+      'verified',
+      'వరంగల్ రూరల్ ఆగ్రో ట్రాన్స్‌పోర్ట్',
+      'వరంగల్'
+    );
+
+    insertUser.run(
+      'USR-ADM-01',
+      'తెలంగాణ APMC మార్కెట్ అడ్మిన్',
+      '+91 94400 11223',
+      'admin',
+      '🛡️',
+      'verified',
+      'తెలంగాణ వ్యవసాయ మార్కెటింగ్ శాఖ',
+      'హైదరాబాద్'
+    );
+
+    // 2. Verified APMC Buyers
     const insertBuyer = db.prepare(`
-      INSERT INTO buyers (id, name, short_name, gstin, trade_license, phone, city, lat, lon, escrow_balance, rating, avatar)
+      INSERT OR REPLACE INTO buyers (id, name, short_name, gstin, trade_license, phone, city, lat, lon, escrow_balance, rating, avatar)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
@@ -80,9 +166,9 @@ function initDatabase() {
       '🌶️'
     );
 
-    // Registered Telangana farmer
+    // 3. Registered Farmers
     const insertFarmer = db.prepare(`
-      INSERT INTO farmers (id, name, phone, village, district, lat, lon, wallet_balance, kyc_status)
+      INSERT OR REPLACE INTO farmers (id, name, phone, village, district, lat, lon, wallet_balance, kyc_status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
@@ -98,220 +184,13 @@ function initDatabase() {
       'rythubandhu_verified'
     );
 
-    // Initial authentic harvest lots
-    const insertLot = db.prepare(`
-      INSERT INTO harvest_lots (
-        id, farmer_id, farmer_name, farmer_phone, crop_key, crop_name_te, crop_name_en,
-        variety_te, variety_en, quantity_quintals, grade, moisture_pct, location_te, location_en,
-        lat, lon, storage_type_te, storage_type_en, reserve_price, highest_bid, image_url, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+    console.log('✅ Base users and buyers initialized with 0 crop listings (Clean Slate).');
 
-    insertLot.run(
-      'LOT-TS-401',
-      'USR-FARM-01',
-      'మల్లారెడ్డి',
-      '+91 98480 55210',
-      'teja_chilli',
-      'తేజ మిర్చి (Teja Red Chilli)',
-      'Teja Red Chilli',
-      'తేజ స్పెషల్ ఎగుమతి రకం',
-      'Teja Special Export Grade',
-      40,
-      'A',
-      '9.2%',
-      'జనగామ మండలం, వరంగల్ జిల్లా',
-      'Jangaon Mandal, Warangal Dist',
-      17.7214,
-      79.1834,
-      'పొలంలోనే ఉంది (Farm Gate)',
-      'Farm Gate Pickup',
-      21000,
-      21650,
-      '/shared/assets/crops/teja_chilli.jpg',
-      'active'
-    );
 
-    insertLot.run(
-      'LOT-TS-402',
-      'USR-FARM-01',
-      'మల్లారెడ్డి',
-      '+91 98480 55210',
-      'paddy',
-      'తెలంగాణ సోనా వరి (Telangana Sona Paddy)',
-      'Telangana Sona Paddy (RNR)',
-      'RNR 15048 సూపర్ ఫైన్',
-      'RNR 15048 Super Fine Grain',
-      120,
-      'A',
-      '13.5%',
-      'మిర్యాలగూడ పరిసరాలు, నల్గొండ జిల్లా',
-      'Miryalaguda, Nalgonda Dist',
-      16.8722,
-      79.5638,
-      'ఇంటి గోదాము (Village Shed)',
-      'Village Shed Storage',
-      2320,
-      2440,
-      '/shared/assets/crops/paddy.jpg',
-      'active'
-    );
 
-    insertLot.run(
-      'LOT-TS-403',
-      'USR-FARM-01',
-      'మల్లారెడ్డి',
-      '+91 98480 55210',
-      'cotton',
-      'పత్తి (Raw White Cotton)',
-      'Raw White Cotton',
-      'బ్రహ్మ / కావేరి పొడవు పింజ',
-      'Long Staple Cotton',
-      55,
-      'A',
-      '7.8%',
-      'వరంగల్ రూరల్',
-      'Warangal Rural',
-      17.9689,
-      79.5941,
-      'రైతు గోదాము (Farm Shed)',
-      'Farmer Warehouse',
-      7400,
-      7550,
-      '/shared/assets/crops/cotton.jpg',
-      'active'
-    );
-
-    insertLot.run(
-      'LOT-TS-404',
-      'USR-FARM-01',
-      'మల్లారెడ్డి',
-      '+91 98480 55210',
-      'turmeric',
-      'నిజామాబాద్ పసుపు (Nizamabad Turmeric)',
-      'Nizamabad Finger Turmeric',
-      'నిజామాబాద్ ఫింగర్ స్పెషల్ (కర్క్యుమిన్ 3.8%)',
-      'Finger Special (Curcumin 3.8%)',
-      35,
-      'A',
-      '8.5%',
-      'ఆర్మూర్, నిజామాబాద్ జిల్లా',
-      'Armoor, Nizamabad Dist',
-      18.7891,
-      78.2858,
-      'పొలం వద్ద క్లీన్ చేసిన లాట్',
-      'Farm Cleaned Lot',
-      14500,
-      14950,
-      '/shared/assets/crops/turmeric.jpg',
-      'active'
-    );
-
-    // Initial active bids from registered buyers
-    const insertBid = db.prepare(`
-      INSERT INTO bids (id, lot_id, buyer_id, buyer_name, buyer_rating, buyer_location, price_per_q, total_deal_amount, logistics_mode, logistics_text_te, logistics_text_en, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    insertBid.run(
-      'BID-901',
-      'LOT-TS-401',
-      'USR-BUY-01',
-      'ITC Agri Business Hub',
-      '4.9 ★ (84 డీల్స్)',
-      'సికింద్రాబాద్ / వరంగల్',
-      21650,
-      866000,
-      'buyer_vehicle',
-      '🚛 కొనుగోలుదారుడే సొంత లారీ పంపుతారు (రైతుకు ఖర్చు ₹0)',
-      '🚛 Buyer will send their own truck (₹0 farmer cost)',
-      'active'
-    );
-
-    insertBid.run(
-      'BID-902',
-      'LOT-TS-402',
-      'USR-BUY-02',
-      'శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్',
-      '4.9 ★ (120 డీల్స్)',
-      'మిర్యాలగూడ యార్డ్',
-      2440,
-      292800,
-      'buyer_vehicle',
-      '🚛 కొనుగోలుదారుడే సొంత లారీ పంపుతారు (రైతుకు ఖర్చు ₹0)',
-      '🚛 Buyer will send their own truck (₹0 farmer cost)',
-      'active'
-    );
-
-    // Initial procurement order with verified escrow lock
-    const insertOrder = db.prepare(`
-      INSERT INTO procurement_orders (
-        id, lot_id, buyer_id, farmer_id, crop_name_te, crop_name_en, quantity_quintals,
-        agreed_rate, total_escrow_amount, current_step, vehicle_reg, driver_name, driver_phone, farm_gate_otp, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    insertOrder.run(
-      'ORD-TS-8801',
-      'LOT-TS-401',
-      'USR-BUY-01',
-      'USR-FARM-01',
-      'తేజ మిర్చి (Teja Chilli)',
-      'Teja Chilli',
-      40,
-      21650,
-      866000,
-      3,
-      'TS 03 UB 8192',
-      'రాము యాదవ్ (డ్రైవర్)',
-      '+91 98481 23990',
-      '4819',
-      'dispatched'
-    );
-
-    // Initial logistics trip
-    const insertTrip = db.prepare(`
-      INSERT INTO logistics_trips (
-        id, order_id, crop_name, origin, destination, distance_km, vehicle_type, freight_offer,
-        status, assigned_vehicle, driver_name, driver_phone, pickup_otp
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    insertTrip.run(
-      'TRIP-TS-701',
-      'ORD-TS-8801',
-      'తేజ మిర్చి (40 క్వింటాళ్లు)',
-      'జనగామ మండలం, వరంగల్',
-      'ITC సికింద్రాబాద్ హబ్',
-      85.0,
-      '10-Ton DCM / Truck',
-      9500,
-      'assigned',
-      'TS 03 UB 8192',
-      'రాము యాదవ్',
-      '9848123990',
-      '4819'
-    );
-
-    insertTrip.run(
-      'TRIP-TS-702',
-      null,
-      'తెలంగాణ సోనా వరి (120 క్వింటాళ్లు)',
-      'మిర్యాలగూడ రూరల్ పొలం',
-      'శ్రీ కృష్ణ రైస్ మిల్, మిర్యాలగూడ',
-      18.0,
-      'ట్రాక్టర్ ట్రాలీ లేదా డీసీఎం',
-      4200,
-      'available',
-      null,
-      null,
-      null,
-      '7122'
-    );
-
-    // Initial verified RFQ
+    // 8. Buyer RFQs
     const insertRfq = db.prepare(`
-      INSERT INTO rfqs (id, buyer_id, buyer_name, crop_key, crop_name_te, crop_name_en, target_qty, offer_price, delivery_mandi, valid_until, status)
+      INSERT OR REPLACE INTO rfqs (id, buyer_id, buyer_name, crop_key, crop_name_te, crop_name_en, target_qty, offer_price, delivery_mandi, valid_until, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
@@ -329,16 +208,56 @@ function initDatabase() {
       'active'
     );
 
+    // 9. Initial Audit Logs
+    const insertAudit = db.prepare(`
+      INSERT INTO audit_logs (user_id, user_role, action, entity_type, entity_id, details)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+
+    insertAudit.run('USR-SYS', 'system', 'PLATFORM_INITIALIZED', 'system', 'SIH-26132', 'SQLite Central Database initialized with verified Telangana accounts.');
+    insertAudit.run('USR-BUY-01', 'buyer', 'ESCROW_LOCKED', 'order', 'ORD-TS-8801', 'Escrow locked for ₹8,66,000 for Teja Chilli harvest lot LOT-TS-401.');
+    insertAudit.run('USR-LOG-01', 'logistics', 'TRIP_ACCEPTED', 'trip', 'TRIP-TS-701', 'Vehicle TS 03 UB 8192 assigned by Ramu Yadav for direct farm haulage.');
+
+    // 10. Sample Grievance / Dispute
+    const insertDispute = db.prepare(`
+      INSERT INTO disputes (id, order_id, raised_by_id, raised_by_name, raised_by_role, title, description, status, resolution, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    insertDispute.run(
+      'DISP-TS-101',
+      'ORD-TS-8801',
+      'USR-BUY-01',
+      'ITC Agri Business Hub',
+      'buyer',
+      'తేమ శాతం ధృవీకరణ (Moisture verification query)',
+      'పొలం వద్ద తేమ శాతం 9.2% ఉన్నట్లు నివేదించబడింది, డిజిటల్ మీటర్ రీడింగ్ స్కాన్ ధృవీకరించబడింది.',
+      'resolved',
+      'APMC అధికారి ద్వారా డిజిటల్ నాణ్యత ధృవీకరణ ఆమోదించబడింది. (Approved by APMC Inspector)',
+      new Date().toISOString()
+    );
+
     console.log('✅ Initial database records seeded successfully.');
   } else {
-    console.log('Database already initialized with', existingBuyers.count, 'buyers.');
+    console.log('Database already initialized with', existingUsers.count, 'users.');
   }
 
   return db;
+}
+
+function recordAuditLog(db, userId, userRole, action, entityType, entityId, details) {
+  try {
+    db.prepare(`
+      INSERT INTO audit_logs (user_id, user_role, action, entity_type, entity_id, details)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(userId || 'anonymous', userRole || 'guest', action, entityType, String(entityId), String(details || ''));
+  } catch (err) {
+    console.warn('[Audit Log Error]', err.message);
+  }
 }
 
 if (require.main === module) {
   initDatabase();
 }
 
-module.exports = { initDatabase, DB_PATH };
+module.exports = { initDatabase, recordAuditLog, DB_PATH };

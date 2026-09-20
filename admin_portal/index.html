@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>తెలంగాణ APMC అడ్మిన్ కంట్రోలర్ | కిసాన్ కనెక్ట్</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <base href="/admin_portal/">
+  <link rel="stylesheet" href="/shared/css/main.css">
+  <link rel="stylesheet" href="/shared/css/components.css">
+  <link rel="stylesheet" href="/admin_portal/css/admin.css">
+</head>
+<body>
+
+  <!-- Top Admin Navbar -->
+  <header class="admin-navbar">
+    <div class="admin-brand">
+      <span style="font-size: 1.5rem;">🛡️</span>
+      <div>
+        <strong style="font-size: 1.1rem; display:block;">కిసాన్ కనెక్ట్ అడ్మిన్ కంట్రోల్</strong>
+        <small style="color: #94A3B8;">తెలంగాణ వ్యవసాయ మార్కెటింగ్ శాఖ (SIH-26132)</small>
+      </div>
+      <span class="admin-badge">GOVERNANCE & KYC</span>
+    </div>
+
+    <div class="admin-controls">
+      <div class="lang-switch-wrapper">
+        <button class="lang-btn active" id="btnLangTe" onclick="setLanguage('te')">తెలుగు</button>
+        <span class="lang-divider">|</span>
+        <button class="lang-btn" id="btnLangEn" onclick="setLanguage('en')">English</button>
+      </div>
+      <a href="/main_portal/index.html" class="btn btn-outline btn-sm" style="color:#FFF; border-color:rgba(255,255,255,0.3);">← ప్రధాన పోర్టల్</a>
+    </div>
+  </header>
+
+  <main class="admin-container">
+
+    <!-- KPI Summary Row -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">మొత్తం పంట లాట్లు</span>
+        <div class="kpi-value" id="kpiLots">--</div>
+        <span class="kpi-sub" id="kpiActiveLots">-- యాక్టివ్ వేలంలో ఉన్నాయి</span>
+      </div>
+      <div class="kpi-card gold">
+        <span class="kpi-title">లాక్ చేయబడిన ఎస్క్రో నిధులు</span>
+        <div class="kpi-value" id="kpiEscrow">₹--</div>
+        <span class="kpi-sub">100% సురక్షిత బ్యాంక్ ఎస్క్రో</span>
+      </div>
+      <div class="kpi-card blue">
+        <span class="kpi-title">విడుదలైన చెల్లింపులు</span>
+        <div class="kpi-value" id="kpiSettled">₹--</div>
+        <span class="kpi-sub">రైతుల ఖాతాలకు చేరిన నిధులు</span>
+      </div>
+      <div class="kpi-card purple">
+        <span class="kpi-title">రిజిస్టర్డ్ యూజర్లు</span>
+        <div class="kpi-value" id="kpiUsers">--</div>
+        <span class="kpi-sub">రైతులు, ట్రేడర్లు & ఫ్లీట్</span>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="admin-tabs">
+      <button class="admin-tab-btn active" onclick="switchAdminTab('users')">👥 యూజర్ మేనేజ్‌మెంట్ & KYC</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('lots')">🌾 పంట లాట్లు & వేలం పర్యవేక్షణ</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('community')">🏘️ కమ్యూనిటీ బల్క్ & విలేజ్ పూలింగ్</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('financial')">💳 ఆర్థిక మేనేజ్‌మెంట్ & ఎస్క్రో ఆడిట్</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('disputes')">⚖️ సమస్యల పరిష్కారం (Disputes)</button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('audit')">📜 సిస్టమ్ ఆడిట్ లాగ్స్</button>
+    </nav>
+
+    <!-- TAB 1: USERS & KYC VERIFICATION -->
+    <section class="admin-panel active" id="panelUsers">
+      <div class="panel-header">
+        <h3 class="panel-title">రిజిస్టర్డ్ మార్కెట్ యూజర్లు & ధృవీకరణ</h3>
+        <span style="font-size:0.85rem; color:#64748B;">APMC ట్రేడ్ లైసెన్స్ & రైతుబంధు ధృవీకరణ</span>
+      </div>
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>యూజర్ ఐడీ</th>
+              <th>పేరు</th>
+              <th>మొబైల్</th>
+              <th>పాత్ర (Role)</th>
+              <th>సంస్థ / మండలం</th>
+              <th>నగరం / జిల్లా</th>
+              <th>KYC స్థితి</th>
+              <th>చర్యలు</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 2: HARVEST LOTS & MODERATION -->
+    <section class="admin-panel" id="panelLots">
+      <div class="panel-header">
+        <h3 class="panel-title">తెలంగాణ పంట లాట్లు & ప్రత్యక్ష వేలం</h3>
+        <button class="btn btn-secondary btn-sm" onclick="loadAdminLots()">🔄 రిఫ్రెష్</button>
+      </div>
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>లాట్ ఐడీ</th>
+              <th>పంట పేరు</th>
+              <th>రైతు పేరు</th>
+              <th>పరిమాణం</th>
+              <th>గ్రేడ్ / తేమ</th>
+              <th>రిజర్వ్ ధర</th>
+              <th>టాప్ బిడ్</th>
+              <th>స్థితి</th>
+            </tr>
+          </thead>
+          <tbody id="lotsTableBody">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: DISPUTES & GRIEVANCE -->
+    <section class="admin-panel" id="panelDisputes">
+      <div class="panel-header">
+        <h3 class="panel-title">రైతు & కొనుగోలుదారు సమస్యల పరిష్కార డెస్క్</h3>
+        <span style="font-size:0.85rem; color:#64748B;">APMC మార్కెట్ కమిటీ మధ్యవర్తిత్వం</span>
+      </div>
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>సమస్య ఐడీ</th>
+              <th>ఆర్డర్ ఐడీ</th>
+              <th>ఫిర్యాదుదారు</th>
+              <th>విషయం</th>
+              <th>వివరణ</th>
+              <th>స్థితి</th>
+              <th>పరిష్కారం</th>
+            </tr>
+          </thead>
+          <tbody id="disputesTableBody">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: IMMUTABLE AUDIT TRAIL -->
+    <section class="admin-panel" id="panelAudit">
+      <div class="panel-header">
+        <h3 class="panel-title">ప్లాట్‌ఫామ్ ఆడిట్ లాగ్స్ (SQLite Immutable Records)</h3>
+        <button class="btn btn-secondary btn-sm" onclick="loadAdminAuditLogs()">🔄 రిఫ్రెష్</button>
+      </div>
+      <div class="audit-list" id="auditLogsContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- TAB 5: COMMUNITY BULK PROCUREMENT & VILLAGE POOLING -->
+    <section class="admin-panel" id="panelCommunity">
+      <div class="panel-header">
+        <h3 class="panel-title">కమ్యూనిటీ బల్క్ కొనుగోళ్లు & విలేజ్ పూలింగ్ పర్యవేక్షణ</h3>
+        <button class="btn btn-secondary btn-sm" onclick="loadAdminCommunityOverview()">🔄 రిఫ్రెష్</button>
+      </div>
+
+      <!-- Community Sub-KPIs -->
+      <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+        <div class="kpi-card">
+          <span class="kpi-title">కమ్యూనిటీ డిమాండ్లు (Reqs)</span>
+          <div class="kpi-value" id="kpiCommActiveReqs">0</div>
+          <span class="kpi-sub" id="kpiCommTotalReqs">0 మొత్తం పోస్ట్ చేయబడ్డాయి</span>
+        </div>
+        <div class="kpi-card gold">
+          <span class="kpi-title">పూల్ చేయబడిన మొత్తం బరువు</span>
+          <div class="kpi-value" id="kpiCommTotalQty">0 kg</div>
+          <span class="kpi-sub">రైతుల సమూహ ఉత్పత్తులు</span>
+        </div>
+        <div class="kpi-card blue">
+          <span class="kpi-title">విలేజ్ పూల్ గ్రూపులు</span>
+          <div class="kpi-value" id="kpiCommVillagePools">0</div>
+          <span class="kpi-sub">కలిసి రవాణా చేసే గ్రామాలు</span>
+        </div>
+        <div class="kpi-card purple">
+          <span class="kpi-title">రవాణా సిద్ధంగా ఉన్న ఆర్డర్లు</span>
+          <div class="kpi-value" id="kpiCommTransportReady">0</div>
+          <span class="kpi-sub" id="kpiCommDeliveriesActive">0 డెలివరీలో ఉన్నాయి</span>
+        </div>
+      </div>
+
+      <!-- Live Community Requirements Table -->
+      <div style="margin-bottom:2rem;">
+        <h4 style="margin-bottom:0.75rem; color:var(--admin-primary); font-size:1.05rem;">🏘️ కమ్యూనిటీ బల్క్ డిమాండ్లు (Live Community Requirements)</h4>
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>డిమాండ్ ఐడీ</th>
+                <th>కమ్యూనిటీ పేరు</th>
+                <th>రకం (Type)</th>
+                <th>ప్రాంతం / నగరం</th>
+                <th>డెలివరీ తేదీ</th>
+                <th>నెరవేర్పు (Fulfillment)</th>
+                <th>స్థితి (Status)</th>
+              </tr>
+            </thead>
+            <tbody id="adminCommunityReqsTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Live Transport Requests Table -->
+      <div>
+        <h4 style="margin-bottom:0.75rem; color:var(--admin-primary); font-size:1.05rem;">🚛 విలేజ్ రవాణా ఆర్డర్లు (Village Pooled Transport Requests)</h4>
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>రవాణా ఐడీ</th>
+                <th>గమ్యస్థాన కమ్యూనిటీ</th>
+                <th>సేకరణ గ్రామాలు (Pickup Villages)</th>
+                <th>మొత్తం బరువు (kg)</th>
+                <th>సూచించిన వాహనం</th>
+                <th>దూరం (Distance)</th>
+                <th>స్థితి (Status)</th>
+              </tr>
+            </thead>
+            <tbody id="adminCommunityTransportTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: FINANCIAL MANAGEMENT, ESCROW & FARMER PAYOUT AUDIT -->
+    <section class="admin-panel" id="panelFinancial">
+      <div class="panel-header">
+        <h3 class="panel-title">💳 ప్లాట్‌ఫామ్ ఆర్థిక మేనేజ్‌మెంట్ & ఎస్క్రో నిధుల పర్యవేక్షణ</h3>
+        <button class="btn btn-secondary btn-sm" onclick="loadAdminFinancialOverview()">🔄 రిఫ్రెష్</button>
+      </div>
+
+      <!-- Financial System Summary KPIs -->
+      <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+        <div class="kpi-card">
+          <span class="kpi-title">కొనుగోలుదారుల వాలెట్ నిల్వలు</span>
+          <div class="kpi-value" id="adminTotalWalletBal">₹0</div>
+          <span class="kpi-sub">సిస్టమ్‌లోని మొత్తం నిధులు</span>
+        </div>
+        <div class="kpi-card gold">
+          <span class="kpi-title">లాక్ అయిన ఎస్క్రో హోల్డ్‌లు</span>
+          <div class="kpi-value" id="adminActiveEscrowHolds">₹0</div>
+          <span class="kpi-sub">యాక్టివ్ బిడ్‌లు & ఆర్డర్లు</span>
+        </div>
+        <div class="kpi-card blue">
+          <span class="kpi-title">విడుదలైన రైతు పేఅవుట్‌లు</span>
+          <div class="kpi-value" id="adminFarmerPayoutsTotal">₹0</div>
+          <span class="kpi-sub">రైతుల ఖాతాలకు జమైనది</span>
+        </div>
+        <div class="kpi-card purple">
+          <span class="kpi-title">ప్లాట్‌ఫామ్ సేవా ఫీజులు</span>
+          <div class="kpi-value" id="adminPlatformFeesTotal">₹0</div>
+          <span class="kpi-sub">ఆర్జించిన సేవా రుసుము</span>
+        </div>
+      </div>
+
+      <!-- Farmer Bank Payout Verification Table -->
+      <div style="margin-bottom:2rem; background:#FFF; padding:1.25rem; border-radius:10px; border:1px solid #E2E8F0;">
+        <h4 style="margin-top:0; margin-bottom:0.75rem; color:#1E293B; font-size:1.05rem;">🏦 రైతుల బ్యాంక్ పేఅవుట్ ఖాతాల ధృవీకరణ (Farmer Bank Payout Profiles)</h4>
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>రైతు ఐడీ</th>
+                <th>ఖాతాదారు పేరు</th>
+                <th>బ్యాంక్ పేరు</th>
+                <th>ఖాతా సంఖ్య (Masked)</th>
+                <th>IFSC కోడ్</th>
+                <th>ధృవీకరణ హోదా</th>
+                <th>చర్యలు</th>
+              </tr>
+            </thead>
+            <tbody id="farmerPayoutVerifyTableBody">
+              <tr><td colspan="7" style="text-align:center; padding:1rem; color:#94A3B8;">లోడ్ అవుతోంది...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Immutable System Financial Ledger -->
+      <div style="background:#FFF; padding:1.25rem; border-radius:10px; border:1px solid #E2E8F0;">
+        <h4 style="margin-top:0; margin-bottom:0.75rem; color:#1E293B; font-size:1.05rem;">📜 పూర్తి సిస్టమ్ ఆర్థిక ఆడిట్ లేడ్జర్ (Immutable Financial Ledger)</h4>
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ల్యాప్‌టైమ్ ID</th>
+                <th>యూజర్ ఐడీ</th>
+                <th>రకం (Transaction Type)</th>
+                <th>రకం (Direction)</th>
+                <th>మొత్తం (₹)</th>
+                <th>వివరణ</th>
+                <th>సమయం</th>
+              </tr>
+            </thead>
+            <tbody id="financialLedgerTableBody">
+              <tr><td colspan="7" style="text-align:center; padding:1rem; color:#94A3B8;">లోడ్ అవుతోంది...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toastNotification" class="toast-popup"></div>
+
+  <!-- Scripts -->
+  <script src="/shared/js/api.js"></script>
+  <script src="/shared/js/data.js"></script>
+  <script src="/shared/js/lang.js"></script>
+  <script src="/admin_portal/js/admin.js"></script>
+</body>
+</html>

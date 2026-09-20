@@ -78,11 +78,6 @@
             <span data-i18n="wallet_escrow_label">ఎస్క్రో నిధులు:</span>
             <strong id="topDisplayWallet">₹1,48,500</strong>
           </div>
-
-          <!-- Switch Role Button -->
-          <a href="../main_portal/index.html" class="btn btn-outline btn-sm switch-role-btn" title="వినియోగదారు ఎంపిక స్క్రీన్‌కు వెళ్లండి">
-            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి</span>
-          </a>
         </div>
       </header>
 
@@ -150,6 +145,15 @@
               <span class="nav-badge info" id="activeOrdersBadge">1 యాక్టివ్</span>
             </button>
 
+            <button class="sidebar-nav-item" onclick="openFarmerPayoutProfileModal()" id="tabFarmerPayout">
+              <span class="nav-icon">🏦</span>
+              <div class="nav-text-col">
+                <span class="nav-title">బ్యాంక్ ఖాతా & పేఅవుట్</span>
+                <small class="nav-subtitle">IFSC & చెల్లింపుల ధృవీకరణ</small>
+              </div>
+              <span class="nav-badge count" id="farmerPayoutStatusBadge">పరిశీలించండి</span>
+            </button>
+
             <button class="sidebar-nav-item" onclick="switchFarmerTab('aiQuality')" id="tabAiQuality">
               <span class="nav-icon">🔬</span>
               <div class="nav-text-col">
@@ -184,6 +188,15 @@
                 <small class="nav-subtitle" data-i18n="tab_disputes_sub">ఫిర్యాదు నమోదు & సహాయవాణి</small>
               </div>
             </button>
+
+            <button class="sidebar-nav-item" onclick="switchFarmerTab('nearbyCommunity')" id="tabNearbyCommunity">
+              <span class="nav-icon">🏘️</span>
+              <div class="nav-text-col">
+                <span class="nav-title">సమీప సామూహిక కొనుగోళ్లు</span>
+                <small class="nav-subtitle">గ్రేటెడ్ కమ్యూనిటీల బల్క్ ఆర్డర్లు</small>
+              </div>
+              <span class="nav-badge live" id="nearbyReqsCountBadge">0</span>
+            </button>
           </nav>
 
           <!-- Escrow Summary Card in Sidebar -->
@@ -195,14 +208,7 @@
             <p class="escrow-note" data-i18n="sidebar_escrow_desc">పొలం వద్ద OTP సరిచూశాక మాత్రమే లారీ బయలుదేరుతుంది. డబ్బు సురక్షితం.</p>
           </div>
 
-          <!-- Bottom Switch Role link -->
-          <div class="sidebar-footer-action">
-            <a href="../main_portal/index.html" class="sidebar-logout-btn" style="text-decoration:none;">
-              <span>🚪</span>
-              <span data-i18n="btn_switch_role_text">పాత్ర మార్చండి (హోమ్‌కు వెళ్లు)</span>
-            </a>
           </div>
-
         </aside>
 
         <!-- RIGHT MAIN CONTENT AREA -->
@@ -1168,6 +1174,37 @@
             </div><!-- /kyc-documents-container -->
           </div><!-- /paneDocVerification -->
 
+          <!-- TAB: NEARBY COMMUNITY BULK REQUIREMENTS FOR FARMERS -->
+          <div id="paneNearbyCommunity" class="tab-pane">
+            <div class="section-banner">
+              <div>
+                <h2 class="section-title">🏘️ సమీప గ్రేటెడ్ కమ్యూనిటీల బల్క్ కోరికలు (Nearby Community Bulk Requirements)</h2>
+                <p class="section-desc">మీ గ్రామానికి సమీపంలో ఉన్న కమ్యూనిటీలు పోస్ట్ చేసిన బల్క్ కొనుగోలు డిమాండ్లను పరిశీలించి మీ వద్ద అందుబాటులో ఉన్న పరిమాణానికి ధర ఆఫర్ చేయండి.</p>
+              </div>
+              <div class="banner-actions">
+                <button class="btn btn-outline btn-sm" onclick="renderNearbyCommunityRequirements()">🔄 రిఫ్రెష్</button>
+              </div>
+            </div>
+
+            <!-- Distance Radius Filter Bar -->
+            <div class="discovery-filter-bar" style="margin-bottom:1.5rem;">
+              <div class="filter-dropdown-group" style="width:100%; display:flex; gap:1rem; align-items:center;">
+                <label style="font-weight:700; white-space:nowrap;">📡 రైతు వెతుకుడు రేడియస్:</label>
+                <select id="farmerRadiusFilter" onchange="renderNearbyCommunityRequirements()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-card);">
+                  <option value="5">5 km (అత్యంత సమీప గ్రామాలు)</option>
+                  <option value="10">10 km రేడియస్</option>
+                  <option value="25" selected>25 km రేడియస్ (సిఫార్సు)</option>
+                  <option value="50">50 km రేడియస్</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Requirements Feed for Farmers -->
+            <div id="farmerNearbyReqsList" style="display:flex; flex-direction:column; gap:1.25rem;">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
         </div><!-- /farmer-main-content -->
 
       </div><!-- /farmer-dashboard-grid -->
@@ -1422,12 +1459,132 @@
     </div>
   </div>
 
+  <!-- MODAL: SUBMIT FARMER OFFER -->
+  <div class="modal-backdrop" id="submitFarmerOfferModal" style="display:none;">
+    <div class="modal-card" style="max-width:560px;">
+      <button class="modal-close-btn" onclick="closeSubmitOfferModal()">&times;</button>
+      <h3 class="modal-title">🌾 సరుకు ఆఫర్ సమర్పించండి (Submit Offer)</h3>
+      <p class="modal-subtitle" id="offerModalSub">కమ్యూనిటీకి మీ పంట పరిమాణం మరియు ధరను ఆఫర్ చేయండి</p>
+
+      <form id="formSubmitFarmerOffer" onsubmit="handleFarmerOfferSubmit(event)">
+        <input type="hidden" id="offerReqId">
+        <input type="hidden" id="offerItemId">
+
+        <div style="background:var(--bg-subtle); padding:0.85rem; border-radius:8px; margin-bottom:1rem; font-size:0.88rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+            <span>కమ్యూనిటీ పేరు:</span>
+            <strong id="offerTargetCommName">Green Valley Community</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+            <span>కావలసిన పంట:</span>
+            <strong id="offerTargetProductName">Tomato (100 kg)</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>మిగిలిన డిమాండ్ పరిమాణం:</span>
+            <strong id="offerTargetRemainingQty" style="color:var(--primary-800);">100 kg</strong>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+          <div class="form-group">
+            <label for="offerQtyInput">మీరు అందించే పరిమాణం (<span id="offerUnitLabel">kg</span>) *</label>
+            <input type="number" id="offerQtyInput" min="1" step="1" oninput="calculateOfferTotal()" required>
+          </div>
+          <div class="form-group">
+            <label for="offerPriceInput">ధర / <span id="offerUnitPriceLabel">kg</span> (₹) *</label>
+            <input type="number" id="offerPriceInput" min="1" step="0.5" oninput="calculateOfferTotal()" required>
+          </div>
+        </div>
+
+        <div style="background:#ECFDF5; border:1px solid #A7F3D0; padding:0.75rem; border-radius:8px; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.88rem; color:#065F46;">మొత్తం ఆఫర్ విలువ (Total Amount):</span>
+          <strong style="font-size:1.2rem; color:#047857;" id="offerTotalAmountText">₹0</strong>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+          <div class="form-group">
+            <label for="offerHarvestDate">పంట లభ్యత / కోత తేదీ *</label>
+            <input type="date" id="offerHarvestDate" required>
+          </div>
+          <div class="form-group">
+            <label for="offerQualityInfo">నాణ్యత వివరాలు (Grade/Moisture)</label>
+            <input type="text" id="offerQualityInfo" placeholder="e.g. Grade A Fresh Harvest">
+          </div>
+        </div>
+
+        <div style="margin-bottom:1.25rem;">
+          <label class="custom-checkbox-row" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+            <input type="checkbox" id="offerOrganicCheck">
+            <span>🌱 ఇది ధృవీకరించబడిన సేంద్రీయ / ఆర్గానిక్ పంట (Organic Certified)</span>
+          </label>
+        </div>
+
+        <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeSubmitOfferModal()">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary">🚀 ఆఫర్ సమర్పించండి (Submit Offer) →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       MODAL: FARMER BANK PAYOUT PROFILE
+       ============================================== -->
+  <div class="modal-backdrop" id="farmerPayoutProfileModal">
+    <div class="modal-card" style="max-width:560px;">
+      <button class="modal-close-btn" onclick="closeFarmerPayoutProfileModal()">&times;</button>
+      <h3 class="modal-title">🏦 రైతు బ్యాంక్ పేఅవుట్ ఖాతా వివరాలు</h3>
+      <p class="modal-subtitle">రవాణా ప్రారంభమైన వెంటనే నేరుగా మీ బ్యాంక్ ఖాతాకు ఎస్క్రో డబ్బులు జమ కావడానికి వివరాలు నమోదు చేయండి</p>
+
+      <form onsubmit="handleFarmerPayoutProfileSubmit(event)">
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1.25rem;">
+          <span style="font-size:0.85rem; color:#64748B; font-weight:600; display:block;">ప్రస్తుత ఖాతా ధృవీకరణ హోదా:</span>
+          <div id="payoutProfileStatusBadge" style="font-size:1.1rem; font-weight:800; color:#D97706; margin-top:0.2rem;">
+            ⚠️ నివేదించలేదు (not_submitted)
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>ఖాతాదారు పేరు (Account Holder Name) *</label>
+          <input type="text" id="payoutAccountHolderName" required placeholder="ఉదా: మల్లారెడ్డి">
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>బ్యాంక్ పేరు (Bank Name) *</label>
+          <input type="text" id="payoutBankName" required placeholder="ఉదా: State Bank of India / Telangana Grameena Bank">
+        </div>
+
+        <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+          <div class="form-group">
+            <label>బ్యాంక్ ఖాతా సంఖ్య (Account Number) *</label>
+            <input type="password" id="payoutAccountNumber" required placeholder="•••• •••• ••••">
+          </div>
+          <div class="form-group">
+            <label>IFSC కోడ్ *</label>
+            <input type="text" id="payoutIfscCode" required style="text-transform:uppercase;" placeholder="e.g. SBIN0020192">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.25rem;">
+          <label>UPI ఐడీ (ఐచ్ఛికం / Optional)</label>
+          <input type="text" id="payoutUpiId" placeholder="e.g. 9848055210@ybl">
+        </div>
+
+        <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeFarmerPayoutProfileModal()">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" id="btnSavePayoutProfile" style="background:#16A34A; border:none;">
+            ✓ ఖాతా వివరాలు భద్రపరచండి (Submit Profile)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toastNotification" class="toast-popup" role="status" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="/integrated_db/integrated_db.js"></script>
-  <script src="/farmer_portal/db/farmer_db.js"></script>
+  <script src="/shared/js/api.js"></script>
   <script src="/shared/js/data.js"></script>
   <script src="/shared/js/lang.js"></script>
   <script src="/farmer_portal/js/farmer.js"></script>

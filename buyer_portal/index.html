@@ -57,6 +57,7 @@
             <option value="USR-BUY-01" data-i18n="buyer_firm_1">ITC Agri Business Hub (సికింద్రాబాద్)</option>
             <option value="USR-BUY-02" data-i18n="buyer_firm_2">శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్ (మిర్యాలగూడ)</option>
             <option value="USR-BUY-03" data-i18n="buyer_firm_3">ఖమ్మం స్పైసెస్ ఎక్స్‌పోర్టర్స్ (ఖమ్మం)</option>
+            <option value="USR-COMM-01">🏡 Green Valley Community (గ్రేటెడ్ కమ్యూనిటీ - 240 కుటుంబాలు)</option>
           </select>
         </div>
 
@@ -66,9 +67,6 @@
             <span data-i18n="escrow_deposit_label">ఎస్క్రో డిపాజిట్:</span>
             <strong id="topBuyerWallet">₹15,50,000</strong>
           </div>
-          <a href="../main_portal/index.html" class="btn btn-outline btn-sm switch-role-btn" title="వినియోగదారు ఎంపిక స్క్రీన్‌కు వెళ్లండి">
-            🚪 <span data-i18n="btn_switch_role">పాత్ర మార్చండి</span>
-          </a>
         </div>
       </header>
 
@@ -127,6 +125,15 @@
               </div>
             </button>
 
+            <button class="sidebar-nav-item" onclick="switchBuyerTab('communityBulk')" id="tabCommunityBulk">
+              <span class="nav-icon">🏘️</span>
+              <div class="nav-text-col">
+                <span class="nav-title">సామూహిక కొనుగోలు (Community Bulk)</span>
+                <small class="nav-subtitle">గ్రేటెడ్ కమ్యూనిటీ బల్క్ డిమాండ్</small>
+              </div>
+              <span class="nav-badge info" id="communityReqsBadge">0</span>
+            </button>
+
             <button class="sidebar-nav-item" onclick="switchBuyerTab('marketArbitrage')" id="tabMarketArbitrage">
               <span class="nav-icon">📊</span>
               <div class="nav-text-col">
@@ -134,6 +141,15 @@
                 <small class="nav-subtitle" data-i18n="buyer_tab_arbitrage_sub">మండి వర్సెస్ డైరెక్ట్ పొదుపు</small>
               </div>
               <span class="nav-badge ai">AI</span>
+            </button>
+
+            <button class="sidebar-nav-item" onclick="switchBuyerTab('buyerWallet')" id="tabBuyerWallet">
+              <span class="nav-icon">💳</span>
+              <div class="nav-text-col">
+                <span class="nav-title">వాలెట్ & ఎస్క్రో నిధులు</span>
+                <small class="nav-subtitle">నిల్వ, టాప్-అప్ & ట్రాన్సాక్షన్ ఆడిట్</small>
+              </div>
+              <span class="nav-badge info" id="buyerWalletBadge">₹0</span>
             </button>
           </nav>
 
@@ -145,17 +161,7 @@
             </div>
             <div class="escrow-value" id="sideBuyerWallet">₹15,50,000</div>
             <p class="escrow-note" data-i18n="buyer_escrow_note">రైతు పొలం వద్ద ధాన్యం తూకం వేసి OTP ధృవీకరించిన తర్వాతే మీ ఎస్క్రో నుండి పేమెంట్ విడుదలవుతుంది.</p>
-            <button class="btn btn-secondary btn-sm btn-block" style="margin-top:0.85rem;" onclick="showAddFundsToast()" data-i18n="btn_add_funds">+ నిధులు జత చేయండి</button>
           </div>
-
-          <!-- Bottom Switch Role link -->
-          <div class="sidebar-footer-action">
-            <a href="../main_portal/index.html" class="sidebar-logout-btn" style="text-decoration:none;">
-              <span>🚪</span>
-              <span data-i18n="btn_switch_role_text">పాత్ర మార్చండి (హోమ్‌కు వెళ్లు)</span>
-            </a>
-          </div>
-
         </aside>
 
         <!-- RIGHT MAIN CONTENT AREA -->
@@ -372,6 +378,236 @@
             </div>
           </div>
 
+          <!-- TAB 6: COMMUNITY BULK PROCUREMENT & VILLAGE POOLING -->
+          <div id="paneCommunityBulk" class="tab-pane">
+            
+            <!-- Professional Community Profile Card -->
+            <div class="community-profile-card-box" id="communityProfileCardBox" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+                <div style="display:flex; gap:1.25rem; align-items:center;">
+                  <div id="commCardAvatar" style="font-size:2.8rem; background:rgba(255,255,255,0.1); width:70px; height:70px; display:flex; align-items:center; justify-content:center; border-radius:12px; border:1px solid rgba(255,255,255,0.2);">🏡</div>
+                  <div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                      <h2 id="commCardName" style="font-size:1.4rem; font-weight:800; margin:0;">Green Valley Community</h2>
+                      <span id="commCardTypeBadge" style="background:#10B981; color:#064E3B; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:12px;">Gated Community</span>
+                      <span id="commCardVerifiedBadge" style="background:#3B82F6; color:white; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:12px;">✓ APMC Verified</span>
+                    </div>
+                    <p id="commCardLocation" style="color:#94A3B8; font-size:0.88rem; margin:0.3rem 0 0 0;">📍 Financial District / Hyderabad • Delivery Area: Gachibowli & Nanakramguda</p>
+                    <div style="display:flex; gap:1.25rem; margin-top:0.75rem; font-size:0.85rem;">
+                      <span>👨‍👩‍👧‍👦 <strong id="commCardFamilies">240 families</strong></span>
+                      <span>🌱 <strong id="commCardOrganic">Organic produce preferred</strong></span>
+                      <span>📦 <strong id="commCardActiveReqs">0 active requirements</strong></span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <button class="btn btn-outline-light btn-sm" onclick="openEditCommunityProfileModal()" style="border-color:rgba(255,255,255,0.3); color:white;">✏️ ప్రొఫైల్ సవరించు (Edit Profile)</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Post New Bulk Requirement Form Section -->
+            <div class="card" style="background:white; border-radius:12px; padding:1.5rem; border:1px solid var(--border-card); margin-bottom:1.5rem;">
+              <h3 style="font-size:1.2rem; font-weight:800; color:var(--primary-900); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                <span>🏘️</span> సామూహిక కొనుగోలు డిమాండ్ నమోదు (Post Bulk Requirement)
+              </h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
+                మీ గ్రేటెడ్ / విల్లా కమ్యూనిటీ లేదా సంస్థ కోసం సమీప రైతుల నుండి నేరుగా కూరగాయలు, బియ్యం మరియు పండ్లను బల్క్‌గా కొనుగోలు చేయడానికి డిమాండ్ పోస్ట్ చేయండి.
+              </p>
+
+              <form id="formPostCommunityReq" onsubmit="handlePostCommunityReqSubmit(event)">
+                <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                  <div class="form-group">
+                    <label for="reqTitle">కోరిక శీర్షిక (Requirement Title) *</label>
+                    <input type="text" id="reqTitle" placeholder="e.g. Weekly Fresh Produce Requirement" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="reqOrganicPref">సేంద్రీయ ప్రాధాన్యత (Organic) *</label>
+                    <select id="reqOrganicPref">
+                      <option value="preferred">సేంద్రీయానికి ప్రాధాన్యత (Preferred)</option>
+                      <option value="yes">తప్పనిసరిగా ఆర్గానిక్ (Organic Only)</option>
+                      <option value="no">సాధారణ పంట (Standard Produce)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="reqRadiusKm">రైతు వెతుకుడు రేడియస్ (Radius) *</label>
+                    <select id="reqRadiusKm">
+                      <option value="5">5 km (అత్యంత సమీప గ్రామాలు)</option>
+                      <option value="10">10 km రేడియస్</option>
+                      <option value="25" selected>25 km రేడియస్ (సిఫార్సు)</option>
+                      <option value="50">50 km రేడియస్</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                  <div class="form-group">
+                    <label for="reqDeliveryDate">కావలసిన డెలివరీ తేదీ (Delivery Date) *</label>
+                    <input type="date" id="reqDeliveryDate" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="reqDeliveryWindow">డెలివరీ సమయం (Time Window) *</label>
+                    <select id="reqDeliveryWindow">
+                      <option value="06:00 AM - 09:00 AM">06:00 AM - 09:00 AM (Early Morning)</option>
+                      <option value="08:00 AM - 12:00 PM" selected>08:00 AM - 12:00 PM (Morning Slot)</option>
+                      <option value="04:00 PM - 08:00 PM">04:00 PM - 08:00 PM (Evening Slot)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="reqPickupPref">పికప్ ప్రాధాన్యత (Pickup Preference)</label>
+                    <select id="reqPickupPref">
+                      <option value="farm_gate">పొలం వద్ద నేరుగా సేకరించడం (Farm Gate)</option>
+                      <option value="mandi_yard">మండి కలెక్షన్ పాయింట్ (Mandi Collection)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:1rem;">
+                  <label for="reqDeliveryAddress">డెలివరీ చిరునామా (Delivery Address) *</label>
+                  <input type="text" id="reqDeliveryAddress" placeholder="e.g. Green Valley Clubhouse Gate 2, Financial District, Gachibowli, Hyderabad" required>
+                </div>
+
+                <!-- Multi-Product Requirement Builder Table -->
+                <div style="background:var(--bg-subtle); padding:1rem; border-radius:8px; margin-bottom:1rem; border:1px solid var(--border-card);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <strong style="color:var(--primary-900);">📦 కావలసిన పంటల జాబితా (Products List) *</strong>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="addReqItemRow()">+ మరో పంట జోడించు (+ Add Item)</button>
+                  </div>
+
+                  <table style="width:100%; border-collapse:collapse; font-size:0.85rem;" id="reqItemsTable">
+                    <thead>
+                      <tr style="text-align:left; color:var(--text-muted); border-bottom:1px solid #CBD5E1;">
+                        <th style="padding:6px;">పంట / సరుకు పేరు</th>
+                        <th style="padding:6px; width:120px;">పరిమాణం</th>
+                        <th style="padding:6px; width:100px;">యూనిట్</th>
+                        <th style="padding:6px; width:110px;">గ్రేడ్</th>
+                        <th style="padding:6px; width:140px;">గరిష్ట ధర (₹ / unit)</th>
+                        <th style="padding:6px; width:50px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="reqItemsTbody">
+                      <!-- Product item rows -->
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1rem; align-items:center; margin-bottom:1rem;">
+                  <div class="form-group">
+                    <label for="reqInstructions">అదనపు సూచనలు (Additional Instructions)</label>
+                    <input type="text" id="reqInstructions" placeholder="e.g. Separate packaging per family required / Organic certification check">
+                  </div>
+                  <div>
+                    <label class="custom-checkbox-row" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; margin-top:1.2rem;">
+                      <input type="checkbox" id="reqIsRecurring">
+                      <span>పునరావృత డిమాండ్ (Recurring Weekly)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div style="text-align:right;">
+                  <button type="submit" class="btn btn-primary" style="padding:0.75rem 2rem; font-weight:700;">
+                    🚀 డిమాండ్ పబ్లిష్ చేయండి & సమీప రైతులను నోటిఫై చేయండి →
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Active Requirements & Live Fulfillment Grid -->
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="font-size:1.25rem; font-weight:800; color:var(--primary-900); margin:0;">
+                  📊 లైవ్ సామూహిక డిమాండ్లు & రైతు ఆఫర్ల పూర్తి వివరాలు
+                </h3>
+                <button class="btn btn-outline btn-sm" onclick="renderCommunityRequirements()">🔄 రిఫ్రెష్</button>
+              </div>
+
+              <div id="communityReqsList" style="display:flex; flex-direction:column; gap:1.25rem;">
+                <!-- Rendered via JS -->
+            </div>
+
+          </div>
+
+          <!-- ==============================================
+               TAB: BUYER WALLET, ESCROW & IMMUTABLE LEDGER
+               ============================================== -->
+          <div id="paneBuyerWallet" class="tab-pane">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; background:linear-gradient(135deg, #1E293B, #0F172A); padding:1.5rem; border-radius:12px; color:#FFF;">
+              <div>
+                <h2 style="margin:0 0 0.25rem 0; font-size:1.5rem;">💳 కొనుగోలుదారు డిజిటల్ వాలెట్ & ఎస్క్రో ఖాతా</h2>
+                <p style="margin:0; font-size:0.9rem; color:#94A3B8;">రియల్ టైమ్ డేటాబేస్ ఆడిట్ లేడ్జర్ | 100% సేఫ్ బ్యాంక్ ఎస్క్రో</p>
+              </div>
+              <button class="btn btn-primary" onclick="openTopupWalletModal()" style="background:#22C55E; border:none; font-weight:700; font-size:1rem; padding:0.75rem 1.5rem;">
+                ➕ నిధులు యాడ్ చేయండి (Top Up)
+              </button>
+            </div>
+
+            <!-- Wallet Balance Summary Cards -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; margin-bottom:1.75rem;">
+              <div style="background:#FFF; padding:1.25rem; border-radius:10px; border:1px solid #E2E8F0; box-shadow:0 2px 4px rgba(0,0,0,0.04);">
+                <span style="font-size:0.85rem; color:#64748B; font-weight:600; display:block; margin-bottom:0.35rem;">మొత్తం వాలెట్ నిల్వ (Total Balance)</span>
+                <div style="font-size:1.6rem; font-weight:800; color:#0F172A;" id="walletTotalBalanceDisplay">₹0</div>
+                <small style="color:#64748B;">బ్యాంక్ ఎస్క్రో లో జమ అయిన నిధులు</small>
+              </div>
+
+              <div style="background:#ECFDF5; padding:1.25rem; border-radius:10px; border:1px solid #A7F3D0;">
+                <span style="font-size:0.85rem; color:#065F46; font-weight:600; display:block; margin-bottom:0.35rem;">వినియోగానికి సిద్ధమైన నిల్వ (Available Balance)</span>
+                <div style="font-size:1.6rem; font-weight:800; color:#047857;" id="walletAvailableBalanceDisplay">₹0</div>
+                <small style="color:#065F46;">కొత్త బిడ్‌లు వేయడానికి అందుబాటులో ఉంది</small>
+              </div>
+
+              <div style="background:#EFF6FF; padding:1.25rem; border-radius:10px; border:1px solid #BFDBFE;">
+                <span style="font-size:0.85rem; color:#1E40AF; font-weight:600; display:block; margin-bottom:0.35rem;">లాక్ చేయబడిన ఎస్క్రో నిధులు (Held Balance)</span>
+                <div style="font-size:1.6rem; font-weight:800; color:#1D4ED8;" id="walletHeldBalanceDisplay">₹0</div>
+                <small style="color:#1E40AF;">బిడ్‌లు & రవాణా ఆర్డర్ల కోసం హోల్డ్‌లో ఉన్నవి</small>
+              </div>
+            </div>
+
+            <!-- Active Escrow Holds Table -->
+            <div style="background:#FFF; padding:1.25rem; border-radius:10px; border:1px solid #E2E8F0; margin-bottom:1.75rem;">
+              <h3 style="font-size:1.1rem; font-weight:700; margin-top:0; margin-bottom:1rem; color:#1E293B;">🔒 ప్రస్తుత యాక్టివ్ ఎస్క్రో లాక్‌లు (Active Escrow Holds)</h3>
+              <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                  <thead>
+                    <tr style="background:#F8FAFC; text-align:left; border-bottom:2px solid #E2E8F0;">
+                      <th style="padding:0.6rem;">ఎస్క్రో ఐడీ</th>
+                      <th style="padding:0.6rem;">బిడ్ / ఆర్డర్ ఐడీ</th>
+                      <th style="padding:0.6rem;">పంట విలువ</th>
+                      <th style="padding:0.6rem;">ప్లాట్‌ఫామ్ ఛార్జ్</th>
+                      <th style="padding:0.6rem;">మొత్తం లాక్</th>
+                      <th style="padding:0.6rem;">ఎస్క్రో స్థితి</th>
+                      <th style="padding:0.6rem;">చెల్లింపు విడుదల నిబంధన</th>
+                    </tr>
+                  </thead>
+                  <tbody id="walletEscrowHoldsTableBody">
+                    <tr><td colspan="7" style="text-align:center; padding:1rem; color:#94A3B8;">లోడ్ అవుతోంది...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Immutable Transaction Ledger History -->
+            <div style="background:#FFF; padding:1.25rem; border-radius:10px; border:1px solid #E2E8F0;">
+              <h3 style="font-size:1.1rem; font-weight:700; margin-top:0; margin-bottom:1rem; color:#1E293B;">📜 లావాదేవీల చరిత్ర (Immutable Wallet Ledger)</h3>
+              <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                  <thead>
+                    <tr style="background:#F8FAFC; text-align:left; border-bottom:2px solid #E2E8F0;">
+                      <th style="padding:0.6rem;">ట్రాన్సాక్షన్ ఐడీ</th>
+                      <th style="padding:0.6rem;">రకం</th>
+                      <th style="padding:0.6rem;">రకం (Credit/Debit)</th>
+                      <th style="padding:0.6rem;">మొత్తం (₹)</th>
+                      <th style="padding:0.6rem;">వివరణ</th>
+                      <th style="padding:0.6rem;">సమయం</th>
+                    </tr>
+                  </thead>
+                  <tbody id="walletLedgerTableBody">
+                    <tr><td colspan="6" style="text-align:center; padding:1rem; color:#94A3B8;">లోడ్ అవుతోంది...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div><!-- /farmer-main-content -->
 
       </div><!-- /buyer-dashboard-grid -->
@@ -405,10 +641,29 @@
           <span data-i18n="lot_qty_label">మొత్తం పరిమాణం:</span>
           <strong id="modalLotQty">40 క్వింటాళ్లు</strong>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:0.95rem;">
-          <span data-i18n="total_deal_valuation">మొత్తం డీల్ విలువ:</span>
-          <strong style="color:var(--primary-800); font-size:1.15rem;" id="modalTotalValuation">₹8,68,000</strong>
+        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
+          <span>పంట విలువ (Crop Amount):</span>
+          <span id="modalCropValuation">₹0</span>
         </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
+          <span>ప్లాట్‌ఫామ్ ఫీజు (Platform Fee):</span>
+          <span>₹500</span>
+        </div>
+        <hr style="border:0; border-top:1px dashed #CBD5E1; margin:0.5rem 0;">
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem; font-weight:700;">
+          <span data-i18n="total_deal_valuation">మొత్తం ఎస్క్రో హోల్డ్ అవసరం (Total Hold Required):</span>
+          <strong style="color:var(--primary-800); font-size:1.15rem;" id="modalTotalValuation">₹0</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-top:0.35rem;" id="modalWalletBalanceRow">
+          <span>వాలెట్‌లో అందుబాటులో ఉన్న నిల్వ:</span>
+          <strong id="modalAvailableWallet">₹0</strong>
+        </div>
+      </div>
+
+      <div id="modalWalletInsufficientWarning" style="display:none; background:#FEF2F2; border:1px solid #FCA5A5; padding:0.75rem; border-radius:8px; margin-bottom:1rem; color:#991B1B; font-size:0.85rem;">
+        ⚠️ <strong>వాలెట్ నిల్వ సరిపోదు!</strong><br>
+        అవసరమైన మొత్తం: <span id="modalWarnRequired">₹0</span> | అందుబాటులో ఉన్నది: <span id="modalWarnAvailable">₹0</span><br>
+        దయచేసి కొనసాగడానికి <strong>₹<span id="modalWarnDeficit">0</span></strong> నిధులను టాప్-అప్ చేయండి.
       </div>
 
       <div class="form-group" style="margin-bottom:1.25rem;">
@@ -425,8 +680,47 @@
 
       <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
         <button class="btn btn-secondary" onclick="closePlaceBidModal()" data-i18n="btn_cancel">రద్దు చేయండి</button>
-        <button class="btn btn-primary" onclick="submitLiveBid()" data-i18n="btn_confirm_bid">బిడ్ సమర్పించండి →</button>
+        <button class="btn btn-primary" id="btnSubmitBidAction" onclick="submitLiveBid()" data-i18n="btn_confirm_bid">బిడ్ సమర్పించండి & ఎస్క్రో హోల్డ్ చేయండి →</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       MODAL: WALLET TOP UP (PAYMENT GATEWAY)
+       ============================================== -->
+  <div class="modal-backdrop" id="topupWalletModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeTopupWalletModal()">&times;</button>
+      <h3 class="modal-title">💳 వాలెట్‌కు నిధులు జత చేయండి (Top Up Wallet)</h3>
+      <p class="modal-subtitle">సురక్షిత బ్యాంక్ ఎస్క్రో పేమెంట్ గేట్‌వే ద్వారా నిధులు జమ చేయండి</p>
+
+      <form onsubmit="handleWalletTopupSubmit(event)">
+        <div class="form-group" style="margin-bottom:1.25rem;">
+          <label for="topupAmountInput"><strong>జమ చేయవలసిన మొత్తం (రూపాయలు ₹) *</strong></label>
+          <div class="currency-input-wrapper">
+            <span class="currency-symbol">₹</span>
+            <input type="number" id="topupAmountInput" placeholder="ఉదా: 50000" min="100" step="100" required style="font-size:1.25rem; font-weight:700;">
+          </div>
+          <small style="color:var(--text-muted); display:block; margin-top:0.35rem;">
+            కనీస టాప్-అప్ మొత్తం: ₹100. నిధులు తక్షణమే మీ వాలెట్‌లో జమవుతాయి.
+          </small>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.25rem;">
+          <label style="font-weight:700; display:block; margin-bottom:0.5rem;">పేమెంట్ గేట్‌వే ఎంపిక *</label>
+          <label class="custom-checkbox-row" style="margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+            <input type="radio" name="topupProvider" value="sandbox" checked>
+            <span>💳 Razorpay / Verified Test Gateway (తక్షణ డిజిటల్ సిమ్యులేషన్)</span>
+          </label>
+        </div>
+
+        <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeTopupWalletModal()">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitTopup" style="background:#22C55E; border:none;">
+            ✓ పేమెంట్ పూర్తి చేయండి & వాలెట్‌కు చేర్చండి
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -549,10 +843,64 @@
     </div>
   </div>
 
+  <!-- ==============================================
+       MODAL: EDIT COMMUNITY PROFILE
+       ============================================== -->
+  <div class="modal-backdrop" id="editCommunityProfileModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeEditCommunityProfileModal()">&times;</button>
+      <h3 class="modal-title">కమ్యూనిటీ ప్రొఫైల్ సవరణ (Edit Community Profile)</h3>
+      <p class="modal-subtitle">మీ గ్రేటెడ్ కమ్యూనిటీ లేదా సంస్థ వివరాలను డేటాబేస్‌లో అప్‌డేట్ చేయండి</p>
+
+      <form id="formEditCommunityProfile" onsubmit="handleEditCommunityProfileSubmit(event)">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="editCommName">కమ్యూనిటీ / సంస్థ పేరు (Name) *</label>
+          <input type="text" id="editCommName" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="editCommBuyerType">కొనుగోలుదారు కేటగిరీ (Buyer Type) *</label>
+          <select id="editCommBuyerType" required>
+            <option value="gated_community">గ్రేటెడ్ కమ్యూనిటీ (Gated Community)</option>
+            <option value="villa_community">విల్లా కమ్యూనిటీ (Villa Community)</option>
+            <option value="apartment_community">అపార్ట్‌మెంట్ కమ్యూనిటీ (Apartment Community)</option>
+            <option value="business">వ్యాపార సంస్థ (Business Buyer)</option>
+            <option value="individual">వ్యక్తిగత కొనుగోలుదారు (Individual Buyer)</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+          <div class="form-group">
+            <label for="editCommFamilies">కుటుంబాల సంఖ్య (Number of Families)</label>
+            <input type="number" id="editCommFamilies" min="0" placeholder="e.g. 240">
+          </div>
+          <div class="form-group">
+            <label for="editCommOrganic">సేంద్రీయ ప్రాధాన్యత (Organic Preferred)</label>
+            <select id="editCommOrganic">
+              <option value="1">🌱 అవును - సేంద్రీయానికి ప్రాధాన్యత</option>
+              <option value="0">సాధారణ / అన్ని రకాలు</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="editCommArea">అంచనా డెలివరీ ప్రాంతం (Delivery Area) *</label>
+          <input type="text" id="editCommArea" placeholder="e.g. Financial District, Gachibowli, Hyderabad" required>
+        </div>
+
+        <div class="modal-actions-row" style="display:flex; gap:0.75rem; justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditCommunityProfileModal()">రద్దు చేయండి</button>
+          <button type="submit" class="btn btn-primary">💾 భద్రపరచండి (Save Profile)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toastNotification" class="toast-popup" role="status" aria-live="polite"></div>
 
   <!-- Scripts -->
+  <script src="/shared/js/api.js"></script>
   <script src="/shared/js/data.js"></script>
   <script src="/shared/js/lang.js"></script>
   <script src="/buyer_portal/js/buyer.js"></script>

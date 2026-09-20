@@ -16,5 +16,9 @@ dist/
 *.sqlite3
 data/*.db
 data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/backups/
+scratch/
 
 

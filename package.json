@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "init-db": "node db/init_db.js"
+    "init-db": "node db/init_db.js",
+    "migrate": "node db/migrate.js",
+    "backup": "node scripts/backup_db.js",
+    "cleanup": "node scripts/cleanup.js",
+    "test:remediation": "node scripts/run_full_remediation_test_suite.js"
   },
   "keywords": [
     "agritech",
@@ -17,6 +21,7 @@
   "author": "Kissan Connect Team",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
     "dotenv": "^16.4.5"
   }
 }

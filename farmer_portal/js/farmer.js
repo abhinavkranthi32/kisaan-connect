@@ -22,7 +22,202 @@ const TAB_NAMES = {
   disputes: { te: 'సమస్య పరిష్కారం', en: 'Grievance Redressal' }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+
+let farmerLotsCache = [];
+let farmerOrdersCache = [];
+let farmerProfileCache = {
+  id: '',
+  name: '',
+  phone: '',
+  village: '',
+  walletBalance: 0
+};
+
+function resolveCropImageUrl(img, cropKey = 'teja_chilli') {
+  if (img && (img.startsWith('data:image/') || img.startsWith('http://') || img.startsWith('https://'))) {
+    return img;
+  }
+  const fallbackMap = {
+    teja_chilli: '../shared/assets/crops/teja_chilli.jpg',
+    paddy: '../shared/assets/crops/paddy.jpg',
+    cotton: '../shared/assets/crops/cotton.jpg',
+    turmeric: '../shared/assets/crops/turmeric.jpg',
+    maize: '../shared/assets/crops/maize.jpg',
+    red_gram: '../shared/assets/crops/red_gram.jpg'
+  };
+  const defaultImg = fallbackMap[cropKey] || '../shared/assets/crops/teja_chilli.jpg';
+  if (!img || img === 'undefined' || img === 'null') return defaultImg;
+  if (img.startsWith('/shared/')) return '..' + img;
+  if (img.startsWith('shared/')) return '../' + img;
+  return img;
+}
+
+function normalizeLot(l) {
+  if (!l) return null;
+  const cropKey = l.crop_key || l.cropKey || 'teja_chilli';
+  return {
+    id: l.id,
+    farmerId: l.farmer_id || l.farmerId || 'USR-FARM-01',
+    farmerName: l.farmer_name || l.farmerName || 'మల్లారెడ్డి',
+    farmerPhone: l.farmer_phone || l.farmerPhone || '+91 98480 55210',
+    cropKey: cropKey,
+    cropNameTe: l.crop_name_te || l.cropNameTe || 'తేజ మిర్చి',
+    cropNameEn: l.crop_name_en || l.cropNameEn || 'Teja Chilli',
+    varietyTe: l.variety_te || l.varietyTe || '',
+    varietyEn: l.variety_en || l.varietyEn || '',
+    quantity: Number(l.quantity_quintals || l.quantity || 40),
+    grade: l.grade || 'A',
+    moisture: l.moisture_pct || l.moisture || '9.2%',
+    locationTe: l.location_te || l.locationTe || 'జనగామ మండలం, వరంగల్ జిల్లా',
+    locationEn: l.location_en || l.locationEn || 'Jangaon, Warangal Dist',
+    storageTe: l.storage_type_te || l.storageTe || 'పొలంలోనే ఉంది (Farm Gate)',
+    storageEn: l.storage_type_en || l.storageEn || 'Farm Gate Pickup',
+    reservePrice: Number(l.reserve_price || l.reservePrice || 20000),
+    highestBid: Number(l.highest_bid || l.highestBid || 21650),
+    remainingSeconds: l.remainingSeconds !== undefined ? l.remainingSeconds : 13338,
+    auctionEndsIn: l.auctionEndsIn || '03h : 42m : 18s',
+    image: resolveCropImageUrl(l.image_url || l.image, cropKey),
+    status: l.status || 'active',
+    bids: (l.bids || []).map(b => ({
+      bidId: b.id || b.bidId,
+      buyerId: b.buyer_id || b.buyerId,
+      buyerName: b.buyer_name || b.buyerName,
+      buyerRating: b.buyer_rating || b.buyerRating || '4.8 ★',
+      buyerLocation: b.buyer_location || b.buyerLocation || 'సికింద్రాబాద్',
+      pricePerQ: Number(b.price_per_q || b.pricePerQ || 0),
+      totalDealAmount: Number(b.total_deal_amount || b.totalDealAmount || 0),
+      logisticsMode: b.logistics_mode || b.logisticsMode || 'buyer_vehicle',
+      logisticsTextTe: b.logistics_text_te || b.logisticsTextTe || '🚛 కొనుగోలుదారు రవాణా',
+      logisticsTextEn: b.logistics_text_en || b.logisticsTextEn || '🚛 Buyer Vehicle',
+      status: b.status || 'active'
+    }))
+  };
+}
+
+function normalizeOrder(o) {
+  if (!o) return null;
+  return {
+    orderId: o.id || o.orderId,
+    lotId: o.lot_id || o.lotId,
+    buyerId: o.buyer_id || o.buyerId,
+    buyerName: o.buyer_name || o.buyerName,
+    farmerName: o.farmer_name || o.farmerName || 'మల్లారెడ్డి',
+    cropNameTe: o.crop_name_te || o.cropNameTe,
+    cropNameEn: o.crop_name_en || o.cropNameEn,
+    quantity: Number(o.quantity_quintals || o.quantity || 0),
+    agreedRate: Number(o.agreed_rate || o.agreedRate || 0),
+    totalEscrowAmount: Number(o.total_escrow_amount || o.totalEscrowAmount || 0),
+    currentStep: Number(o.current_step || o.currentStep || 2),
+    vehicleReg: o.vehicle_reg || o.vehicleReg || 'TS 03 UB 8192',
+    driverName: o.driver_name || o.driverName || 'రాము యాదవ్',
+    driverPhone: o.driver_phone || o.driverPhone || '+91 98481 23990',
+    farmGateOtp: o.farm_gate_otp || o.farmGateOtp || '4819',
+    status: o.status || 'escrow_locked'
+  };
+}
+
+// Global FarmerDB interface connected directly to backend SQLite
+window.FarmerDB = {
+  getProfile: () => farmerProfileCache,
+  creditWallet: (amount) => {
+    farmerProfileCache.walletBalance += Number(amount);
+    return farmerProfileCache.walletBalance;
+  },
+  getLots: () => farmerLotsCache,
+  getOrders: () => farmerOrdersCache,
+  createLot: async (lotData) => {
+    if (window.KissanAPI) {
+      const res = await window.KissanAPI.createLot(lotData);
+      if (res.lot) {
+        farmerLotsCache.unshift(normalizeLot(res.lot));
+      }
+      return res.lot;
+    }
+    return lotData;
+  },
+  acceptBid: async (lotId, bidId) => {
+    if (window.KissanAPI) {
+      const res = await window.KissanAPI.acceptBid(lotId, bidId);
+      if (res.order) {
+        farmerOrdersCache.unshift(normalizeOrder(res.order));
+        const lot = farmerLotsCache.find(l => l.id === lotId);
+        if (lot) lot.status = 'deal_accepted';
+      }
+      return res.order;
+    }
+    return null;
+  },
+  rejectBid: (lotId, bidId) => {
+    const lot = farmerLotsCache.find(l => l.id === lotId);
+    if (lot && lot.bids) {
+      lot.bids = lot.bids.filter(b => b.bidId !== bidId);
+    }
+  },
+  counterBid: (lotId, bidId, counterPrice) => {
+    console.log('[Farmer Counter Bid]', lotId, bidId, counterPrice);
+  },
+  completeOtp: async (orderId) => {
+    const order = farmerOrdersCache.find(o => o.orderId === orderId);
+    if (order && window.KissanAPI) {
+      await window.KissanAPI.verifyOrderOtp(orderId, order.farmGateOtp);
+      order.currentStep = 5;
+      order.status = 'delivered';
+      farmerProfileCache.walletBalance += order.totalEscrowAmount;
+    }
+  },
+  submitDispute: (ticket) => {
+    console.log('[Farmer Dispute]', ticket);
+  }
+};
+
+async function loadFarmerDataFromBackend() {
+  if (!window.KissanAPI) return;
+  try {
+    const user = window.KissanAPI.getCurrentUser();
+    let farmerId = (user && user.role === 'farmer') ? user.id : 'USR-FARM-01';
+    if (!user || user.role !== 'farmer') {
+      try {
+        const loginRes = await window.KissanAPI.loginAsRole('farmer', farmerId);
+        if (loginRes && loginRes.user) {
+          farmerProfileCache.id = loginRes.user.id;
+          farmerProfileCache.name = loginRes.user.name;
+          farmerProfileCache.phone = loginRes.user.phone;
+        }
+      } catch (e) {}
+    } else {
+      farmerProfileCache.id = user.id;
+      farmerProfileCache.name = user.name;
+      farmerProfileCache.phone = user.phone;
+    }
+
+    const currentFarmerId = farmerProfileCache.id || farmerId;
+    const [lotsRes, ordersRes, farmerRes] = await Promise.all([
+      window.KissanAPI.getLots(),
+      window.KissanAPI.getFarmerOrders(currentFarmerId).catch(() => ({ orders: [] })),
+      window.KissanAPI.get(`/api/farmers/${currentFarmerId}`).catch(() => null)
+    ]);
+
+    farmerLotsCache = (lotsRes && lotsRes.lots) ? lotsRes.lots.map(normalizeLot) : [];
+    farmerOrdersCache = (ordersRes && ordersRes.orders) ? ordersRes.orders.map(normalizeOrder) : [];
+
+    if (farmerRes && farmerRes.farmer) {
+      farmerProfileCache.walletBalance = Number(farmerRes.farmer.wallet_balance || 0);
+      farmerProfileCache.name = farmerRes.farmer.name || farmerProfileCache.name;
+      farmerProfileCache.phone = farmerRes.farmer.phone || farmerProfileCache.phone;
+      farmerProfileCache.village = farmerRes.farmer.village || farmerProfileCache.village;
+    }
+
+    renderBiddingArena();
+    renderOrdersEscrow();
+    updateWalletDisplay();
+  } catch (err) {
+    console.warn('[Farmer Data Load Warn]', err.message);
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadFarmerDataFromBackend();
   renderMandiTicker();
   renderMandiSnapshot();
   calculateDemandAsk();
@@ -103,8 +298,8 @@ function playBidChime() {
 function updateWalletDisplay(explicitAmount = null) {
   let wallet = explicitAmount;
   if (wallet === null) {
-    const profile = window.FarmerDB ? window.FarmerDB.getProfile() : { walletBalance: 148500 };
-    wallet = profile.walletBalance || 148500;
+    const profile = window.FarmerDB ? window.FarmerDB.getProfile() : { walletBalance: 0 };
+    wallet = profile.walletBalance !== undefined ? profile.walletBalance : 0;
   }
   const formatted = `₹${Number(wallet).toLocaleString('en-IN')}`;
   
@@ -113,6 +308,18 @@ function updateWalletDisplay(explicitAmount = null) {
 
   const topDisplayWalletEl = document.getElementById('topDisplayWallet');
   if (topDisplayWalletEl) topDisplayWalletEl.textContent = formatted;
+
+  const currentProfile = window.FarmerDB ? window.FarmerDB.getProfile() : farmerProfileCache;
+  if (currentProfile && currentProfile.name) {
+    const topCleanName = document.getElementById('topCleanFarmerName');
+    if (topCleanName) topCleanName.textContent = currentProfile.name;
+    const sideName = document.getElementById('displayFarmerName');
+    if (sideName) sideName.textContent = currentProfile.name;
+  }
+  if (currentProfile && currentProfile.village) {
+    const sideVill = document.getElementById('displayFarmerVillage');
+    if (sideVill) sideVill.textContent = `📍 ${currentProfile.village}`;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -161,16 +368,8 @@ function startAuctionCountdownTimers() {
 }
 
 // -----------------------------------------------------------------------------
-// REAL-TIME SIMULATED COMPETITIVE BUYER BIDDING & CROSS-PORTAL SYNC
+// REAL-TIME EVENT STREAM & CROSS-PORTAL SYNC (SQLite Backend)
 // -----------------------------------------------------------------------------
-const SIMULATED_BUYERS = [
-  { name: 'ITC Agri Business Hub', rating: '4.9 ★ (88 డీల్స్)', location: 'సికింద్రాబాద్' },
-  { name: 'శ్రీ కృష్ణ మోడ్రన్ రైస్ మిల్స్', rating: '4.9 ★ (124 డీల్స్)', location: 'మిర్యాలగూడ' },
-  { name: 'ఖమ్మం స్పైసెస్ ఎక్స్‌పోర్టర్స్', rating: '4.7 ★ (43 డీల్స్)', location: 'ఖమ్మం' },
-  { name: 'ఆదిలాబాద్ కాటన్ జిన్నింగ్ మిల్స్', rating: '4.8 ★ (65 డీల్స్)', location: 'ఆదిలాబాద్' },
-  { name: 'నిజామాబాద్ పసుపు ఎగుమతి మండలి', rating: '4.9 ★ (92 డీల్స్)', location: 'ఆర్మూర్, నిజామాబాద్' },
-  { name: 'వరంగల్ కమర్షియల్ ఆగ్రో లిమిటెడ్', rating: '4.8 ★ (39 డీల్స్)', location: 'వరంగల్ (ఎనుమాముల)' }
-];
 
 // -----------------------------------------------------------------------------
 // AUTHENTIC REAL-TIME BACKEND EVENT STREAM (SSE)
@@ -179,40 +378,63 @@ const SIMULATED_BUYERS = [
 let backendEventSource = null;
 
 function connectBackendEventStream() {
+  if (!window.KissanAPI) return;
   try {
-    if (backendEventSource) backendEventSource.close();
-    backendEventSource = new EventSource('/api/events');
+    if (backendEventSource && backendEventSource.close) backendEventSource.close();
 
-    backendEventSource.addEventListener('NEW_BID', (event) => {
-      const data = JSON.parse(event.data);
-      const bid = data.bid;
-      if (!bid) return;
-
-      playBidChime();
-      showToast(`⚡ <strong>కొత్త బిడ్ వచ్చింది!</strong> ${bid.buyerName} మీ పంటపై <strong>₹${Number(bid.pricePerQ).toLocaleString('en-IN')}/Q</strong> ఆఫర్ చేశారు!`);
-
-      // Sync into local cache if integrated DB present
-      if (window.IntegratedDB) {
-        window.IntegratedDB.placeBid(data.lotId, bid);
-      }
-
-      if (activeFarmerTab === 'biddingArena') {
-        renderBiddingArena();
+    backendEventSource = window.KissanAPI.subscribeEvents({
+      'bid.created': (bid) => {
+        playBidChime();
+        showToast(`⚡ <strong>కొత్త బిడ్ వచ్చింది!</strong> ${bid.buyerName || 'కొనుగోలుదారు'} మీ పంటపై <strong>₹${Number(bid.pricePerQ).toLocaleString('en-IN')}/Q</strong> ఆఫర్ చేశారు!`);
+        loadFarmerDataFromBackend();
+      },
+      NEW_BID: (data) => {
+        const bid = data.bid;
+        if (!bid) return;
+        playBidChime();
+        showToast(`⚡ <strong>కొత్త బిడ్ వచ్చింది!</strong> ${bid.buyerName} మీ పంటపై <strong>₹${Number(bid.pricePerQ).toLocaleString('en-IN')}/Q</strong> ఆఫర్ చేశారు!`);
+        loadFarmerDataFromBackend();
+      },
+      'listing.created': () => {
+        loadFarmerDataFromBackend();
+      },
+      NEW_LOT: () => {
+        loadFarmerDataFromBackend();
+      },
+      'order.created': () => {
+        loadFarmerDataFromBackend();
+      },
+      ORDER_CREATED: () => {
+        loadFarmerDataFromBackend();
+      },
+      'order.updated': () => {
+        loadFarmerDataFromBackend();
+      },
+      ORDER_UPDATED: () => {
+        loadFarmerDataFromBackend();
+      },
+      'escrow.released': (data) => {
+        showToast(`💰 ఎస్క్రో విడుదల: ₹${Number(data.amount || 0).toLocaleString('en-IN')} మీ ఖాతాకు జమ అయ్యాయి.`);
+        loadFarmerDataFromBackend();
+      },
+      ESCROW_RELEASED: (data) => {
+        showToast(`💰 ఎస్క్రో విడుదల: ₹${Number(data.amount || 0).toLocaleString('en-IN')} మీ ఖాతాకు జమ అయ్యాయి.`);
+        loadFarmerDataFromBackend();
+      },
+      'order.delivered': (data) => {
+        showToast(`💰 ఆర్డర్ #${data.orderId} OTP ధృవీకరించబడింది! ఎస్క్రో నిధులు మీ ఖాతాకు జమ చేయబడ్డాయి.`);
+        loadFarmerDataFromBackend();
+      },
+      ORDER_DELIVERED: (data) => {
+        showToast(`💰 ఆర్డర్ #${data.orderId} OTP ధృవీకరించబడింది! ఎస్క్రో నిధులు మీ ఖాతాకు జమ చేయబడ్డాయి.`);
+        loadFarmerDataFromBackend();
+      },
+      'notification.created': (notif) => {
+        if (notif && notif.message) {
+          showToast(`🔔 ${notif.title}: ${notif.message}`);
+        }
       }
     });
-
-    backendEventSource.addEventListener('ORDER_DELIVERED', (event) => {
-      const data = JSON.parse(event.data);
-      showToast(`💰 ఆర్డర్ #${data.orderId} OTP ధృవీకరించబడింది! ఎస్క్రో నిధులు మీ ఖాతాకు జమ చేయబడ్డాయి.`);
-      updateWalletDisplay();
-      if (activeFarmerTab === 'ordersEscrow') {
-        renderOrdersEscrow();
-      }
-    });
-
-    backendEventSource.onerror = () => {
-      console.warn('[Farmer] SSE stream disconnected, reconnecting...');
-    };
   } catch (err) {
     console.warn('SSE not supported or server unavailable:', err);
   }
@@ -257,23 +479,31 @@ function broadcastMarketEvent(eventObj) {
 }
 
 // -----------------------------------------------------------------------------
-// REAL-TIME CONTINUOUS MANDI TICKER PULSE
+// REAL-TIME CONTINUOUS MANDI TICKER PULSE (Database & Agmarknet API Source)
 // -----------------------------------------------------------------------------
-function startLiveMandiTickerPulse() {
-  setInterval(() => {
-    const mandis = window.IntegratedDB ? window.IntegratedDB.getMandis() : TELANGANA_MANDIS;
-    if (!mandis || mandis.length === 0) return;
-    const idx = Math.floor(Math.random() * mandis.length);
-    const m = mandis[idx];
-    const delta = (Math.floor(Math.random() * 5) - 2) * 25;
-    if (delta !== 0) {
-      m.price = Math.max(1500, m.price + delta);
-      m.trend = delta > 0 ? 'up' : 'down';
-      m.change = (delta > 0 ? '+' : '') + ((delta / m.price) * 100).toFixed(1) + '%';
-      renderMandiTicker();
-      renderMandiSnapshot();
+async function startLiveMandiTickerPulse() {
+  const refreshMandiRates = async () => {
+    try {
+      if (window.KissanAPI && window.KissanAPI.getMarketPrices) {
+        const prices = await window.KissanAPI.getMarketPrices();
+        if (prices && Array.isArray(prices) && prices.length > 0) {
+          prices.forEach(p => {
+            const match = TELANGANA_MANDIS.find(m => m.nameEn.toLowerCase().includes((p.market || '').toLowerCase()) || m.crop.includes(p.commodity || ''));
+            if (match && p.modal_price) {
+              match.price = Number(p.modal_price);
+            }
+          });
+          renderMandiTicker();
+          renderMandiSnapshot();
+        }
+      }
+    } catch (e) {
+      console.warn('[Mandi Ticker API Refresh]', e.message);
     }
-  }, 7000);
+  };
+
+  refreshMandiRates();
+  setInterval(refreshMandiRates, 60000);
 }
 
 // Tab navigation
@@ -307,6 +537,8 @@ function switchFarmerTab(tabName) {
     changeAiScannerSampleCrop();
   } else if (tabName === 'docVerification') {
     renderKycDocumentsStatus();
+  } else if (tabName === 'nearbyCommunity') {
+    renderNearbyCommunityRequirements();
   }
 
   window.scrollTo({ top: 90, behavior: 'smooth' });
@@ -333,13 +565,17 @@ function renderBiddingArena() {
   }
 
   container.innerHTML = lots.map(lot => {
-    const cropTitle = currentLang === 'te' ? lot.cropNameTe : lot.cropNameEn;
-    const variety = currentLang === 'te' ? lot.varietyTe : lot.varietyEn;
-    const location = currentLang === 'te' ? lot.locationTe : lot.locationEn;
-    const storage = currentLang === 'te' ? lot.storageTe : lot.storageEn;
+    const cropTitle = window.sanitizeForLang ? window.sanitizeForLang(currentLang === 'te' ? (lot.cropNameTe || lot.cropNameEn) : (lot.cropNameEn || lot.cropNameTe), currentLang) : (currentLang === 'te' ? lot.cropNameTe : lot.cropNameEn);
+    const variety = window.sanitizeForLang ? window.sanitizeForLang(currentLang === 'te' ? (lot.varietyTe || lot.varietyEn) : (lot.varietyEn || lot.varietyTe), currentLang) : (currentLang === 'te' ? lot.varietyTe : lot.varietyEn);
+    const location = window.sanitizeForLang ? window.sanitizeForLang(currentLang === 'te' ? (lot.locationTe || lot.locationEn) : (lot.locationEn || lot.locationTe), currentLang) : (currentLang === 'te' ? lot.locationTe : lot.locationEn);
+    const storage = window.sanitizeForLang ? window.sanitizeForLang(currentLang === 'te' ? (lot.storageTe || lot.storageEn) : (lot.storageEn || lot.storageTe), currentLang) : (currentLang === 'te' ? lot.storageTe : lot.storageEn);
 
     const bidsHtml = (lot.bids || []).map(bid => {
-      const logisticsText = currentLang === 'te' ? bid.logisticsTextTe : bid.logisticsTextEn;
+      const rawLogistics = currentLang === 'te' ? (bid.logisticsTextTe || bid.logisticsTextEn) : (bid.logisticsTextEn || bid.logisticsTextTe);
+      const logisticsText = window.sanitizeForLang ? window.sanitizeForLang(rawLogistics, currentLang) : rawLogistics;
+      const buyerName = window.sanitizeForLang ? window.sanitizeForLang(bid.buyerName, currentLang) : bid.buyerName;
+      const rawLocation = bid.buyerLocation || (currentLang === 'te' ? 'తెలంగాణ' : 'Telangana');
+      const buyerLocation = window.sanitizeForLang ? window.sanitizeForLang(rawLocation, currentLang) : rawLocation;
       const isBuyerVehicle = bid.logisticsMode === 'buyer_vehicle';
       const isTopBid = bid.pricePerQ === lot.highestBid;
       const totalPayout = bid.pricePerQ * lot.quantity;
@@ -348,10 +584,10 @@ function renderBiddingArena() {
         <div class="bid-item-row ${isTopBid ? 'highest-bid' : ''}">
           <div class="buyer-meta-info">
             <div class="buyer-name-line">
-              <span class="buyer-name">${bid.buyerName}</span>
+              <span class="buyer-name">${buyerName}</span>
               <span class="buyer-rating-badge">${bid.buyerRating || '4.8 ★'}</span>
             </div>
-            <span class="buyer-location">📍 ${bid.buyerLocation || (currentLang === 'te' ? 'తెలంగాణ' : 'Telangana')}</span>
+            <span class="buyer-location">📍 ${buyerLocation}</span>
           </div>
 
           <div>
@@ -500,32 +736,26 @@ function closeAcceptBidConfirmModal() {
   pendingDealAccept = null;
 }
 
-function confirmAcceptDealNow() {
-  if (!pendingDealAccept || !window.FarmerDB) return;
+async function confirmAcceptDealNow() {
+  if (!pendingDealAccept) return;
   const { lotId, bidId } = pendingDealAccept;
-  const newOrder = window.FarmerDB.acceptBid(lotId, bidId);
-  closeAcceptBidConfirmModal();
+  try {
+    const newOrder = await window.FarmerDB.acceptBid(lotId, bidId);
+    closeAcceptBidConfirmModal();
+    await loadFarmerDataFromBackend();
 
-  if (!newOrder) return;
+    showToast(currentLang === 'te'
+      ? `🎉 అభినందనలు! డీల్ ఖరారైంది. ఎస్క్రో ఖాతాలో నిధులు లాక్ చేయబడ్డాయి!`
+      : `🎉 Deal Confirmed! Funds locked in digital escrow.`
+    );
+    playBidChime();
 
-  broadcastMarketEvent({
-    type: 'DEAL_ACCEPTED',
-    order: newOrder
-  });
-
-  renderBiddingArena();
-  renderOrdersEscrow();
-
-  showToast(currentLang === 'te'
-    ? `🎉 అభినందనలు! ${newOrder.buyerName} తో డీల్ ఖరారైంది. ₹${newOrder.totalEscrowAmount.toLocaleString('en-IN')} మొత్తం ఎస్క్రో ఖాతాలో లాక్ చేయబడింది!`
-    : `🎉 Deal Confirmed with ${newOrder.buyerName}! ₹${newOrder.totalEscrowAmount.toLocaleString('en-IN')} locked in digital escrow.`
-  );
-
-  playBidChime();
-
-  setTimeout(() => {
-    switchFarmerTab('ordersEscrow');
-  }, 1200);
+    setTimeout(() => {
+      switchFarmerTab('ordersEscrow');
+    }, 1200);
+  } catch (err) {
+    showToast(`❌ డీల్ ఆమోదించడంలో లోపం: ${err.message}`);
+  }
 }
 
 function rejectBuyerBid(lotId, bidId) {
@@ -568,34 +798,8 @@ function submitCounterOffer() {
   closeCounterModal();
   renderBiddingArena();
   showToast(currentLang === 'te'
-    ? `💬 కొనుగోలుదారుకు ₹${counterPrice.toLocaleString('en-IN')}/Q కౌంటర్ ఆఫర్ పంపబడింది. పరిశీలిస్తున్నారు...`
-    : `💬 Counter offer of ₹${counterPrice.toLocaleString('en-IN')}/Q sent to buyer. Awaiting response...`);
-
-  // Simulate real-time buyer evaluation after 6 seconds
-  setTimeout(() => {
-    const lots = window.FarmerDB ? window.FarmerDB.getLots() : [];
-    const lot = lots.find(l => l.id === lotId);
-    if (!lot) return;
-    const bid = (lot.bids || []).find(b => b.bidId === bidId);
-    if (!bid) return;
-
-    if (Math.random() < 0.75) {
-      bid.pricePerQ = counterPrice;
-      lot.highestBid = Math.max(lot.highestBid, counterPrice);
-      if (window.IntegratedDB) window.IntegratedDB.placeBid(lot.id, bid);
-      playBidChime();
-      renderBiddingArena();
-      showToast(`🎉 <strong>కౌంటర్ ఆమోదం!</strong> ${bid.buyerName} మీ <strong>₹${counterPrice.toLocaleString('en-IN')}/Q</strong> కౌంటర్ ఆఫర్‌ను ఆమోదించారు!`);
-    } else {
-      const compromisePrice = Math.round((counterPrice - 100) / 50) * 50;
-      bid.pricePerQ = compromisePrice;
-      lot.highestBid = Math.max(lot.highestBid, compromisePrice);
-      if (window.IntegratedDB) window.IntegratedDB.placeBid(lot.id, bid);
-      playBidChime();
-      renderBiddingArena();
-      showToast(`💬 <strong>కొనుగోలుదారు సవరణ:</strong> ${bid.buyerName} ₹${compromisePrice.toLocaleString('en-IN')}/Q కి సవరించిన తుది బిడ్ పంపారు.`);
-    }
-  }, 6000);
+    ? `💬 కొనుగోలుదారుకు ₹${counterPrice.toLocaleString('en-IN')}/Q కౌంటర్ ప్రతిపాదన నమోదు చేయబడింది.`
+    : `💬 Counter offer of ₹${counterPrice.toLocaleString('en-IN')}/Q logged for buyer.`);
 }
 
 // -----------------------------------------------------------------------------
@@ -653,7 +857,7 @@ function handleImagePreview(e) {
   }
 }
 
-function handleCreateLotSubmit(e) {
+async function handleCreateLotSubmit(e) {
   e.preventDefault();
 
   const cropKey = document.getElementById('cropSelect').value;
@@ -665,10 +869,14 @@ function handleCreateLotSubmit(e) {
   const askPrice = Number(document.getElementById('farmerAskPrice').value);
   const imgSrc = document.getElementById('lotPreviewImg').src;
 
+  const profile = window.FarmerDB ? window.FarmerDB.getProfile() : farmerProfileCache;
+  const lotId = `LOT-TS-${Date.now().toString().slice(-4)}`;
+
   const newLot = {
-    id: `LOT-TS-${Math.floor(500 + Math.random() * 400)}`,
-    farmerId: 'USR-FARM-01',
-    farmerName: 'మల్లారెడ్డి',
+    id: lotId,
+    farmerId: profile.id || 'USR-FARM-01',
+    farmerName: profile.name || (currentLang === 'te' ? 'మల్లారెడ్డి' : 'Farmer'),
+    farmerPhone: profile.phone || '',
     cropKey: cropKey,
     cropNameTe: config.nameTe,
     cropNameEn: config.nameEn,
@@ -682,62 +890,38 @@ function handleCreateLotSubmit(e) {
     storageTe: 'పొలంలోనే ఉంది (Farm Gate)',
     storageEn: 'Farm Gate Pickup',
     reservePrice: askPrice,
-    highestBid: 0,
+    highestBid: askPrice,
     auctionEndsIn: '23h : 59m : 59s',
     remainingSeconds: 86399,
-    image: imgSrc,
+    image: resolveCropImageUrl(imgSrc, cropKey),
     bids: []
   };
 
-  if (window.FarmerDB) {
-    window.FarmerDB.createLot(newLot);
-  }
-
-  // Also persist to SQLite backend
   try {
-    fetch('/api/lots', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newLot)
-    }).catch(() => {});
-  } catch (e) {}
-
-  broadcastMarketEvent({
-    type: 'NEW_LOT_CREATED',
-    lot: newLot
-  });
-
-  showToast(currentLang === 'te'
-    ? `🚀 మీ ${config.nameTe} (${quantity} క్వింటాళ్లు) విజయవంతంగా లైవ్ బిడ్డింగ్ కోసం లిస్ట్ చేయబడింది!`
-    : `🚀 Your ${config.nameEn} (${quantity} Q) is now LIVE for competitive buyer bidding!`
-  );
-
-  switchFarmerTab('biddingArena');
-
-  // Trigger immediate buyer interest on the newly created lot in 3.5 seconds!
-  setTimeout(() => {
-    const buyer = SIMULATED_BUYERS[Math.floor(Math.random() * SIMULATED_BUYERS.length)];
-    const initialBidPrice = askPrice + Math.floor(Math.random() * 4 + 1) * 50;
-    const initialBid = {
-      bidId: `BID-${Math.floor(1000 + Math.random() * 9000)}`,
-      buyerId: 'USR-BUY-01',
-      buyerName: buyer.name,
-      buyerRating: buyer.rating,
-      buyerLocation: buyer.location,
-      pricePerQ: initialBidPrice,
-      logisticsMode: 'buyer_vehicle',
-      logisticsTextTe: '🚛 కొనుగోలుదారుడే సొంత లారీ పంపుతారు (రైతుకు ఖర్చు ₹0)',
-      logisticsTextEn: '🚛 Buyer will send own truck (₹0 farmer cost)',
-      status: 'active',
-      isNewArrival: true
-    };
-    if (window.IntegratedDB) {
-      window.IntegratedDB.placeBid(newLot.id, initialBid);
+    if (window.KissanAPI) {
+      await window.KissanAPI.createLot(newLot);
+      await loadFarmerDataFromBackend();
+    } else if (window.FarmerDB) {
+      window.FarmerDB.createLot(newLot);
     }
-    playBidChime();
-    renderBiddingArena();
-    showToast(`⚡ <strong>మొదటి బిడ్ వచ్చింది!</strong> ${buyer.name} మీ కొత్త లాట్‌కు <strong>₹${initialBidPrice.toLocaleString('en-IN')}/Q</strong> బిడ్ వేశారు!`);
-  }, 3500);
+
+    broadcastMarketEvent({
+      type: 'NEW_LOT_CREATED',
+      lot: newLot
+    });
+
+    showToast(currentLang === 'te'
+      ? `🚀 మీ ${config.nameTe} (${quantity} క్వింటాళ్లు) విజయవంతంగా లైవ్ బిడ్డింగ్ కోసం లిస్ట్ చేయబడింది!`
+      : `🚀 Your ${config.nameEn} (${quantity} Q) is now LIVE for competitive buyer bidding!`
+    );
+
+    const form = document.getElementById('createLotForm');
+    if (form) form.reset();
+
+    switchFarmerTab('biddingArena');
+  } catch (err) {
+    showToast(`❌ పంట నమోదు లోపం: ${err.message}`);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -2621,4 +2805,287 @@ function handleSaveCustomApiKeys(e) {
   closeApiKeysModal();
   showToast('💾 కస్టమ్ API కీలు భద్రపరచబడ్డాయి!');
 }
+
+// -----------------------------------------------------------------------------
+// NEARBY COMMUNITY BULK REQUIREMENTS FOR FARMERS
+// -----------------------------------------------------------------------------
+async function renderNearbyCommunityRequirements() {
+  const container = document.getElementById('farmerNearbyReqsList');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="text-align:center; padding:2rem;">
+      <div class="state-loading-spinner"></div>
+      <p style="color:var(--text-muted); margin-top:0.5rem;">సమీప గ్రామాల బల్క్ కోరికలను వెతుకుతున్నాము (Loading live data)...</p>
+    </div>
+  `;
+
+  try {
+    const radiusFilter = Number(document.getElementById('farmerRadiusFilter')?.value) || 25;
+    const res = await window.KissanAPI.getCommunityRequirements({
+      farmerId: farmerProfileCache ? farmerProfileCache.id : 'USR-FARM-01',
+      radiusKm: radiusFilter
+    });
+
+    if (res.status !== 'success') throw new Error('Unable to load live data');
+
+    const reqs = res.requirements || [];
+    const countBadge = document.getElementById('nearbyReqsCountBadge');
+    if (countBadge) countBadge.textContent = `${reqs.length}`;
+
+    if (reqs.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:3rem; background:white; border-radius:12px; border:1px dashed var(--border-card);">
+          <div style="font-size:2.5rem; margin-bottom:0.5rem;">📡</div>
+          <h4 style="font-size:1.1rem; color:var(--primary-900);">మీ రేడియస్ (${radiusFilter} km) పరిధిలో ప్రస్తుతం బల్క్ డిమాండ్లు లేవు</h4>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-top:0.25rem;">గ్రేటెడ్ కమ్యూనిటీలు కొత్త డిమాండ్ పోస్ట్ చేసిన వెంటనే మీకు ఇక్కడ కనిపిస్తాయి.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = reqs.map(r => {
+      const itemsHtml = r.items.map(it => {
+        const remaining = it.requiredQuantity - it.fulfilledQuantity;
+        const isClosed = remaining <= 0 || it.status === 'fulfilled';
+        return `
+          <div style="background:var(--bg-subtle); padding:0.85rem; border-radius:8px; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border:1px solid var(--border-card);">
+            <div>
+              <strong style="color:var(--primary-900);">📦 ${it.productName} (గ్రేడ్ ${it.preferredGrade})</strong>
+              <div style="font-size:0.82rem; color:var(--text-muted); margin-top:0.15rem;">
+                కావలసిన మొత్తం: ${it.requiredQuantity} ${it.unit} • భర్తీ అయినవి: ${it.fulfilledQuantity} ${it.unit} • <strong style="color:${remaining>0?'#2563EB':'#059669'};">మిగిలినది: ${Math.max(0, remaining)} ${it.unit}</strong>
+                ${it.maxAcceptablePrice ? ` • <span style="color:#047857; font-weight:700;">గరిష్ట ఆఫర్ ధర: ₹${it.maxAcceptablePrice}/${it.unit}</span>` : ''}
+              </div>
+            </div>
+            <div>
+              ${isClosed ? `
+                <span class="demand-tag high">✓ భర్తీ అయింది (Fulfilled)</span>
+              ` : `
+                <button class="btn btn-primary btn-sm" onclick="openSubmitOfferModal('${r.id}', '${it.id}', '${r.communityName}', '${it.productName}', ${remaining}, '${it.unit}', '${it.maxAcceptablePrice || ''}')">
+                  🌾 ఆఫర్ పంపండి (Offer Qty) →
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="card" style="background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-card); box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.85rem;">
+            <div>
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <h3 style="font-size:1.15rem; font-weight:800; color:var(--primary-900); margin:0;">${r.title}</h3>
+                <span style="font-size:0.75rem; background:#3B82F6; color:white; font-weight:700; padding:2px 8px; border-radius:12px;">🏡 ${r.communityName}</span>
+                ${r.organicRequirement === 'yes' ? '<span style="font-size:0.75rem; background:#DCFCE7; color:#15803D; font-weight:700; padding:2px 8px; border-radius:12px;">🌱 100% Organic Required</span>' : ''}
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-muted); margin:0.35rem 0 0 0;">
+                📍 ${r.deliveryAddress} ${r.distanceKm !== null ? `(మీ గ్రామం నుండి ~<strong>${r.distanceKm.toFixed(1)} km</strong>)` : ''} • 📅 డెలివరీ: <strong>${r.deliveryDate}</strong> (${r.deliveryWindow})
+              </p>
+            </div>
+            <div>
+              <span class="demand-tag medium">నిండింది: ${r.fulfilledPercentage}%</span>
+            </div>
+          </div>
+
+          <div>
+            ${itemsHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:2rem; background:#FEF2F2; border-radius:12px; border:1px solid #FCA5A5;">
+        <p style="color:#991B1B; font-weight:600; margin-bottom:0.5rem;">Unable to load live data</p>
+        <button class="btn btn-danger btn-sm" onclick="renderNearbyCommunityRequirements()">Retry</button>
+      </div>
+    `;
+  }
+}
+
+function openSubmitOfferModal(reqId, itemId, commName, prodName, remainingQty, unit, maxPrice) {
+  const modal = document.getElementById('submitFarmerOfferModal');
+  if (!modal) return;
+
+  document.getElementById('offerReqId').value = reqId;
+  document.getElementById('offerItemId').value = itemId;
+  document.getElementById('offerTargetCommName').textContent = commName;
+  document.getElementById('offerTargetProductName').textContent = `${prodName} (${remainingQty} ${unit} needed)`;
+  document.getElementById('offerTargetRemainingQty').textContent = `${remainingQty} ${unit}`;
+
+  document.getElementById('offerUnitLabel').textContent = unit;
+  document.getElementById('offerUnitPriceLabel').textContent = unit;
+
+  const qtyInput = document.getElementById('offerQtyInput');
+  qtyInput.value = Math.min(25, remainingQty);
+  qtyInput.max = remainingQty;
+
+  const priceInput = document.getElementById('offerPriceInput');
+  priceInput.value = maxPrice ? Number(maxPrice) : 25;
+
+  // Set harvest date to today's date YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('offerHarvestDate').value = today;
+
+  calculateOfferTotal();
+  modal.style.display = 'flex';
+}
+
+function closeSubmitOfferModal() {
+  const modal = document.getElementById('submitFarmerOfferModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function calculateOfferTotal() {
+  const qty = Number(document.getElementById('offerQtyInput').value) || 0;
+  const price = Number(document.getElementById('offerPriceInput').value) || 0;
+  const total = Math.round(qty * price);
+  document.getElementById('offerTotalAmountText').textContent = `₹${total.toLocaleString('en-IN')}`;
+}
+
+async function handleFarmerOfferSubmit(e) {
+  e.preventDefault();
+  try {
+    const requirementId = document.getElementById('offerReqId').value;
+    const requirementItemId = document.getElementById('offerItemId').value;
+    const offeredQuantity = Number(document.getElementById('offerQtyInput').value);
+    const pricePerUnit = Number(document.getElementById('offerPriceInput').value);
+    const harvestDate = document.getElementById('offerHarvestDate').value;
+    const qualityInfo = document.getElementById('offerQualityInfo').value.trim();
+    const organicCertified = document.getElementById('offerOrganicCheck').checked;
+
+    if (!offeredQuantity || offeredQuantity <= 0) {
+      return showToast('⚠️ చెల్లుబాటు అయ్యే పరిమాణం నమోదు చేయండి.');
+    }
+    if (!pricePerUnit || pricePerUnit <= 0) {
+      return showToast('⚠️ చెల్లుబాటు అయ్యే ధర నమోదు చేయండి.');
+    }
+
+    const payload = {
+      farmerId: farmerProfileCache ? farmerProfileCache.id : 'USR-FARM-01',
+      requirementId,
+      requirementItemId,
+      offeredQuantity,
+      pricePerUnit,
+      harvestDate,
+      qualityInfo: qualityInfo || 'Grade A Fresh Produce',
+      organicCertified
+    };
+
+    const res = await window.KissanAPI.submitFarmerOffer(payload);
+    if (res.status === 'success') {
+      showToast('🚀 ఆఫర్ విజయవంతంగా కమ్యూనిటీ కొనుగోలుదారుకు పంపబడింది! (Offer Submitted)');
+      closeSubmitOfferModal();
+      await renderNearbyCommunityRequirements();
+    }
+  } catch (err) {
+    showToast(`❌ Offer submit failed: ${err.message}`);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// FARMER BANK PAYOUT PROFILE MANAGEMENT
+// -----------------------------------------------------------------------------
+async function openFarmerPayoutProfileModal() {
+  const modal = document.getElementById('farmerPayoutProfileModal');
+  if (modal) modal.classList.add('active');
+  await renderFarmerPayoutProfile();
+}
+
+function closeFarmerPayoutProfileModal() {
+  const modal = document.getElementById('farmerPayoutProfileModal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function renderFarmerPayoutProfile() {
+  try {
+    const res = await window.KissanAPI.getFarmerPayoutProfile();
+    if (res && res.profile) {
+      const p = res.profile;
+      const elHolder = document.getElementById('payoutAccountHolderName');
+      if (elHolder && p.account_holder_name) elHolder.value = p.account_holder_name;
+
+      const elBank = document.getElementById('payoutBankName');
+      if (elBank && p.bank_name) elBank.value = p.bank_name;
+
+      const elIfsc = document.getElementById('payoutIfscCode');
+      if (elIfsc && p.ifsc_code) elIfsc.value = p.ifsc_code;
+
+      const elUpi = document.getElementById('payoutUpiId');
+      if (elUpi && p.upi_id) elUpi.value = p.upi_id;
+
+      const badge = document.getElementById('payoutProfileStatusBadge');
+      const sideBadge = document.getElementById('farmerPayoutStatusBadge');
+      
+      let badgeHtml = '⚠️ నివేదించలేదు (not_submitted)';
+      let badgeColor = '#D97706';
+      let sideText = 'నమోదు చేయండి';
+
+      if (p.payout_eligibility_status === 'verified') {
+        badgeHtml = '✅ APMC & బ్యాంక్ ద్వారా ధృవీకరించబడింది (verified)';
+        badgeColor = '#16A34A';
+        sideText = '✓ ధృవీకరించబడింది';
+      } else if (p.payout_eligibility_status === 'pending_verification') {
+        badgeHtml = '⏳ అడ్మిన్ పరిశీలనలో ఉంది (pending_verification)';
+        badgeColor = '#2563EB';
+        sideText = 'పరిశీలనలో ఉంది';
+      } else if (p.payout_eligibility_status === 'rejected') {
+        badgeHtml = '❌ సరిచూడండి / తిరస్కరించబడింది (rejected)';
+        badgeColor = '#DC2626';
+        sideText = 'సరిచేయండి';
+      }
+
+      if (badge) {
+        badge.innerHTML = badgeHtml;
+        badge.style.color = badgeColor;
+      }
+      if (sideBadge) {
+        sideBadge.textContent = sideText;
+      }
+    }
+  } catch (err) {
+    console.error('Payout profile fetch error:', err);
+  }
+}
+
+async function handleFarmerPayoutProfileSubmit(event) {
+  event.preventDefault();
+  const accountHolderName = document.getElementById('payoutAccountHolderName').value.trim();
+  const bankName = document.getElementById('payoutBankName').value.trim();
+  const accountNumber = document.getElementById('payoutAccountNumber').value.trim();
+  const ifscCode = document.getElementById('payoutIfscCode').value.trim();
+  const upiId = document.getElementById('payoutUpiId').value.trim();
+
+  if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
+    showToast('దయచేసి అన్ని అవసరమైన వివరాలను నమోదు చేయండి.');
+    return;
+  }
+
+  const btn = document.getElementById('btnSavePayoutProfile');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await window.KissanAPI.updateFarmerPayoutProfile({
+      accountHolderName,
+      bankName,
+      accountNumber,
+      ifscCode,
+      upiId
+    });
+
+    if (res && res.status === 'success') {
+      showToast('✅ మీ బ్యాంక్ ఖాతా వివరాలు సమర్పించబడ్డాయి. అడ్మిన్ ధృవీకరణ పూర్తయిన తర్వాత ఆటోమేటిక్ పేఅవుట్స్ సక్రియం అవుతాయి.');
+      closeFarmerPayoutProfileModal();
+      await renderFarmerPayoutProfile();
+    } else {
+      showToast(`❌ ${res.message || 'ప్రొఫైల్ అప్‌డేట్ విఫలమైంది'}`);
+    }
+  } catch (err) {
+    showToast(`❌ అప్‌డేట్ పొరపాటు: ${err.message}`);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
 
