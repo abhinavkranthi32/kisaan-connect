@@ -1118,6 +1118,8 @@ if (typeof window !== 'undefined') {
   window.TRANSLATIONS = TRANSLATIONS;
   window.setLanguage = setLanguage;
   window.currentLang = currentLang;
-  window.t = t;
+  window.t = function(key) {
+    return key;
+};
   window.sanitizeForLang = sanitizeForLang;
 }

@@ -125,20 +125,24 @@ function runMigrations(dbInstance = null) {
     // 4. Safe Table Migration: buyers with CHECK constraint
     db.exec(`
       CREATE TABLE IF NOT EXISTS buyers_v1 (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        short_name TEXT NOT NULL,
-        gstin TEXT NOT NULL UNIQUE,
-        trade_license TEXT NOT NULL UNIQUE,
-        phone TEXT NOT NULL,
-        city TEXT NOT NULL,
-        lat REAL DEFAULT 17.3850,
-        lon REAL DEFAULT 78.4867,
-        escrow_balance INTEGER NOT NULL DEFAULT 0 CHECK(escrow_balance >= 0),
-        rating TEXT DEFAULT '4.8 ★',
-        avatar TEXT DEFAULT '🏢',
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      );
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  short_name TEXT NOT NULL,
+  gstin TEXT NOT NULL UNIQUE,
+  trade_license TEXT NOT NULL UNIQUE,
+  phone TEXT NOT NULL,
+  city TEXT NOT NULL,
+  lat REAL DEFAULT 17.3850,
+  lon REAL DEFAULT 78.4867,
+  escrow_balance INTEGER NOT NULL DEFAULT 0 CHECK(escrow_balance >= 0),
+  rating TEXT DEFAULT '4.8 ★',
+  avatar TEXT DEFAULT '🏢',
+  buyer_type TEXT DEFAULT 'business',
+  families_count INTEGER DEFAULT 0,
+  organic_preferred INTEGER DEFAULT 0,
+  delivery_area TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
       INSERT INTO buyers_v1 SELECT * FROM buyers;
       DROP TABLE buyers;

@@ -226,7 +226,7 @@ function initDatabase() {
 
     insertDispute.run(
       'DISP-TS-101',
-      'ORD-TS-8801',
+      null,
       'USR-BUY-01',
       'ITC Agri Business Hub',
       'buyer',
