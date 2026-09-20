@@ -32,7 +32,40 @@ let farmerProfileCache = {
   village: '',
   walletBalance: 0
 };
+// ============================================================
+// FARMER AADHAAR DETAILS
+// ============================================================
 
+function validateAadhaarNumber(aadhaar) {
+  return /^\d{12}$/.test(String(aadhaar).trim());
+}
+
+function saveFarmerAadhaarDetails(aadhaar, documentFile = null) {
+  aadhaar = String(aadhaar || '').trim();
+
+  if (!validateAadhaarNumber(aadhaar)) {
+    showToast(
+      currentLang === 'te'
+        ? '❌ ఆధార్ నంబర్ 12 అంకెలుగా ఉండాలి.'
+        : '❌ Aadhaar number must contain exactly 12 digits.'
+    );
+    return false;
+  }
+
+  // Do NOT store the complete Aadhaar number.
+  farmerProfileCache.aadhaarLast4 = aadhaar.slice(-4);
+  farmerProfileCache.aadhaarDocumentProvided = !!documentFile;
+
+  // This is NOT official Aadhaar verification.
+  farmerProfileCache.aadhaarVerified = false;
+
+  console.log('[Farmer Profile] Aadhaar details saved:', {
+    aadhaarLast4: farmerProfileCache.aadhaarLast4,
+    documentProvided: farmerProfileCache.aadhaarDocumentProvided
+  });
+
+  return true;
+}
 function resolveCropImageUrl(img, cropKey = 'teja_chilli') {
   if (img && (img.startsWith('data:image/') || img.startsWith('http://') || img.startsWith('https://'))) {
     return img;
